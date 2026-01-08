@@ -34,7 +34,10 @@ export async function seedApiKeys() {
   const apiKeysEnv = process.env.API_KEYS;
   if (!apiKeysEnv) return;
 
-  const keys = apiKeysEnv.split(",").map((k) => k.trim()).filter(Boolean);
+  const keys = apiKeysEnv
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean);
 
   for (const key of keys) {
     await prisma.apiKey.upsert({

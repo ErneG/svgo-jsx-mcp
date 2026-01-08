@@ -17,7 +17,11 @@ server.tool(
   {
     content: z.string().describe("The SVG content to optimize"),
     filename: z.string().optional().describe("Optional filename for context in reporting"),
-    camelCase: z.boolean().optional().default(true).describe("Convert kebab-case attributes to camelCase (default: true)"),
+    camelCase: z
+      .boolean()
+      .optional()
+      .default(true)
+      .describe("Convert kebab-case attributes to camelCase (default: true)"),
   },
   async ({ content, filename, camelCase }) => {
     try {
@@ -28,7 +32,9 @@ server.tool(
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
       return {
-        content: [{ type: "text", text: JSON.stringify({ success: false, error: message }, null, 2) }],
+        content: [
+          { type: "text", text: JSON.stringify({ success: false, error: message }, null, 2) },
+        ],
         isError: true,
       };
     }

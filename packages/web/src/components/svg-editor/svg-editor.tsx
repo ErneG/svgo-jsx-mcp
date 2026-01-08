@@ -124,14 +124,17 @@ export function SvgEditor() {
     }
   }, [input, camelCase]);
 
-  const handleCopy = useCallback(async (type: "input" | "output") => {
-    const text = type === "input" ? input : output?.result;
-    if (!text) return;
+  const handleCopy = useCallback(
+    async (type: "input" | "output") => {
+      const text = type === "input" ? input : output?.result;
+      if (!text) return;
 
-    await copyToClipboard(text);
-    setCopied(type);
-    setTimeout(() => setCopied(null), 2000);
-  }, [input, output]);
+      await copyToClipboard(text);
+      setCopied(type);
+      setTimeout(() => setCopied(null), 2000);
+    },
+    [input, output]
+  );
 
   const handleDownload = useCallback(() => {
     if (!output?.result) return;
@@ -169,7 +172,13 @@ export function SvgEditor() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                className="w-6 h-6 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
               </svg>
             </div>
@@ -226,12 +235,7 @@ export function SvgEditor() {
               <h2 className="font-semibold text-gray-300">Input SVG</h2>
               <div className="flex items-center gap-2">
                 <label className="cursor-pointer">
-                  <input
-                    type="file"
-                    accept=".svg"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
+                  <input type="file" accept=".svg" onChange={handleFileSelect} className="hidden" />
                   <span className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-800 hover:bg-gray-700 rounded-md transition-colors">
                     <Upload className="w-4 h-4" />
                     Upload
@@ -242,7 +246,11 @@ export function SvgEditor() {
                   disabled={!input}
                   className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-800 hover:bg-gray-700 rounded-md transition-colors disabled:opacity-50"
                 >
-                  {copied === "input" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {copied === "input" ? (
+                    <Check className="w-4 h-4" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
                   Copy
                 </button>
               </div>
@@ -284,7 +292,11 @@ export function SvgEditor() {
                   disabled={!output?.result}
                   className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-800 hover:bg-gray-700 rounded-md transition-colors disabled:opacity-50"
                 >
-                  {copied === "output" ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {copied === "output" ? (
+                    <Check className="w-4 h-4" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
                   Copy
                 </button>
               </div>
@@ -303,7 +315,8 @@ export function SvgEditor() {
                   Size: {formatBytes(output.optimization.optimizedSize)}
                 </span>
                 <span className="text-green-400">
-                  Saved: {formatBytes(output.optimization.savedBytes)} ({output.optimization.savedPercent})
+                  Saved: {formatBytes(output.optimization.savedBytes)} (
+                  {output.optimization.savedPercent})
                 </span>
                 {output.camelCaseApplied && (
                   <span className="text-violet-400">camelCase applied</span>
@@ -345,7 +358,10 @@ export function SvgEditor() {
       {/* Footer */}
       <footer className="border-t border-gray-800 px-6 py-4 mt-8">
         <div className="max-w-7xl mx-auto text-center text-sm text-gray-500">
-          Powered by SVGO &bull; <a href="/admin" className="text-violet-400 hover:text-violet-300">Admin</a>
+          Powered by SVGO &bull;{" "}
+          <a href="/admin" className="text-violet-400 hover:text-violet-300">
+            Admin
+          </a>
         </div>
       </footer>
     </div>

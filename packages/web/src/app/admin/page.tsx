@@ -28,9 +28,7 @@ export default function AdminDashboard() {
             <BarChart3 className="w-6 h-6 text-green-400" />
           </div>
           <h2 className="text-xl font-semibold mb-2">Statistics</h2>
-          <p className="text-gray-400">
-            View usage statistics, optimization metrics, and trends.
-          </p>
+          <p className="text-gray-400">View usage statistics, optimization metrics, and trends.</p>
         </Link>
 
         <div className="p-6 bg-gray-900 border border-gray-800 rounded-xl">
@@ -38,9 +36,7 @@ export default function AdminDashboard() {
             <Activity className="w-6 h-6 text-blue-400" />
           </div>
           <h2 className="text-xl font-semibold mb-2">Health Status</h2>
-          <p className="text-gray-400 mb-4">
-            API and database connection status.
-          </p>
+          <p className="text-gray-400 mb-4">API and database connection status.</p>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             <span className="text-sm text-green-400">All systems operational</span>

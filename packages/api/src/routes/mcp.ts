@@ -20,10 +20,12 @@ const OptimizeSchema = z.object({
 });
 
 const BatchOptimizeSchema = z.object({
-  items: z.array(z.object({
-    content: z.string(),
-    filename: z.string().optional(),
-  })),
+  items: z.array(
+    z.object({
+      content: z.string(),
+      filename: z.string().optional(),
+    })
+  ),
   camelCase: z.boolean().optional().default(true),
 });
 
@@ -195,11 +197,13 @@ mcp.get("/", (c) => {
   return c.json({
     name: "SvgoJsxServer",
     version: "0.1.0",
-    description: "MCP server for SVG optimization with JSX-compatible camelCase attribute conversion",
+    description:
+      "MCP server for SVG optimization with JSX-compatible camelCase attribute conversion",
     tools: [
       {
         name: "optimize_svg",
-        description: "Optimize an SVG file using SVGO and optionally convert attributes to camelCase",
+        description:
+          "Optimize an SVG file using SVGO and optionally convert attributes to camelCase",
         endpoint: "/mcp/optimize",
         method: "POST",
         parameters: {
