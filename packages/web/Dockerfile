@@ -61,15 +61,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/packages/web/public ./public
-
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
+# Copy standalone output (includes full monorepo structure with outputFileTracingRoot)
 COPY --from=builder --chown=nextjs:nodejs /app/packages/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/packages/web/.next/static ./.next/static
+
+# Copy static files and public folder to the correct location
+COPY --from=builder --chown=nextjs:nodejs /app/packages/web/.next/static ./packages/web/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/packages/web/public ./packages/web/public
 
 USER nextjs
 
@@ -78,5 +75,5 @@ EXPOSE 3001
 ENV PORT=3001
 ENV HOSTNAME="0.0.0.0"
 
-# Start the server with error logging
-CMD ["sh", "-c", "echo 'Starting server...' && echo 'Listing node_modules:' && ls -la node_modules/ | head -20 && echo '--- Checking for next ---' && ls -la node_modules/next 2>&1 || echo 'next not found' && echo '--- Starting node ---' && node server.js 2>&1"]
+# Start the server from the web package directory
+CMD ["node", "packages/web/server.js"]
