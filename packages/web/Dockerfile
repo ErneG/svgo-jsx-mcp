@@ -78,5 +78,5 @@ EXPOSE 3001
 ENV PORT=3001
 ENV HOSTNAME="0.0.0.0"
 
-# Debug: list files to find server.js location, then start
-CMD ["sh", "-c", "ls -la && ls -la packages/web/ 2>/dev/null || echo 'packages/web not found' && find . -name 'server.js' 2>/dev/null && sleep 30"]
+# Start the server
+CMD ["node", "server.js"]
