@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Upload, Download, Copy, Check, Loader2, RefreshCw } from "lucide-react";
 import { cn, formatBytes, copyToClipboard, downloadFile } from "@/lib/utils";
 import type { OptimizeSvgResponse } from "@svgo-jsx/shared";
@@ -15,17 +15,96 @@ export function SvgEditor() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<"input" | "output" | null>(null);
 
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Auto-optimize when input or camelCase changes (debounced)
+  useEffect(() => {
+    // Clear any pending debounce
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Cancel any in-flight request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const trimmedInput = input.trim();
+
+    // Only optimize if input looks like SVG
+    if (!trimmedInput || (!trimmedInput.startsWith("<svg") && !trimmedInput.startsWith("<?xml"))) {
+      setOutput(null);
+      setError(null);
+      return;
+    }
+
+    // Debounce the optimization
+    debounceRef.current = setTimeout(async () => {
+      setIsLoading(true);
+      setError(null);
+
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
+      try {
+        const response = await fetch(`${API_URL}/public/optimize`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: input, camelCase }),
+          signal: controller.signal,
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Optimization failed");
+        }
+
+        setOutput(data);
+      } catch (err) {
+        // Ignore abort errors
+        if (err instanceof Error && err.name === "AbortError") {
+          return;
+        }
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setIsLoading(false);
+      }
+    }, 500);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [input, camelCase]);
+
   const handleOptimize = useCallback(async () => {
     if (!input.trim()) return;
 
+    // Cancel any pending debounce
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Cancel any in-flight request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
     setIsLoading(true);
     setError(null);
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
     try {
       const response = await fetch(`${API_URL}/public/optimize`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: input, camelCase }),
+        signal: controller.signal,
       });
 
       const data = await response.json();
@@ -36,6 +115,9 @@ export function SvgEditor() {
 
       setOutput(data);
     } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        return;
+      }
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setIsLoading(false);
