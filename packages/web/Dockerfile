@@ -13,6 +13,9 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/web/package.json ./packages/web/
 COPY packages/shared/package.json ./packages/shared/
 
+# Copy Prisma schema (needed for postinstall script)
+COPY packages/web/prisma ./packages/web/prisma
+
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
