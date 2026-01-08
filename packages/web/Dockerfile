@@ -58,9 +58,6 @@ RUN apk add --no-cache openssl
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install Prisma CLI for runtime db push (pinned version)
-RUN npm install -g prisma@5.22.0
-
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
@@ -74,9 +71,6 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/packages/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/packages/web/.next/static ./.next/static
 
-# Copy Prisma schema for db push
-COPY --from=builder /app/packages/web/prisma ./prisma
-
 USER nextjs
 
 EXPOSE 3001
@@ -84,5 +78,5 @@ EXPOSE 3001
 ENV PORT=3001
 ENV HOSTNAME="0.0.0.0"
 
-# Sync database schema and start server
-CMD ["sh", "-c", "prisma db push && node server.js"]
+# Start the server
+CMD ["node", "server.js"]
