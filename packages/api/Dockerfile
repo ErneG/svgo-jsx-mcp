@@ -24,7 +24,7 @@ COPY packages/api ./packages/api
 WORKDIR /app/packages/api
 
 # Generate Prisma client and build
-RUN pnpm prisma generate
+RUN npx prisma generate
 RUN pnpm build
 
 # Production stage
@@ -39,6 +39,7 @@ COPY --from=builder /app/packages/api/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/api/node_modules ./packages/api/node_modules
 COPY --from=builder /app/packages/api/prisma ./prisma
+COPY --from=builder /app/packages/api/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/packages/api/package.json ./
 
 # Expose port

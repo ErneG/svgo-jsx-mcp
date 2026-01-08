@@ -13,8 +13,9 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY packages/web/package.json ./packages/web/
 COPY packages/shared/package.json ./packages/shared/
 
-# Copy Prisma schema (needed for postinstall script)
+# Copy Prisma schema and config (needed for postinstall script)
 COPY packages/web/prisma ./packages/web/prisma
+COPY packages/web/prisma.config.ts ./packages/web/prisma.config.ts
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
@@ -46,7 +47,7 @@ WORKDIR /app/packages/web
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Generate Prisma client and build
-RUN pnpm db:generate
+RUN npx prisma generate
 RUN pnpm build
 
 # Production image

@@ -18,24 +18,28 @@
     "start:stdio": "node dist/index.js",
     "dev": "pnpm build && pnpm start:server",
     "dev:stdio": "pnpm build && pnpm start:stdio",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
-    "prisma:deploy": "prisma migrate deploy",
-    "prisma:studio": "prisma studio",
-    "db:push": "prisma db push"
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:deploy": "npx prisma migrate deploy",
+    "prisma:studio": "npx prisma studio",
+    "db:push": "npx prisma db push"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.7",
     "@modelcontextprotocol/sdk": "^1.17.3",
-    "@prisma/client": "^5.22.0",
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
     "@svgo-jsx/shared": "workspace:*",
+    "dotenv": "^16.4.5",
     "hono": "^4.11.3",
-    "prisma": "^5.22.0",
+    "pg": "^8.13.0",
     "svgo": "^4.0.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "@types/pg": "^8.11.0",
+    "prisma": "^7.0.0",
     "typescript": "^5.9.2"
   }
 }
