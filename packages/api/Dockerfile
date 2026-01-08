@@ -41,6 +41,10 @@ COPY --from=builder /app/packages/api/node_modules ./packages/api/node_modules
 COPY --from=builder /app/packages/api/prisma ./prisma
 COPY --from=builder /app/packages/api/package.json ./
 
+# Copy entrypoint script
+COPY packages/api/docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x ./docker-entrypoint.sh
+
 # Expose port
 EXPOSE 3001
 
@@ -48,5 +52,5 @@ EXPOSE 3001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
 
-# Start server (migrations should be run separately or at first deployment)
-CMD ["node", "dist/server.js"]
+# Start server with entrypoint script that runs db push first
+ENTRYPOINT ["./docker-entrypoint.sh"]
