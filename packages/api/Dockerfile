@@ -34,11 +34,13 @@ WORKDIR /app/packages/api
 
 RUN apk add --no-cache openssl
 
-# Copy root node_modules (pnpm hoisted dependencies)
+# Copy the entire pnpm structure including .pnpm store to preserve symlinks
 COPY --from=builder /app/node_modules /app/node_modules
-
-# Copy API-specific node_modules
 COPY --from=builder /app/packages/api/node_modules ./node_modules
+COPY --from=builder /app/packages/shared /app/packages/shared
+
+# Set NODE_PATH to help resolve modules from workspace root
+ENV NODE_PATH=/app/node_modules
 
 # Copy built files
 COPY --from=builder /app/packages/api/dist ./dist
