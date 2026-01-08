@@ -78,5 +78,5 @@ EXPOSE 3001
 ENV PORT=3001
 ENV HOSTNAME="0.0.0.0"
 
-# Start the server
-CMD ["node", "server.js"]
+# Start the server (path reflects monorepo structure in standalone output)
+CMD ["node", "packages/web/server.js"]
