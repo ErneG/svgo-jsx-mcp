@@ -41,7 +41,7 @@ admin.get("/keys", async (c) => {
   });
 
   return c.json(
-    keys.map((k) => ({
+    keys.map((k: (typeof keys)[number]) => ({
       id: k.id,
       key: k.key,
       name: k.name,
@@ -144,7 +144,7 @@ admin.get("/stats", async (c) => {
     last24Hours: {
       requests: recentRequests,
     },
-    topKeys: topKeys.map((k) => ({
+    topKeys: topKeys.map((k: (typeof topKeys)[number]) => ({
       apiKeyId: k.apiKeyId,
       requestCount: k._count.id,
       bytesSaved: k._sum.savedBytes || 0,

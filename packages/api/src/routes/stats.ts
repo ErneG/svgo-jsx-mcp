@@ -36,7 +36,7 @@ stats.get("/", async (c) => {
     last24Hours: {
       requests: recentRequests,
     },
-    topKeys: topKeys.map((k) => ({
+    topKeys: topKeys.map((k: (typeof topKeys)[number]) => ({
       apiKeyId: k.apiKeyId,
       requestCount: k._count.id,
       bytesSaved: k._sum.savedBytes || 0,
