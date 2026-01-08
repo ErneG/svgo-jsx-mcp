@@ -5,7 +5,9 @@
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "svgo-jsx-mcp": "dist/index.js"
+    "svgo-jsx-mcp": "dist/cli/index.js",
+    "svgo-jsx-server": "dist/server.js",
+    "svgo-jsx-stdio": "dist/index.js"
   },
   "files": [
     "dist",
@@ -16,8 +18,10 @@
     "start": "node dist/index.js",
     "start:server": "node dist/server.js",
     "start:stdio": "node dist/index.js",
+    "start:cli": "node dist/cli/index.js",
     "dev": "pnpm build && pnpm start:server",
     "dev:stdio": "pnpm build && pnpm start:stdio",
+    "dev:cli": "pnpm build && pnpm start:cli",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx prisma migrate dev",
     "prisma:deploy": "npx prisma migrate deploy",
@@ -30,8 +34,12 @@
     "@prisma/adapter-pg": "^7.0.0",
     "@prisma/client": "^7.0.0",
     "@svgo-jsx/shared": "workspace:*",
+    "chalk": "^5.4.1",
+    "chokidar": "^4.0.3",
+    "commander": "^13.1.0",
     "dotenv": "^16.4.5",
     "hono": "^4.11.3",
+    "ora": "^8.2.0",
     "pg": "^8.13.0",
     "prisma": "^7.0.0",
     "svgo": "^4.0.0",
