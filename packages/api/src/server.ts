@@ -8,6 +8,8 @@ import { loggingMiddleware } from "./middleware/logging.js";
 import healthRoutes from "./routes/health.js";
 import statsRoutes from "./routes/stats.js";
 import mcpRoutes from "./routes/mcp.js";
+import adminRoutes from "./routes/admin.js";
+import publicRoutes from "./routes/public.js";
 
 const app = new Hono();
 
@@ -19,6 +21,8 @@ app.use("*", loggingMiddleware);
 app.route("/health", healthRoutes);
 app.route("/stats", statsRoutes);
 app.route("/mcp", mcpRoutes);
+app.route("/admin", adminRoutes);
+app.route("/public", publicRoutes);
 
 // Root endpoint
 app.get("/", (c) => {
@@ -49,7 +53,7 @@ app.onError((err, c) => {
 });
 
 async function main() {
-  const port = parseInt(process.env.PORT || "3000", 10);
+  const port = parseInt(process.env.PORT || "3001", 10);
 
   try {
     // Initialize database
@@ -70,7 +74,8 @@ async function main() {
     console.log("Endpoints:");
     console.log(`  - Health: http://localhost:${port}/health`);
     console.log(`  - Stats:  http://localhost:${port}/stats`);
-    console.log(`  - MCP:    http://localhost:${port}/mcp/sse`);
+    console.log(`  - MCP:    http://localhost:${port}/mcp/optimize`);
+    console.log(`  - Admin:  http://localhost:${port}/admin/keys`);
   } catch (error) {
     console.error("Failed to start server:", error);
     process.exit(1);
