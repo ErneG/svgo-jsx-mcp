@@ -83,7 +83,7 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'set -e' >> /app/start.sh && \
     echo 'cd /app/packages/web' >> /app/start.sh && \
     echo 'echo "Pushing database schema..."' >> /app/start.sh && \
-    echo 'npx prisma db push --schema=./prisma/schema.prisma --url="$DATABASE_URL" --skip-generate' >> /app/start.sh && \
+    echo 'npx prisma db push --schema=./prisma/schema.prisma --url="$DATABASE_URL"' >> /app/start.sh && \
     echo 'echo "Schema push completed successfully"' >> /app/start.sh && \
     echo 'cd /app' >> /app/start.sh && \
     echo 'exec node packages/web/server.js' >> /app/start.sh && \
