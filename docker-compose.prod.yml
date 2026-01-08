@@ -22,6 +22,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    networks:
+      - coolify
+      - default
 
   api:
     build:
@@ -43,6 +46,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    networks:
+      - coolify
+      - default
 
   db:
     image: postgres:16-alpine
@@ -61,3 +67,7 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  coolify:
+    external: true
