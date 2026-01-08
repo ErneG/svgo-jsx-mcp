@@ -39,7 +39,6 @@ COPY --from=builder /app/packages/api/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/api/node_modules ./packages/api/node_modules
 COPY --from=builder /app/packages/api/prisma ./prisma
-COPY --from=builder /app/packages/api/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/packages/api/package.json ./
 
 # Expose port
@@ -50,4 +49,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1
 
 # Run migrations and start server
-CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy && node dist/server.js"]
+CMD ["sh", "-c", "./node_modules/.bin/prisma migrate deploy --schema=./prisma/schema.prisma && node dist/server.js"]
