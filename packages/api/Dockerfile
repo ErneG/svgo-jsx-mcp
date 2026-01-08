@@ -30,14 +30,18 @@ RUN pnpm build
 # Production stage
 FROM node:20-alpine
 
-WORKDIR /app
+WORKDIR /app/packages/api
 
 RUN apk add --no-cache openssl
 
-# Copy built files and dependencies
+# Copy root node_modules (pnpm hoisted dependencies)
+COPY --from=builder /app/node_modules /app/node_modules
+
+# Copy API-specific node_modules
+COPY --from=builder /app/packages/api/node_modules ./node_modules
+
+# Copy built files
 COPY --from=builder /app/packages/api/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/packages/api/node_modules ./packages/api/node_modules
 COPY --from=builder /app/packages/api/prisma ./prisma
 COPY --from=builder /app/packages/api/package.json ./
 
