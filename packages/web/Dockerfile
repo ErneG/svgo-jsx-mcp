@@ -33,7 +33,12 @@ COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_module
 # Copy shared package
 COPY packages/shared ./packages/shared
 
+# Build shared package first
+WORKDIR /app/packages/shared
+RUN pnpm build
+
 # Copy web package
+WORKDIR /app
 COPY packages/web ./packages/web
 
 WORKDIR /app/packages/web
