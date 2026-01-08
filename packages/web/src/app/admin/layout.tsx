@@ -4,6 +4,9 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 
+// Force dynamic rendering to avoid build-time database access
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({
   children,
 }: {
