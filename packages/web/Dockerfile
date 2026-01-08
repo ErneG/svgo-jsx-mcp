@@ -78,5 +78,5 @@ EXPOSE 3001
 ENV PORT=3001
 ENV HOSTNAME="0.0.0.0"
 
-# Start the server (path reflects monorepo structure in standalone output)
-CMD ["node", "packages/web/server.js"]
+# Debug: list files to find server.js location, then start
+CMD ["sh", "-c", "ls -la && ls -la packages/web/ 2>/dev/null || echo 'packages/web not found' && find . -name 'server.js' 2>/dev/null && sleep 30"]
