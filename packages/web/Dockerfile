@@ -79,4 +79,4 @@ ENV PORT=3001
 ENV HOSTNAME="0.0.0.0"
 
 # Start the server with error logging
-CMD ["sh", "-c", "echo 'Starting server...' && echo 'PORT='$PORT && echo 'HOSTNAME='$HOSTNAME && echo 'NODE_ENV='$NODE_ENV && echo 'DATABASE_URL is set:'${DATABASE_URL:+yes} && ls -la && node server.js 2>&1"]
+CMD ["sh", "-c", "echo 'Starting server...' && echo 'Listing node_modules:' && ls -la node_modules/ | head -20 && echo '--- Checking for next ---' && ls -la node_modules/next 2>&1 || echo 'next not found' && echo '--- Starting node ---' && node server.js 2>&1"]
