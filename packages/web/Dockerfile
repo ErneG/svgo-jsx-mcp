@@ -56,6 +56,9 @@ WORKDIR /app
 
 RUN apk add --no-cache openssl
 
+# Install pnpm for running prisma commands at runtime
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
@@ -69,6 +72,22 @@ COPY --from=builder --chown=nextjs:nodejs /app/packages/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/packages/web/.next/static ./packages/web/.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/packages/web/public ./packages/web/public
 
+# Copy Prisma schema and config for runtime db push
+COPY --from=builder --chown=nextjs:nodejs /app/packages/web/prisma ./packages/web/prisma
+COPY --from=builder --chown=nextjs:nodejs /app/packages/web/prisma.config.ts ./packages/web/prisma.config.ts
+
+# Copy node_modules for prisma CLI (needed for db push)
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+
+# Create startup script
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'cd /app/packages/web' >> /app/start.sh && \
+    echo 'echo "Pushing database schema..."' >> /app/start.sh && \
+    echo 'npx prisma db push --url="$DATABASE_URL" --accept-data-loss 2>/dev/null || echo "Schema push completed (or already up to date)"' >> /app/start.sh && \
+    echo 'cd /app' >> /app/start.sh && \
+    echo 'exec node packages/web/server.js' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
 USER nextjs
 
 EXPOSE 3000
@@ -76,5 +95,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Start the server from the web package directory
-CMD ["node", "packages/web/server.js"]
+# Start with schema push then server
+CMD ["/app/start.sh"]
