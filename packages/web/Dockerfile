@@ -81,9 +81,11 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 # Create startup script
 RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'set -e' >> /app/start.sh && \
     echo 'cd /app/packages/web' >> /app/start.sh && \
     echo 'echo "Pushing database schema..."' >> /app/start.sh && \
-    echo 'npx prisma db push --url="$DATABASE_URL" --accept-data-loss 2>/dev/null || echo "Schema push completed (or already up to date)"' >> /app/start.sh && \
+    echo 'npx prisma db push --url="$DATABASE_URL" --skip-generate' >> /app/start.sh && \
+    echo 'echo "Schema push completed successfully"' >> /app/start.sh && \
     echo 'cd /app' >> /app/start.sh && \
     echo 'exec node packages/web/server.js' >> /app/start.sh && \
     chmod +x /app/start.sh
