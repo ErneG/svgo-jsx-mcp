@@ -25,6 +25,8 @@ services:
     networks:
       - coolify
       - default
+    expose:
+      - "3000"
     labels:
       - "caddy_ingress_network=coolify"
 
@@ -51,6 +53,8 @@ services:
     networks:
       - coolify
       - default
+    expose:
+      - "3001"
     labels:
       - "caddy_ingress_network=coolify"
 
