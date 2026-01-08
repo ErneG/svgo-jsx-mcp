@@ -6,9 +6,6 @@ import { PrismaClient } from "../generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 
-// Lazy initialization to avoid errors during Next.js build
-let _auth: ReturnType<typeof betterAuth> | null = null;
-
 function createAuth() {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
@@ -29,12 +26,25 @@ function createAuth() {
   });
 }
 
-// Getter that lazily initializes auth on first access
+// Cache the auth instance
+let _auth: ReturnType<typeof betterAuth> | null = null;
+
+export function getAuth() {
+  if (!_auth) {
+    _auth = createAuth();
+  }
+  return _auth;
+}
+
+// For backward compatibility - create auth lazily on first property access
 export const auth = new Proxy({} as ReturnType<typeof betterAuth>, {
-  get(_, prop) {
-    if (!_auth) {
-      _auth = createAuth();
+  get(target, prop, receiver) {
+    const instance = getAuth();
+    const value = Reflect.get(instance, prop, receiver);
+    // Bind functions to the auth instance
+    if (typeof value === "function") {
+      return value.bind(instance);
     }
-    return (_auth as Record<string | symbol, unknown>)[prop];
+    return value;
   },
 });
