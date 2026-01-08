@@ -2,14 +2,22 @@
   "name": "svgo-jsx-mcp",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "SVG optimization with JSX-compatible camelCase conversion - Monorepo",
   "scripts": {
     "build": "pnpm -r build",
     "dev": "pnpm -r --parallel dev",
     "dev:api": "pnpm --filter @svgo-jsx/api dev",
     "dev:web": "pnpm --filter @svgo-jsx/web dev",
-    "lint": "pnpm -r lint",
-    "clean": "pnpm -r exec rm -rf dist node_modules"
+    "lint": "eslint packages/*/src --ext .ts,.tsx",
+    "lint:fix": "eslint packages/*/src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"packages/*/src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"packages/*/src/**/*.{ts,tsx}\"",
+    "clean": "pnpm -r exec rm -rf dist node_modules",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "prepare": "husky"
   },
   "keywords": [
     "mcp",
@@ -23,5 +31,27 @@
   "packageManager": "pnpm@10.15.1",
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@vitest/coverage-v8": "^3.0.4",
+    "@vitest/ui": "^3.0.4",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.4.2",
+    "typescript-eslint": "^8.21.0",
+    "vitest": "^3.0.4",
+    "vitest-mock-extended": "^2.0.2"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }
