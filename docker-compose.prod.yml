@@ -25,6 +25,8 @@ services:
     networks:
       - coolify
       - default
+    labels:
+      - "caddy_ingress_network=coolify"
 
   api:
     build:
@@ -49,6 +51,8 @@ services:
     networks:
       - coolify
       - default
+    labels:
+      - "caddy_ingress_network=coolify"
 
   db:
     image: postgres:16-alpine
