@@ -5,6 +5,7 @@ import { Hono } from "hono";
 import { prisma, initializeStats, seedApiKeys } from "./db.js";
 import { createCorsMiddleware } from "./middleware/cors.js";
 import { loggingMiddleware } from "./middleware/logging.js";
+import { createLimitsMiddleware, getLimitsFromEnv } from "./security/limits.js";
 import healthRoutes from "./routes/health.js";
 import statsRoutes from "./routes/stats.js";
 import mcpRoutes from "./routes/mcp.js";
@@ -16,6 +17,7 @@ const app = new Hono();
 // Global middleware
 app.use("*", createCorsMiddleware());
 app.use("*", loggingMiddleware);
+app.use("*", createLimitsMiddleware(getLimitsFromEnv()));
 
 // Routes
 app.route("/health", healthRoutes);

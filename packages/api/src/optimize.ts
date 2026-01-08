@@ -1,9 +1,15 @@
 import { optimize } from "svgo";
+import { sanitizeSvg, checkSvgSecurity } from "./security/sanitizer.js";
+import { validateContentSize } from "./security/limits.js";
 
 export interface OptimizeSvgArgs {
   content: string;
   filename?: string;
   camelCase?: boolean;
+  /** Sanitize SVG to remove XSS vectors (default: true for API, false for CLI) */
+  sanitize?: boolean;
+  /** Maximum content size in bytes (default: 1MB) */
+  maxSize?: number;
 }
 
 /**
@@ -35,6 +41,8 @@ export async function handleOptimizeSvg({
   content,
   filename,
   camelCase = true,
+  sanitize = false,
+  maxSize,
 }: OptimizeSvgArgs): Promise<string> {
   // Validate input
   const trimmedContent = content.trim();
@@ -42,8 +50,26 @@ export async function handleOptimizeSvg({
     throw new Error("Invalid SVG content: must start with <svg or <?xml");
   }
 
+  // Validate content size if maxSize is specified
+  if (maxSize) {
+    validateContentSize(trimmedContent, maxSize);
+  }
+
+  // Sanitize SVG content if enabled
+  let processedContent = trimmedContent;
+  let securityWarnings: string[] = [];
+
+  if (sanitize) {
+    const sanitizeResult = sanitizeSvg(trimmedContent);
+    processedContent = sanitizeResult.sanitized;
+    securityWarnings = sanitizeResult.issues;
+  } else {
+    // Still check for security issues even if not sanitizing (for warnings)
+    securityWarnings = checkSvgSecurity(trimmedContent);
+  }
+
   // Optimize with SVGO
-  const result = optimize(trimmedContent, {
+  const result = optimize(processedContent, {
     multipass: true,
   });
 
@@ -74,6 +100,8 @@ export async function handleOptimizeSvg({
         ratio,
       },
       camelCaseApplied,
+      sanitized: sanitize,
+      securityWarnings: securityWarnings.length > 0 ? securityWarnings : undefined,
       result: optimizedSvg,
     },
     null,
