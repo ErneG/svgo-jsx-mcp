@@ -72,9 +72,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/packages/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/packages/web/.next/static ./packages/web/.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/packages/web/public ./packages/web/public
 
-# Copy Prisma schema and config for runtime db push
+# Copy Prisma schema for runtime db push (not config.ts - it requires prisma/config module)
 COPY --from=builder --chown=nextjs:nodejs /app/packages/web/prisma ./packages/web/prisma
-COPY --from=builder --chown=nextjs:nodejs /app/packages/web/prisma.config.ts ./packages/web/prisma.config.ts
 
 # Copy node_modules for prisma CLI (needed for db push)
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
