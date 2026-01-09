@@ -75,9 +75,13 @@ export default function StatsPage() {
     );
   }
 
-  const successRate = stats?.global.totalRequests
-    ? ((stats.global.successCount / stats.global.totalRequests) * 100).toFixed(1)
-    : "0";
+  const totalRequests = stats?.global?.totalRequests ?? 0;
+  const totalBytesSaved = stats?.global?.totalBytesSaved ?? "0";
+  const successCount = stats?.global?.successCount ?? 0;
+  const errorCount = stats?.global?.errorCount ?? 0;
+  const last24hRequests = stats?.user?.last24Hours?.requests ?? 0;
+
+  const successRate = totalRequests > 0 ? ((successCount / totalRequests) * 100).toFixed(1) : "0";
 
   return (
     <div className="space-y-6">
@@ -101,14 +105,14 @@ export default function StatsPage() {
           <>
             <StatCard
               title="Total Requests"
-              value={stats?.global.totalRequests.toLocaleString() || 0}
-              description={`${stats?.user.last24Hours.requests.toLocaleString() || 0} in last 24h`}
+              value={totalRequests.toLocaleString()}
+              description={`${last24hRequests.toLocaleString()} in last 24h`}
               icon={<TrendingUp className="h-4 w-4 text-[rgb(var(--primary))]" />}
               iconBgColor="bg-[rgb(var(--primary))]/10"
             />
             <StatCard
               title="Bytes Saved"
-              value={formatBytes(parseInt(stats?.global.totalBytesSaved || "0"))}
+              value={formatBytes(parseInt(String(totalBytesSaved), 10) || 0)}
               description="Total savings"
               icon={<HardDrive className="h-4 w-4 text-emerald-500" />}
               iconBgColor="bg-emerald-500/10"
@@ -116,13 +120,13 @@ export default function StatsPage() {
             <StatCard
               title="Success Rate"
               value={`${successRate}%`}
-              description={`${stats?.global.successCount.toLocaleString() || 0} successful`}
+              description={`${successCount.toLocaleString()} successful`}
               icon={<FileCheck className="h-4 w-4 text-sky-500" />}
               iconBgColor="bg-sky-500/10"
             />
             <StatCard
               title="Errors"
-              value={stats?.global.errorCount.toLocaleString() || 0}
+              value={errorCount.toLocaleString()}
               description="Failed requests"
               icon={<AlertCircle className="h-4 w-4 text-[rgb(var(--destructive))]" />}
               iconBgColor="bg-[rgb(var(--destructive))]/10"
@@ -204,7 +208,7 @@ export default function StatsPage() {
       </Card>
 
       {/* Per-Key Stats */}
-      {stats?.user.keyStats && stats.user.keyStats.length > 0 && (
+      {stats?.user?.keyStats && stats.user.keyStats.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Usage by API Key</CardTitle>
@@ -213,15 +217,15 @@ export default function StatsPage() {
           <CardContent>
             <div className="space-y-4">
               {stats.user.keyStats.map((keyStat) => {
-                const percentage = stats.global.totalRequests
-                  ? ((keyStat.requestCount / stats.global.totalRequests) * 100).toFixed(1)
-                  : "0";
+                const keyRequestCount = keyStat?.requestCount ?? 0;
+                const percentage =
+                  totalRequests > 0 ? ((keyRequestCount / totalRequests) * 100).toFixed(1) : "0";
                 return (
-                  <div key={keyStat.apiKeyId} className="space-y-2">
+                  <div key={keyStat?.apiKeyId ?? "unknown"} className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium">{keyStat.keyName || "Unnamed Key"}</span>
+                      <span className="font-medium">{keyStat?.keyName || "Unnamed Key"}</span>
                       <span className="text-[rgb(var(--muted-foreground))]">
-                        {keyStat.requestCount.toLocaleString()} requests ({percentage}%)
+                        {keyRequestCount.toLocaleString()} requests ({percentage}%)
                       </span>
                     </div>
                     <div className="h-2 rounded-full bg-[rgb(var(--muted))] overflow-hidden">
