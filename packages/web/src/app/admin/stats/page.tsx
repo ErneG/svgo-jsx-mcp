@@ -10,24 +10,39 @@ interface Stats {
     totalBytesSaved: string;
     successCount: number;
     errorCount: number;
+    updatedAt: string | null;
   };
-  last24Hours: {
-    requests: number;
+  user: {
+    last24Hours: {
+      requests: number;
+    };
+    keyStats: Array<{
+      apiKeyId: string;
+      keyName: string;
+      requestCount: number;
+      bytesSaved: number;
+    }>;
   };
 }
 
 export default function StatsPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const response = await fetch("/api/admin/stats");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch stats: ${response.status}`);
+        }
         const data = await response.json();
         setStats(data);
-      } catch (error) {
-        console.error("Failed to fetch stats:", error);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to fetch stats";
+        console.error("Failed to fetch stats:", err);
+        setError(message);
       } finally {
         setIsLoading(false);
       }
@@ -40,6 +55,16 @@ export default function StatsPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 text-center">
+        <AlertCircle className="w-12 h-12 text-red-400 mb-4" />
+        <h2 className="text-xl font-semibold text-red-400 mb-2">Error Loading Stats</h2>
+        <p className="text-gray-400">{error}</p>
       </div>
     );
   }
@@ -65,7 +90,7 @@ export default function StatsPage() {
             {stats?.global.totalRequests.toLocaleString() || 0}
           </div>
           <div className="text-sm text-gray-500 mt-1">
-            {stats?.last24Hours.requests.toLocaleString() || 0} in last 24h
+            {stats?.user.last24Hours.requests.toLocaleString() || 0} in last 24h
           </div>
         </div>
 
