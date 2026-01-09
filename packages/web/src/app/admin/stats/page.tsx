@@ -7,6 +7,7 @@ import {
   HardDrive,
   BarChart3,
   PieChart as PieChartIcon,
+  Percent,
 } from "lucide-react";
 import { useStats, useTimeSeries } from "@/hooks/use-stats";
 import { formatBytes } from "@/lib/utils";
@@ -92,6 +93,7 @@ export default function StatsPage() {
   const successCount = stats?.user?.successCount ?? 0;
   const errorCount = stats?.user?.errorCount ?? 0;
   const last24hRequests = stats?.user?.last24Hours?.requests ?? 0;
+  const avgOptimization = stats?.user?.averageOptimizationPercent ?? "0";
 
   const successRate = totalRequests > 0 ? ((successCount / totalRequests) * 100).toFixed(1) : "0";
 
@@ -105,9 +107,10 @@ export default function StatsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         {isLoading ? (
           <>
+            <StatCardSkeleton />
             <StatCardSkeleton />
             <StatCardSkeleton />
             <StatCardSkeleton />
@@ -128,6 +131,13 @@ export default function StatsPage() {
               description="Total savings"
               icon={<HardDrive className="h-4 w-4 text-emerald-500" />}
               iconBgColor="bg-emerald-500/10"
+            />
+            <StatCard
+              title="Avg Optimization"
+              value={`${avgOptimization}%`}
+              description="Size reduction"
+              icon={<Percent className="h-4 w-4 text-amber-500" />}
+              iconBgColor="bg-amber-500/10"
             />
             <StatCard
               title="Success Rate"

@@ -5,6 +5,7 @@ export interface GlobalStats {
   totalBytesSaved: string;
   successCount: number;
   errorCount: number;
+  averageOptimizationPercent: string;
   updatedAt: string | null;
 }
 
@@ -20,6 +21,7 @@ export interface UserStats {
   totalBytesSaved: string;
   successCount: number;
   errorCount: number;
+  averageOptimizationPercent: string;
   last24Hours: {
     requests: number;
   };

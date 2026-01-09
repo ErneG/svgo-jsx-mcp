@@ -32,7 +32,7 @@ export async function GET() {
         apiKeyId: { in: userKeyIds },
       },
       _count: { id: true },
-      _sum: { savedBytes: true },
+      _sum: { savedBytes: true, originalSize: true },
     }),
 
     // User's requests in last 24 hours
@@ -83,6 +83,13 @@ export async function GET() {
 
   const totalRequests = userStats._count.id || 0;
   const totalBytesSaved = userStats._sum.savedBytes || 0;
+  const totalOriginalSize = userStats._sum.originalSize || 0;
+
+  // Calculate average optimization percentage: (savedBytes / originalSize) * 100
+  const averageOptimizationPercent =
+    totalOriginalSize > 0
+      ? ((Number(totalBytesSaved) / Number(totalOriginalSize)) * 100).toFixed(1)
+      : "0";
 
   return NextResponse.json({
     // Keep global for backward compatibility (same as user stats for now)
@@ -91,6 +98,7 @@ export async function GET() {
       totalBytesSaved: totalBytesSaved.toString(),
       successCount,
       errorCount,
+      averageOptimizationPercent,
       updatedAt: new Date().toISOString(),
     },
     user: {
@@ -99,6 +107,7 @@ export async function GET() {
       totalBytesSaved: totalBytesSaved.toString(),
       successCount,
       errorCount,
+      averageOptimizationPercent,
       last24Hours: {
         requests: userRequests24h,
       },
