@@ -160,7 +160,7 @@
       "phase": 4,
       "title": "Test locally and verify all features work",
       "description": "Start local dev server, navigate to stats page, verify all cards show correct data, charts render, and interactions work.",
-      "passes": false,
+      "passes": true,
       "hitl": true,
       "verification": [
         "Stat cards show accurate numbers",
