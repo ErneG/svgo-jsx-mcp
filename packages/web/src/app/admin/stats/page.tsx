@@ -1,6 +1,13 @@
 "use client";
 
-import { TrendingUp, FileCheck, AlertCircle, HardDrive, BarChart3 } from "lucide-react";
+import {
+  TrendingUp,
+  FileCheck,
+  AlertCircle,
+  HardDrive,
+  BarChart3,
+  PieChart as PieChartIcon,
+} from "lucide-react";
 import { useStats, useTimeSeries } from "@/hooks/use-stats";
 import { formatBytes } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +21,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
 interface StatCardProps {
@@ -235,6 +245,64 @@ export default function StatsPage() {
               <BarChart3 className="h-12 w-12 mb-4 opacity-50" />
               <p className="text-sm">No data available yet</p>
               <p className="text-xs">Start making API requests to see your usage trends</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Success/Error Breakdown */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <PieChartIcon className="h-5 w-5" />
+            Request Outcomes
+          </CardTitle>
+          <CardDescription>Success vs error breakdown</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <Skeleton className="h-[200px] w-full" />
+          ) : totalRequests > 0 ? (
+            <div className="h-[200px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={[
+                      { name: "Successful", value: successCount, color: "rgb(34 197 94)" },
+                      { name: "Failed", value: errorCount, color: "rgb(239 68 68)" },
+                    ]}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={80}
+                    paddingAngle={2}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
+                    labelLine={false}
+                  >
+                    <Cell fill="rgb(34 197 94)" />
+                    <Cell fill="rgb(239 68 68)" />
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgb(var(--card))",
+                      borderColor: "rgb(var(--border))",
+                      borderRadius: "0.5rem",
+                    }}
+                    formatter={(value) => [
+                      (typeof value === "number" ? value : 0).toLocaleString(),
+                      "Requests",
+                    ]}
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="h-[200px] flex flex-col items-center justify-center text-[rgb(var(--muted-foreground))]">
+              <PieChartIcon className="h-12 w-12 mb-4 opacity-50" />
+              <p className="text-sm">No requests yet</p>
+              <p className="text-xs">Start making API requests to see the breakdown</p>
             </div>
           )}
         </CardContent>
