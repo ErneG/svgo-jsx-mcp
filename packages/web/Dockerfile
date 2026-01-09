@@ -84,7 +84,7 @@ RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'echo "=== SVGO-JSX Web Server Starting ==="' >> /app/start.sh && \
     echo 'cd /app/packages/web' >> /app/start.sh && \
     echo 'echo "Syncing database schema (accept-data-loss enabled)..."' >> /app/start.sh && \
-    echo 'npx prisma db push --schema=./prisma/schema.prisma --accept-data-loss --skip-generate 2>&1 || echo "Warning: prisma db push had issues"' >> /app/start.sh && \
+    echo 'npx prisma db push --schema=./prisma/schema.prisma --accept-data-loss 2>&1 || echo "Warning: prisma db push had issues"' >> /app/start.sh && \
     echo 'echo "Database sync complete"' >> /app/start.sh && \
     echo 'cd /app' >> /app/start.sh && \
     echo 'echo "Starting Next.js server..."' >> /app/start.sh && \
