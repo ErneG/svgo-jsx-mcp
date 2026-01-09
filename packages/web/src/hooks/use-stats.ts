@@ -41,11 +41,12 @@ export interface TimeSeriesDataPoint {
   bytesSaved: number;
 }
 
-export function useStats() {
+export function useStats(days: number = 0) {
   return useQuery<Stats>({
-    queryKey: ["stats"],
+    queryKey: ["stats", days],
     queryFn: async () => {
-      const res = await fetch("/api/admin/stats");
+      const url = days > 0 ? `/api/admin/stats?days=${days}` : "/api/admin/stats";
+      const res = await fetch(url);
       if (!res.ok) {
         throw new Error("Failed to fetch stats");
       }

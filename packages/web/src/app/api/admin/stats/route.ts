@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
@@ -10,11 +10,18 @@ async function getSession() {
   return session;
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const session = await getSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // Parse days parameter (0 = all time)
+  const searchParams = request.nextUrl.searchParams;
+  const daysParam = searchParams.get("days");
+  const days = daysParam ? parseInt(daysParam, 10) : 0;
+  const dateFilter =
+    days > 0 ? { gte: new Date(Date.now() - days * 24 * 60 * 60 * 1000) } : undefined;
 
   // Get user's API keys
   const userKeys = await prisma.apiKey.findMany({
@@ -30,6 +37,7 @@ export async function GET() {
     prisma.request.aggregate({
       where: {
         apiKeyId: { in: userKeyIds },
+        ...(dateFilter && { createdAt: dateFilter }),
       },
       _count: { id: true },
       _sum: { savedBytes: true, originalSize: true },
@@ -48,6 +56,7 @@ export async function GET() {
       by: ["apiKeyId"],
       where: {
         apiKeyId: { in: userKeyIds },
+        ...(dateFilter && { createdAt: dateFilter }),
       },
       _count: { id: true },
       _sum: { savedBytes: true },
@@ -61,12 +70,14 @@ export async function GET() {
       where: {
         apiKeyId: { in: userKeyIds },
         success: true,
+        ...(dateFilter && { createdAt: dateFilter }),
       },
     }),
     prisma.request.count({
       where: {
         apiKeyId: { in: userKeyIds },
         success: false,
+        ...(dateFilter && { createdAt: dateFilter }),
       },
     }),
     // Success counts per key for success rate calculation
@@ -75,6 +86,7 @@ export async function GET() {
       where: {
         apiKeyId: { in: userKeyIds },
         success: true,
+        ...(dateFilter && { createdAt: dateFilter }),
       },
       _count: { id: true },
     }),

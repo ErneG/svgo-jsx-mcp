@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   TrendingUp,
   FileCheck,
@@ -9,11 +10,13 @@ import {
   PieChart as PieChartIcon,
   Percent,
   Key,
+  Calendar,
 } from "lucide-react";
 import { useStats, useTimeSeries } from "@/hooks/use-stats";
 import { formatBytes } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import {
   AreaChart,
   Area,
@@ -72,9 +75,17 @@ function StatCardSkeleton() {
   );
 }
 
+const TIME_PERIODS = [
+  { label: "7 days", days: 7 },
+  { label: "30 days", days: 30 },
+  { label: "90 days", days: 90 },
+  { label: "All time", days: 0 },
+] as const;
+
 export default function StatsPage() {
-  const { data: stats, isLoading, error } = useStats();
-  const { data: timeSeries, isLoading: isTimeSeriesLoading } = useTimeSeries(7);
+  const [selectedDays, setSelectedDays] = useState(7);
+  const { data: stats, isLoading, error } = useStats(selectedDays);
+  const { data: timeSeries, isLoading: isTimeSeriesLoading } = useTimeSeries(selectedDays || 365);
 
   if (error) {
     return (
@@ -100,13 +111,33 @@ export default function StatsPage() {
 
   const successRate = totalRequests > 0 ? ((successCount / totalRequests) * 100).toFixed(1) : "0";
 
+  const selectedPeriod = TIME_PERIODS.find((p) => p.days === selectedDays) ?? TIME_PERIODS[0];
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Statistics</h1>
-        <p className="text-[rgb(var(--muted-foreground))]">
-          Overview of your API usage and performance
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Statistics</h1>
+          <p className="text-[rgb(var(--muted-foreground))]">
+            Overview of your API usage and performance
+          </p>
+        </div>
+
+        {/* Time Period Selector */}
+        <div className="flex items-center gap-1 p-1 bg-[rgb(var(--muted))]/50 rounded-lg">
+          <Calendar className="h-4 w-4 text-[rgb(var(--muted-foreground))] ml-2 mr-1" />
+          {TIME_PERIODS.map((period) => (
+            <Button
+              key={period.days}
+              variant={selectedDays === period.days ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setSelectedDays(period.days)}
+              className="text-xs"
+            >
+              {period.label}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -167,7 +198,10 @@ export default function StatsPage() {
             <BarChart3 className="h-5 w-5" />
             Usage Over Time
           </CardTitle>
-          <CardDescription>Request volume and bytes saved over the last 7 days</CardDescription>
+          <CardDescription>
+            Request volume and bytes saved{" "}
+            {selectedDays > 0 ? `over the last ${selectedPeriod.label}` : "all time"}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isTimeSeriesLoading ? (
