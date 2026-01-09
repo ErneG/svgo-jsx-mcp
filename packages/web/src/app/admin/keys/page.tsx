@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Copy, Check, Trash2, ToggleLeft, ToggleRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +20,22 @@ export default function ApiKeysPage() {
   const [newKeyName, setNewKeyName] = useState("");
   const [newKeyRateLimit, setNewKeyRateLimit] = useState(100);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchKeys = async () => {
+      try {
+        const response = await fetch("/api/admin/keys");
+        if (response.ok) {
+          const data = await response.json();
+          setKeys(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch keys:", error);
+      }
+    };
+
+    fetchKeys();
+  }, []);
 
   const handleCopyKey = async (key: string) => {
     await navigator.clipboard.writeText(key);
