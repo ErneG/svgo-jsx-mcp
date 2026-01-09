@@ -1,8 +1,14 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Upload, Download, Copy, Check, Loader2, RefreshCw } from "lucide-react";
-import { cn, formatBytes, copyToClipboard, downloadFile } from "@/lib/utils";
+import Link from "next/link";
+import { Upload, Download, Copy, Check, Loader2, RefreshCw, Layers, Settings } from "lucide-react";
+import { formatBytes, copyToClipboard, downloadFile } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { OptimizeSvgResponse } from "@svgo-jsx/shared";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
@@ -166,56 +172,38 @@ export function SvgEditor() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
+    <div className="min-h-screen bg-[rgb(var(--background))]">
       {/* Header */}
-      <header className="border-b border-gray-800 px-6 py-4">
+      <header className="border-b border-[rgb(var(--border))] px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-lg flex items-center justify-center">
-              <svg
-                className="w-6 h-6 text-white"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-              </svg>
+            <div className="w-10 h-10 bg-gradient-to-br from-[rgb(var(--secondary))] to-[rgb(var(--primary))] rounded-lg flex items-center justify-center">
+              <Layers className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-xl font-bold">SVGO JSX</h1>
-              <p className="text-sm text-gray-400">SVG Optimizer with JSX Support</p>
+              <p className="text-sm text-[rgb(var(--muted-foreground))]">
+                SVG Optimizer with JSX Support
+              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={camelCase}
-                onChange={(e) => setCamelCase(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-violet-500 focus:ring-violet-500"
-              />
-              <span className="text-sm">Convert to camelCase</span>
-            </label>
+            <div className="flex items-center gap-2">
+              <Switch id="camelCase" checked={camelCase} onCheckedChange={setCamelCase} />
+              <Label htmlFor="camelCase" className="text-sm cursor-pointer">
+                Convert to camelCase
+              </Label>
+            </div>
 
-            <button
-              onClick={handleOptimize}
-              disabled={!input.trim() || isLoading}
-              className={cn(
-                "px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors",
-                input.trim() && !isLoading
-                  ? "bg-violet-600 hover:bg-violet-500 text-white"
-                  : "bg-gray-800 text-gray-500 cursor-not-allowed"
-              )}
-            >
+            <Button onClick={handleOptimize} disabled={!input.trim() || isLoading}>
               {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw className="h-4 w-4" />
               )}
               Optimize
-            </button>
+            </Button>
           </div>
         </div>
       </header>
@@ -223,145 +211,159 @@ export function SvgEditor() {
       {/* Main content */}
       <main className="max-w-7xl mx-auto p-6">
         {error && (
-          <div className="mb-4 p-4 bg-red-900/50 border border-red-700 rounded-lg text-red-200">
-            {error}
-          </div>
+          <Alert variant="destructive" className="mb-4">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Input panel */}
-          <div className="flex flex-col">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-semibold text-gray-300">Input SVG</h2>
-              <div className="flex items-center gap-2">
-                <label className="cursor-pointer">
-                  <input type="file" accept=".svg" onChange={handleFileSelect} className="hidden" />
-                  <span className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-800 hover:bg-gray-700 rounded-md transition-colors">
-                    <Upload className="w-4 h-4" />
+          <Card>
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between p-4 border-b border-[rgb(var(--border))]">
+                <h2 className="font-semibold">Input SVG</h2>
+                <div className="flex items-center gap-2">
+                  <label className="cursor-pointer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium h-8 px-3 hover:bg-[rgb(var(--accent))] hover:text-[rgb(var(--accent-foreground))] transition-colors">
+                    <input
+                      type="file"
+                      accept=".svg"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                    <Upload className="h-4 w-4" />
                     Upload
-                  </span>
-                </label>
-                <button
-                  onClick={() => handleCopy("input")}
-                  disabled={!input}
-                  className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-800 hover:bg-gray-700 rounded-md transition-colors disabled:opacity-50"
-                >
-                  {copied === "input" ? (
-                    <Check className="w-4 h-4" />
-                  ) : (
-                    <Copy className="w-4 h-4" />
-                  )}
-                  Copy
-                </button>
+                  </label>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleCopy("input")}
+                    disabled={!input}
+                  >
+                    {copied === "input" ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                    Copy
+                  </Button>
+                </div>
               </div>
-            </div>
-            <div
-              className="relative flex-1 min-h-[400px]"
-              onDrop={handleDrop}
-              onDragOver={(e) => e.preventDefault()}
-            >
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Paste your SVG here or drag & drop a file..."
-                className="w-full h-full min-h-[400px] p-4 bg-gray-900 border border-gray-800 rounded-lg font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
-              />
-            </div>
-            {input && (
-              <div className="mt-2 text-sm text-gray-500">
-                Size: {formatBytes(new Blob([input]).size)}
+              <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Paste your SVG here or drag & drop a file..."
+                  className="w-full min-h-[400px] p-4 bg-transparent font-mono text-sm resize-none focus:outline-none border-none"
+                />
               </div>
-            )}
-          </div>
+              {input && (
+                <div className="px-4 pb-4 text-sm text-[rgb(var(--muted-foreground))]">
+                  Size: {formatBytes(new Blob([input]).size)}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Output panel */}
-          <div className="flex flex-col">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-semibold text-gray-300">Optimized Output</h2>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleDownload}
-                  disabled={!output?.result}
-                  className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-800 hover:bg-gray-700 rounded-md transition-colors disabled:opacity-50"
-                >
-                  <Download className="w-4 h-4" />
-                  Download
-                </button>
-                <button
-                  onClick={() => handleCopy("output")}
-                  disabled={!output?.result}
-                  className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-800 hover:bg-gray-700 rounded-md transition-colors disabled:opacity-50"
-                >
-                  {copied === "output" ? (
-                    <Check className="w-4 h-4" />
-                  ) : (
-                    <Copy className="w-4 h-4" />
-                  )}
-                  Copy
-                </button>
+          <Card>
+            <CardContent className="p-0">
+              <div className="flex items-center justify-between p-4 border-b border-[rgb(var(--border))]">
+                <h2 className="font-semibold">Optimized Output</h2>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleDownload}
+                    disabled={!output?.result}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleCopy("output")}
+                    disabled={!output?.result}
+                  >
+                    {copied === "output" ? (
+                      <Check className="h-4 w-4 mr-2" />
+                    ) : (
+                      <Copy className="h-4 w-4 mr-2" />
+                    )}
+                    Copy
+                  </Button>
+                </div>
               </div>
-            </div>
-            <div className="relative flex-1 min-h-[400px]">
               <textarea
                 value={output?.result || ""}
                 readOnly
                 placeholder="Optimized SVG will appear here..."
-                className="w-full h-full min-h-[400px] p-4 bg-gray-900 border border-gray-800 rounded-lg font-mono text-sm resize-none focus:outline-none"
+                className="w-full min-h-[400px] p-4 bg-transparent font-mono text-sm resize-none focus:outline-none border-none"
               />
-            </div>
-            {output?.optimization && (
-              <div className="mt-2 flex items-center gap-4 text-sm">
-                <span className="text-gray-500">
-                  Size: {formatBytes(output.optimization.optimizedSize)}
-                </span>
-                <span className="text-green-400">
-                  Saved: {formatBytes(output.optimization.savedBytes)} (
-                  {output.optimization.savedPercent})
-                </span>
-                {output.camelCaseApplied && (
-                  <span className="text-violet-400">camelCase applied</span>
-                )}
-              </div>
-            )}
-          </div>
+              {output?.optimization && (
+                <div className="px-4 pb-4 flex items-center gap-4 text-sm">
+                  <span className="text-[rgb(var(--muted-foreground))]">
+                    Size: {formatBytes(output.optimization.optimizedSize)}
+                  </span>
+                  <span className="text-emerald-500">
+                    Saved: {formatBytes(output.optimization.savedBytes)} (
+                    {output.optimization.savedPercent})
+                  </span>
+                  {output.camelCaseApplied && (
+                    <span className="text-[rgb(var(--primary))]">camelCase applied</span>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         {/* Preview */}
         {(input || output?.result) && (
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <h3 className="font-semibold text-gray-300 mb-2">Input Preview</h3>
-              <div className="bg-white rounded-lg p-4 flex items-center justify-center min-h-[200px]">
-                {input && (
-                  <div
-                    className="max-w-full max-h-[200px] [&>svg]:max-w-full [&>svg]:max-h-[200px]"
-                    dangerouslySetInnerHTML={{ __html: input }}
-                  />
-                )}
-              </div>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-300 mb-2">Output Preview</h3>
-              <div className="bg-white rounded-lg p-4 flex items-center justify-center min-h-[200px]">
-                {output?.result && (
-                  <div
-                    className="max-w-full max-h-[200px] [&>svg]:max-w-full [&>svg]:max-h-[200px]"
-                    dangerouslySetInnerHTML={{ __html: output.result }}
-                  />
-                )}
-              </div>
-            </div>
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="font-semibold mb-4">Input Preview</h3>
+                <div className="bg-white rounded-lg p-4 flex items-center justify-center min-h-[200px]">
+                  {input && (
+                    <div
+                      className="max-w-full max-h-[200px] [&>svg]:max-w-full [&>svg]:max-h-[200px]"
+                      dangerouslySetInnerHTML={{ __html: input }}
+                    />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="font-semibold mb-4">Output Preview</h3>
+                <div className="bg-white rounded-lg p-4 flex items-center justify-center min-h-[200px]">
+                  {output?.result && (
+                    <div
+                      className="max-w-full max-h-[200px] [&>svg]:max-w-full [&>svg]:max-h-[200px]"
+                      dangerouslySetInnerHTML={{ __html: output.result }}
+                    />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 px-6 py-4 mt-8">
-        <div className="max-w-7xl mx-auto text-center text-sm text-gray-500">
-          Powered by SVGO &bull;{" "}
-          <a href="/admin" className="text-violet-400 hover:text-violet-300">
-            Admin
-          </a>
+      <footer className="border-t border-[rgb(var(--border))] px-6 py-4 mt-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between text-sm text-[rgb(var(--muted-foreground))]">
+          <span>Powered by SVGO</span>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/admin"
+              className="flex items-center gap-1 hover:text-[rgb(var(--foreground))] transition-colors"
+            >
+              <Settings className="h-4 w-4" />
+              Admin
+            </Link>
+          </div>
         </div>
       </footer>
     </div>

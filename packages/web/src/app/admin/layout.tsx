@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import Link from "next/link";
+import { Layers, LayoutDashboard, Key, BarChart3, Code2 } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { Button } from "@/components/ui/button";
 
 // Force dynamic rendering to avoid build-time database access
 export const dynamic = "force-dynamic";
@@ -17,49 +19,49 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
+    <div className="min-h-screen bg-[rgb(var(--background))]">
       {/* Admin Header */}
-      <header className="border-b border-gray-800 px-6 py-4">
+      <header className="border-b border-[rgb(var(--border))] px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-lg flex items-center justify-center">
-                <svg
-                  className="w-6 h-6 text-white"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                </svg>
+              <div className="w-10 h-10 bg-gradient-to-br from-[rgb(var(--secondary))] to-[rgb(var(--primary))] rounded-lg flex items-center justify-center">
+                <Layers className="w-6 h-6 text-white" />
               </div>
               <span className="text-xl font-bold">SVGO JSX</span>
             </Link>
-            <nav className="flex items-center gap-4">
-              <Link href="/admin" className="text-gray-400 hover:text-white transition-colors">
-                Dashboard
-              </Link>
-              <Link href="/admin/keys" className="text-gray-400 hover:text-white transition-colors">
-                API Keys
-              </Link>
-              <Link
-                href="/admin/stats"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                Statistics
-              </Link>
+            <nav className="flex items-center gap-1">
+              <Button variant="ghost" asChild>
+                <Link href="/admin" className="flex items-center gap-2">
+                  <LayoutDashboard className="h-4 w-4" />
+                  Dashboard
+                </Link>
+              </Button>
+              <Button variant="ghost" asChild>
+                <Link href="/admin/keys" className="flex items-center gap-2">
+                  <Key className="h-4 w-4" />
+                  API Keys
+                </Link>
+              </Button>
+              <Button variant="ghost" asChild>
+                <Link href="/admin/stats" className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  Statistics
+                </Link>
+              </Button>
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400">{session.user.email}</span>
+            <span className="text-sm text-[rgb(var(--muted-foreground))]">
+              {session.user.email}
+            </span>
             <SignOutButton />
-            <Link
-              href="/"
-              className="px-4 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
-            >
-              Back to Editor
-            </Link>
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/" className="flex items-center gap-2">
+                <Code2 className="h-4 w-4" />
+                Editor
+              </Link>
+            </Button>
           </div>
         </div>
       </header>
