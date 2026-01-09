@@ -216,27 +216,36 @@ export default function StatsPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {stats.user.keyStats.map((keyStat) => {
-                const keyRequestCount = keyStat?.requestCount ?? 0;
-                const percentage =
-                  totalRequests > 0 ? ((keyRequestCount / totalRequests) * 100).toFixed(1) : "0";
-                return (
-                  <div key={keyStat?.apiKeyId ?? "unknown"} className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium">{keyStat?.keyName || "Unnamed Key"}</span>
-                      <span className="text-[rgb(var(--muted-foreground))]">
-                        {keyRequestCount.toLocaleString()} requests ({percentage}%)
-                      </span>
-                    </div>
-                    <div className="h-2 rounded-full bg-[rgb(var(--muted))] overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-[rgb(var(--primary))]"
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                  </div>
+              {(() => {
+                // Compute total from keyStats for accurate percentage calculation
+                const userTotalRequests = stats.user.keyStats.reduce(
+                  (sum, k) => sum + (k?.requestCount ?? 0),
+                  0
                 );
-              })}
+                return stats.user.keyStats.map((keyStat) => {
+                  const keyRequestCount = keyStat?.requestCount ?? 0;
+                  const percentage =
+                    userTotalRequests > 0
+                      ? ((keyRequestCount / userTotalRequests) * 100).toFixed(1)
+                      : "0";
+                  return (
+                    <div key={keyStat?.apiKeyId ?? "unknown"} className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="font-medium">{keyStat?.keyName || "Unnamed Key"}</span>
+                        <span className="text-[rgb(var(--muted-foreground))]">
+                          {keyRequestCount.toLocaleString()} requests ({percentage}%)
+                        </span>
+                      </div>
+                      <div className="h-2 rounded-full bg-[rgb(var(--muted))] overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-[rgb(var(--primary))]"
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </CardContent>
         </Card>
