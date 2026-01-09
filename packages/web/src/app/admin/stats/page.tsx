@@ -13,6 +13,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 
 interface StatCardProps {
@@ -151,11 +152,15 @@ export default function StatsPage() {
           ) : timeSeries && timeSeries.length > 0 ? (
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={timeSeries} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <AreaChart data={timeSeries} margin={{ top: 10, right: 60, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="rgb(232 121 249)" stopOpacity={0.3} />
                       <stop offset="95%" stopColor="rgb(232 121 249)" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorBytes" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="rgb(34 197 94)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="rgb(34 197 94)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-[rgb(var(--border))]" />
@@ -169,6 +174,15 @@ export default function StatsPage() {
                     fontSize={12}
                   />
                   <YAxis
+                    yAxisId="left"
+                    className="text-[rgb(var(--muted-foreground))]"
+                    stroke="rgb(var(--muted-foreground))"
+                    fontSize={12}
+                  />
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    tickFormatter={(value) => formatBytes(value)}
                     className="text-[rgb(var(--muted-foreground))]"
                     stroke="rgb(var(--muted-foreground))"
                     fontSize={12}
@@ -186,14 +200,32 @@ export default function StatsPage() {
                         day: "numeric",
                       })
                     }
+                    formatter={(value, name) => {
+                      const numValue = typeof value === "number" ? value : 0;
+                      if (name === "Bytes Saved") {
+                        return [formatBytes(numValue), name];
+                      }
+                      return [numValue.toLocaleString(), name];
+                    }}
                   />
+                  <Legend />
                   <Area
+                    yAxisId="left"
                     type="monotone"
                     dataKey="requests"
                     stroke="rgb(232 121 249)"
                     fillOpacity={1}
                     fill="url(#colorRequests)"
                     name="Requests"
+                  />
+                  <Area
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="bytesSaved"
+                    stroke="rgb(34 197 94)"
+                    fillOpacity={1}
+                    fill="url(#colorBytes)"
+                    name="Bytes Saved"
                   />
                 </AreaChart>
               </ResponsiveContainer>
