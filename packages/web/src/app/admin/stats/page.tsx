@@ -75,10 +75,11 @@ export default function StatsPage() {
     );
   }
 
-  const totalRequests = stats?.global?.totalRequests ?? 0;
-  const totalBytesSaved = stats?.global?.totalBytesSaved ?? "0";
-  const successCount = stats?.global?.successCount ?? 0;
-  const errorCount = stats?.global?.errorCount ?? 0;
+  // Use user-specific stats for accurate data
+  const totalRequests = stats?.user?.totalRequests ?? 0;
+  const totalBytesSaved = stats?.user?.totalBytesSaved ?? "0";
+  const successCount = stats?.user?.successCount ?? 0;
+  const errorCount = stats?.user?.errorCount ?? 0;
   const last24hRequests = stats?.user?.last24Hours?.requests ?? 0;
 
   const successRate = totalRequests > 0 ? ((successCount / totalRequests) * 100).toFixed(1) : "0";

@@ -16,6 +16,10 @@ export interface KeyStat {
 }
 
 export interface UserStats {
+  totalRequests: number;
+  totalBytesSaved: string;
+  successCount: number;
+  errorCount: number;
   last24Hours: {
     requests: number;
   };

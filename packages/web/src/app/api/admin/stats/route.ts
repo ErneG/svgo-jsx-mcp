@@ -85,6 +85,7 @@ export async function GET() {
   const totalBytesSaved = userStats._sum.savedBytes || 0;
 
   return NextResponse.json({
+    // Keep global for backward compatibility (same as user stats for now)
     global: {
       totalRequests,
       totalBytesSaved: totalBytesSaved.toString(),
@@ -93,6 +94,11 @@ export async function GET() {
       updatedAt: new Date().toISOString(),
     },
     user: {
+      // User-specific totals computed from Request table
+      totalRequests,
+      totalBytesSaved: totalBytesSaved.toString(),
+      successCount,
+      errorCount,
       last24Hours: {
         requests: userRequests24h,
       },
