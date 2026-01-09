@@ -127,7 +127,7 @@
       "phase": 3,
       "title": "Add time period selector",
       "description": "Allow users to select different time periods for the charts (7 days, 30 days, 90 days, all time).",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Dropdown/tabs to select time period",
@@ -142,7 +142,7 @@
       "phase": 3,
       "title": "Add recent requests table",
       "description": "Add a table showing recent API requests with details: timestamp, filename, original size, optimized size, savings percentage, success status.",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Table shows last 10-20 requests",
