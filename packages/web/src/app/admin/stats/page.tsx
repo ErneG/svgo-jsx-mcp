@@ -11,8 +11,12 @@ import {
   Percent,
   Key,
   Calendar,
+  Table,
+  CheckCircle2,
+  XCircle,
+  ChevronRight,
 } from "lucide-react";
-import { useStats, useTimeSeries } from "@/hooks/use-stats";
+import { useStats, useTimeSeries, useRecentRequests } from "@/hooks/use-stats";
 import { formatBytes } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -84,8 +88,13 @@ const TIME_PERIODS = [
 
 export default function StatsPage() {
   const [selectedDays, setSelectedDays] = useState(7);
+  const [requestsOffset, setRequestsOffset] = useState(0);
   const { data: stats, isLoading, error } = useStats(selectedDays);
   const { data: timeSeries, isLoading: isTimeSeriesLoading } = useTimeSeries(selectedDays || 365);
+  const { data: recentRequests, isLoading: isRequestsLoading } = useRecentRequests(
+    20,
+    requestsOffset
+  );
 
   if (error) {
     return (
@@ -447,6 +456,122 @@ export default function StatsPage() {
               <Key className="h-12 w-12 mb-4 opacity-50" />
               <p className="text-sm">No API keys with requests</p>
               <p className="text-xs">Create an API key and start making requests</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Recent Requests Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Table className="h-5 w-5" />
+            Recent Requests
+          </CardTitle>
+          <CardDescription>Latest API requests with optimization details</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isRequestsLoading ? (
+            <Skeleton className="h-[300px] w-full" />
+          ) : recentRequests && recentRequests.requests.length > 0 ? (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-[rgb(var(--border))]">
+                      <th className="text-left py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
+                        Time
+                      </th>
+                      <th className="text-left py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
+                        Filename
+                      </th>
+                      <th className="text-right py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
+                        Original
+                      </th>
+                      <th className="text-right py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
+                        Optimized
+                      </th>
+                      <th className="text-right py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
+                        Saved
+                      </th>
+                      <th className="text-center py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentRequests.requests.map((req) => (
+                      <tr
+                        key={req.id}
+                        className="border-b border-[rgb(var(--border))]/50 hover:bg-[rgb(var(--muted))]/30"
+                      >
+                        <td className="py-3 px-2 text-[rgb(var(--muted-foreground))]">
+                          {new Date(req.createdAt).toLocaleString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </td>
+                        <td className="py-3 px-2 font-mono text-xs max-w-[200px] truncate">
+                          {req.filename}
+                        </td>
+                        <td className="py-3 px-2 text-right">{formatBytes(req.originalSize)}</td>
+                        <td className="py-3 px-2 text-right">{formatBytes(req.optimizedSize)}</td>
+                        <td className="py-3 px-2 text-right text-emerald-500">
+                          {req.savedPercent}%
+                        </td>
+                        <td className="py-3 px-2 text-center">
+                          {req.success ? (
+                            <CheckCircle2 className="h-4 w-4 text-green-500 inline" />
+                          ) : (
+                            <XCircle className="h-4 w-4 text-red-500 inline" />
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {recentRequests.pagination.total > 20 && (
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-[rgb(var(--border))]">
+                  <p className="text-sm text-[rgb(var(--muted-foreground))]">
+                    Showing {requestsOffset + 1} -{" "}
+                    {Math.min(
+                      requestsOffset + recentRequests.requests.length,
+                      recentRequests.pagination.total
+                    )}{" "}
+                    of {recentRequests.pagination.total}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRequestsOffset(Math.max(0, requestsOffset - 20))}
+                      disabled={requestsOffset === 0}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setRequestsOffset(requestsOffset + 20)}
+                      disabled={!recentRequests.pagination.hasMore}
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="h-[200px] flex flex-col items-center justify-center text-[rgb(var(--muted-foreground))]">
+              <Table className="h-12 w-12 mb-4 opacity-50" />
+              <p className="text-sm">No requests yet</p>
+              <p className="text-xs">Start making API requests to see them here</p>
             </div>
           )}
         </CardContent>

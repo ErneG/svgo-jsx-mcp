@@ -41,6 +41,29 @@ export interface TimeSeriesDataPoint {
   bytesSaved: number;
 }
 
+export interface RecentRequest {
+  id: string;
+  filename: string;
+  originalSize: number;
+  optimizedSize: number;
+  savedBytes: number;
+  savedPercent: string;
+  success: boolean;
+  errorMessage: string | null;
+  createdAt: string;
+  keyName: string;
+}
+
+export interface RecentRequestsResponse {
+  requests: RecentRequest[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
+}
+
 export function useStats(days: number = 0) {
   return useQuery<Stats>({
     queryKey: ["stats", days],
@@ -62,6 +85,19 @@ export function useTimeSeries(days: number = 7) {
       const res = await fetch(`/api/admin/stats/time-series?days=${days}`);
       if (!res.ok) {
         throw new Error("Failed to fetch time series data");
+      }
+      return res.json();
+    },
+  });
+}
+
+export function useRecentRequests(limit: number = 20, offset: number = 0) {
+  return useQuery<RecentRequestsResponse>({
+    queryKey: ["stats", "recent-requests", limit, offset],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/stats/requests?limit=${limit}&offset=${offset}`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch recent requests");
       }
       return res.json();
     },
