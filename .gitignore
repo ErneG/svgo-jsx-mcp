@@ -10,4 +10,5 @@ dist/
 
 # Prisma
 prisma/migrations/*/migration_lock.toml
+packages/web/src/generated/prisma/
 packages/web/.next/
