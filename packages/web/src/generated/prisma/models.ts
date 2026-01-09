@@ -11,4 +11,7 @@ export type * from "./models/User";
 export type * from "./models/Session";
 export type * from "./models/Account";
 export type * from "./models/Verification";
+export type * from "./models/ApiKey";
+export type * from "./models/Request";
+export type * from "./models/Stats";
 export type * from "./commonInputTypes";

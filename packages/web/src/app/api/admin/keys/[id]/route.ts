@@ -1,42 +1,98 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { headers } from "next/headers";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-const ADMIN_SECRET = process.env.ADMIN_SECRET || "";
+async function getSession() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  return session;
+}
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const body = await request.json();
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  const response = await fetch(`${API_URL}/admin/keys/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Admin-Secret": ADMIN_SECRET,
-    },
-    body: JSON.stringify(body),
+  const { id } = await params;
+
+  // Verify the key belongs to the user
+  const existingKey = await prisma.apiKey.findUnique({
+    where: { id },
+    select: { userId: true },
   });
 
-  const data = await response.json();
-  return NextResponse.json(data, { status: response.status });
+  if (!existingKey) {
+    return NextResponse.json({ error: "API key not found" }, { status: 404 });
+  }
+
+  if (existingKey.userId !== session.user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  let body: { enabled?: boolean; rateLimit?: number; name?: string };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const updateData: Record<string, unknown> = {};
+  if (typeof body.enabled === "boolean") updateData.enabled = body.enabled;
+  if (typeof body.rateLimit === "number") updateData.rateLimit = body.rateLimit;
+  if (typeof body.name === "string") updateData.name = body.name;
+
+  const apiKey = await prisma.apiKey.update({
+    where: { id },
+    data: updateData,
+    include: {
+      _count: {
+        select: { requests: true },
+      },
+    },
+  });
+
+  return NextResponse.json({
+    id: apiKey.id,
+    key: apiKey.key,
+    name: apiKey.name,
+    enabled: apiKey.enabled,
+    rateLimit: apiKey.rateLimit,
+    createdAt: apiKey.createdAt.toISOString(),
+    requestCount: apiKey._count.requests,
+  });
 }
 
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
-
-  const response = await fetch(`${API_URL}/admin/keys/${id}`, {
-    method: "DELETE",
-    headers: {
-      "X-Admin-Secret": ADMIN_SECRET,
-    },
-  });
-
-  if (response.status === 204) {
-    return new NextResponse(null, { status: 204 });
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const data = await response.json();
-  return NextResponse.json(data, { status: response.status });
+  const { id } = await params;
+
+  // Verify the key belongs to the user
+  const existingKey = await prisma.apiKey.findUnique({
+    where: { id },
+    select: { userId: true },
+  });
+
+  if (!existingKey) {
+    return NextResponse.json({ error: "API key not found" }, { status: 404 });
+  }
+
+  if (existingKey.userId !== session.user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  await prisma.apiKey.delete({
+    where: { id },
+  });
+
+  return NextResponse.json({ ok: true });
 }

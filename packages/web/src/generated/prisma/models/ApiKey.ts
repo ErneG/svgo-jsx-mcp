@@ -8,8 +8,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client";
-import type * as $Enums from "../enums.js";
-import type * as Prisma from "../internal/prismaNamespace.js";
+import type * as $Enums from "../enums";
+import type * as Prisma from "../internal/prismaNamespace";
 
 /**
  * Model ApiKey
@@ -41,6 +41,7 @@ export type ApiKeyMinAggregateOutputType = {
   rateLimit: number | null;
   createdAt: Date | null;
   updatedAt: Date | null;
+  userId: string | null;
 };
 
 export type ApiKeyMaxAggregateOutputType = {
@@ -51,6 +52,7 @@ export type ApiKeyMaxAggregateOutputType = {
   rateLimit: number | null;
   createdAt: Date | null;
   updatedAt: Date | null;
+  userId: string | null;
 };
 
 export type ApiKeyCountAggregateOutputType = {
@@ -61,6 +63,7 @@ export type ApiKeyCountAggregateOutputType = {
   rateLimit: number;
   createdAt: number;
   updatedAt: number;
+  userId: number;
   _all: number;
 };
 
@@ -80,6 +83,7 @@ export type ApiKeyMinAggregateInputType = {
   rateLimit?: true;
   createdAt?: true;
   updatedAt?: true;
+  userId?: true;
 };
 
 export type ApiKeyMaxAggregateInputType = {
@@ -90,6 +94,7 @@ export type ApiKeyMaxAggregateInputType = {
   rateLimit?: true;
   createdAt?: true;
   updatedAt?: true;
+  userId?: true;
 };
 
 export type ApiKeyCountAggregateInputType = {
@@ -100,6 +105,7 @@ export type ApiKeyCountAggregateInputType = {
   rateLimit?: true;
   createdAt?: true;
   updatedAt?: true;
+  userId?: true;
   _all?: true;
 };
 
@@ -198,6 +204,7 @@ export type ApiKeyGroupByOutputType = {
   rateLimit: number;
   createdAt: Date;
   updatedAt: Date;
+  userId: string | null;
   _count: ApiKeyCountAggregateOutputType | null;
   _avg: ApiKeyAvgAggregateOutputType | null;
   _sum: ApiKeySumAggregateOutputType | null;
@@ -228,6 +235,8 @@ export type ApiKeyWhereInput = {
   rateLimit?: Prisma.IntFilter<"ApiKey"> | number;
   createdAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string;
   updatedAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string;
+  userId?: Prisma.StringNullableFilter<"ApiKey"> | string | null;
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
   requests?: Prisma.RequestListRelationFilter;
 };
 
@@ -239,6 +248,8 @@ export type ApiKeyOrderByWithRelationInput = {
   rateLimit?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder;
+  user?: Prisma.UserOrderByWithRelationInput;
   requests?: Prisma.RequestOrderByRelationAggregateInput;
 };
 
@@ -254,6 +265,8 @@ export type ApiKeyWhereUniqueInput = Prisma.AtLeast<
     rateLimit?: Prisma.IntFilter<"ApiKey"> | number;
     createdAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string;
+    userId?: Prisma.StringNullableFilter<"ApiKey"> | string | null;
+    user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
     requests?: Prisma.RequestListRelationFilter;
   },
   "id" | "key"
@@ -267,6 +280,7 @@ export type ApiKeyOrderByWithAggregationInput = {
   rateLimit?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+  userId?: Prisma.SortOrderInput | Prisma.SortOrder;
   _count?: Prisma.ApiKeyCountOrderByAggregateInput;
   _avg?: Prisma.ApiKeyAvgOrderByAggregateInput;
   _max?: Prisma.ApiKeyMaxOrderByAggregateInput;
@@ -285,6 +299,7 @@ export type ApiKeyScalarWhereWithAggregatesInput = {
   rateLimit?: Prisma.IntWithAggregatesFilter<"ApiKey"> | number;
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ApiKey"> | Date | string;
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ApiKey"> | Date | string;
+  userId?: Prisma.StringNullableWithAggregatesFilter<"ApiKey"> | string | null;
 };
 
 export type ApiKeyCreateInput = {
@@ -295,6 +310,7 @@ export type ApiKeyCreateInput = {
   rateLimit?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  user?: Prisma.UserCreateNestedOneWithoutApiKeysInput;
   requests?: Prisma.RequestCreateNestedManyWithoutApiKeyInput;
 };
 
@@ -306,6 +322,7 @@ export type ApiKeyUncheckedCreateInput = {
   rateLimit?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  userId?: string | null;
   requests?: Prisma.RequestUncheckedCreateNestedManyWithoutApiKeyInput;
 };
 
@@ -317,6 +334,7 @@ export type ApiKeyUpdateInput = {
   rateLimit?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  user?: Prisma.UserUpdateOneWithoutApiKeysNestedInput;
   requests?: Prisma.RequestUpdateManyWithoutApiKeyNestedInput;
 };
 
@@ -328,6 +346,7 @@ export type ApiKeyUncheckedUpdateInput = {
   rateLimit?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   requests?: Prisma.RequestUncheckedUpdateManyWithoutApiKeyNestedInput;
 };
 
@@ -339,6 +358,7 @@ export type ApiKeyCreateManyInput = {
   rateLimit?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  userId?: string | null;
 };
 
 export type ApiKeyUpdateManyMutationInput = {
@@ -359,6 +379,17 @@ export type ApiKeyUncheckedUpdateManyInput = {
   rateLimit?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+};
+
+export type ApiKeyListRelationFilter = {
+  every?: Prisma.ApiKeyWhereInput;
+  some?: Prisma.ApiKeyWhereInput;
+  none?: Prisma.ApiKeyWhereInput;
+};
+
+export type ApiKeyOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder;
 };
 
 export type ApiKeyCountOrderByAggregateInput = {
@@ -369,6 +400,7 @@ export type ApiKeyCountOrderByAggregateInput = {
   rateLimit?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+  userId?: Prisma.SortOrder;
 };
 
 export type ApiKeyAvgOrderByAggregateInput = {
@@ -383,6 +415,7 @@ export type ApiKeyMaxOrderByAggregateInput = {
   rateLimit?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+  userId?: Prisma.SortOrder;
 };
 
 export type ApiKeyMinOrderByAggregateInput = {
@@ -393,6 +426,7 @@ export type ApiKeyMinOrderByAggregateInput = {
   rateLimit?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
+  userId?: Prisma.SortOrder;
 };
 
 export type ApiKeySumOrderByAggregateInput = {
@@ -404,16 +438,78 @@ export type ApiKeyScalarRelationFilter = {
   isNot?: Prisma.ApiKeyWhereInput;
 };
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string;
+export type ApiKeyCreateNestedManyWithoutUserInput = {
+  create?:
+    | Prisma.XOR<Prisma.ApiKeyCreateWithoutUserInput, Prisma.ApiKeyUncheckedCreateWithoutUserInput>
+    | Prisma.ApiKeyCreateWithoutUserInput[]
+    | Prisma.ApiKeyUncheckedCreateWithoutUserInput[];
+  connectOrCreate?:
+    | Prisma.ApiKeyCreateOrConnectWithoutUserInput
+    | Prisma.ApiKeyCreateOrConnectWithoutUserInput[];
+  createMany?: Prisma.ApiKeyCreateManyUserInputEnvelope;
+  connect?: Prisma.ApiKeyWhereUniqueInput | Prisma.ApiKeyWhereUniqueInput[];
 };
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null;
+export type ApiKeyUncheckedCreateNestedManyWithoutUserInput = {
+  create?:
+    | Prisma.XOR<Prisma.ApiKeyCreateWithoutUserInput, Prisma.ApiKeyUncheckedCreateWithoutUserInput>
+    | Prisma.ApiKeyCreateWithoutUserInput[]
+    | Prisma.ApiKeyUncheckedCreateWithoutUserInput[];
+  connectOrCreate?:
+    | Prisma.ApiKeyCreateOrConnectWithoutUserInput
+    | Prisma.ApiKeyCreateOrConnectWithoutUserInput[];
+  createMany?: Prisma.ApiKeyCreateManyUserInputEnvelope;
+  connect?: Prisma.ApiKeyWhereUniqueInput | Prisma.ApiKeyWhereUniqueInput[];
 };
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean;
+export type ApiKeyUpdateManyWithoutUserNestedInput = {
+  create?:
+    | Prisma.XOR<Prisma.ApiKeyCreateWithoutUserInput, Prisma.ApiKeyUncheckedCreateWithoutUserInput>
+    | Prisma.ApiKeyCreateWithoutUserInput[]
+    | Prisma.ApiKeyUncheckedCreateWithoutUserInput[];
+  connectOrCreate?:
+    | Prisma.ApiKeyCreateOrConnectWithoutUserInput
+    | Prisma.ApiKeyCreateOrConnectWithoutUserInput[];
+  upsert?:
+    | Prisma.ApiKeyUpsertWithWhereUniqueWithoutUserInput
+    | Prisma.ApiKeyUpsertWithWhereUniqueWithoutUserInput[];
+  createMany?: Prisma.ApiKeyCreateManyUserInputEnvelope;
+  set?: Prisma.ApiKeyWhereUniqueInput | Prisma.ApiKeyWhereUniqueInput[];
+  disconnect?: Prisma.ApiKeyWhereUniqueInput | Prisma.ApiKeyWhereUniqueInput[];
+  delete?: Prisma.ApiKeyWhereUniqueInput | Prisma.ApiKeyWhereUniqueInput[];
+  connect?: Prisma.ApiKeyWhereUniqueInput | Prisma.ApiKeyWhereUniqueInput[];
+  update?:
+    | Prisma.ApiKeyUpdateWithWhereUniqueWithoutUserInput
+    | Prisma.ApiKeyUpdateWithWhereUniqueWithoutUserInput[];
+  updateMany?:
+    | Prisma.ApiKeyUpdateManyWithWhereWithoutUserInput
+    | Prisma.ApiKeyUpdateManyWithWhereWithoutUserInput[];
+  deleteMany?: Prisma.ApiKeyScalarWhereInput | Prisma.ApiKeyScalarWhereInput[];
+};
+
+export type ApiKeyUncheckedUpdateManyWithoutUserNestedInput = {
+  create?:
+    | Prisma.XOR<Prisma.ApiKeyCreateWithoutUserInput, Prisma.ApiKeyUncheckedCreateWithoutUserInput>
+    | Prisma.ApiKeyCreateWithoutUserInput[]
+    | Prisma.ApiKeyUncheckedCreateWithoutUserInput[];
+  connectOrCreate?:
+    | Prisma.ApiKeyCreateOrConnectWithoutUserInput
+    | Prisma.ApiKeyCreateOrConnectWithoutUserInput[];
+  upsert?:
+    | Prisma.ApiKeyUpsertWithWhereUniqueWithoutUserInput
+    | Prisma.ApiKeyUpsertWithWhereUniqueWithoutUserInput[];
+  createMany?: Prisma.ApiKeyCreateManyUserInputEnvelope;
+  set?: Prisma.ApiKeyWhereUniqueInput | Prisma.ApiKeyWhereUniqueInput[];
+  disconnect?: Prisma.ApiKeyWhereUniqueInput | Prisma.ApiKeyWhereUniqueInput[];
+  delete?: Prisma.ApiKeyWhereUniqueInput | Prisma.ApiKeyWhereUniqueInput[];
+  connect?: Prisma.ApiKeyWhereUniqueInput | Prisma.ApiKeyWhereUniqueInput[];
+  update?:
+    | Prisma.ApiKeyUpdateWithWhereUniqueWithoutUserInput
+    | Prisma.ApiKeyUpdateWithWhereUniqueWithoutUserInput[];
+  updateMany?:
+    | Prisma.ApiKeyUpdateManyWithWhereWithoutUserInput
+    | Prisma.ApiKeyUpdateManyWithWhereWithoutUserInput[];
+  deleteMany?: Prisma.ApiKeyScalarWhereInput | Prisma.ApiKeyScalarWhereInput[];
 };
 
 export type IntFieldUpdateOperationsInput = {
@@ -422,10 +518,6 @@ export type IntFieldUpdateOperationsInput = {
   decrement?: number;
   multiply?: number;
   divide?: number;
-};
-
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string;
 };
 
 export type ApiKeyCreateNestedOneWithoutRequestsInput = {
@@ -454,6 +546,83 @@ export type ApiKeyUpdateOneRequiredWithoutRequestsNestedInput = {
   >;
 };
 
+export type ApiKeyCreateWithoutUserInput = {
+  id?: string;
+  key: string;
+  name?: string | null;
+  enabled?: boolean;
+  rateLimit?: number;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  requests?: Prisma.RequestCreateNestedManyWithoutApiKeyInput;
+};
+
+export type ApiKeyUncheckedCreateWithoutUserInput = {
+  id?: string;
+  key: string;
+  name?: string | null;
+  enabled?: boolean;
+  rateLimit?: number;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  requests?: Prisma.RequestUncheckedCreateNestedManyWithoutApiKeyInput;
+};
+
+export type ApiKeyCreateOrConnectWithoutUserInput = {
+  where: Prisma.ApiKeyWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.ApiKeyCreateWithoutUserInput,
+    Prisma.ApiKeyUncheckedCreateWithoutUserInput
+  >;
+};
+
+export type ApiKeyCreateManyUserInputEnvelope = {
+  data: Prisma.ApiKeyCreateManyUserInput | Prisma.ApiKeyCreateManyUserInput[];
+  skipDuplicates?: boolean;
+};
+
+export type ApiKeyUpsertWithWhereUniqueWithoutUserInput = {
+  where: Prisma.ApiKeyWhereUniqueInput;
+  update: Prisma.XOR<
+    Prisma.ApiKeyUpdateWithoutUserInput,
+    Prisma.ApiKeyUncheckedUpdateWithoutUserInput
+  >;
+  create: Prisma.XOR<
+    Prisma.ApiKeyCreateWithoutUserInput,
+    Prisma.ApiKeyUncheckedCreateWithoutUserInput
+  >;
+};
+
+export type ApiKeyUpdateWithWhereUniqueWithoutUserInput = {
+  where: Prisma.ApiKeyWhereUniqueInput;
+  data: Prisma.XOR<
+    Prisma.ApiKeyUpdateWithoutUserInput,
+    Prisma.ApiKeyUncheckedUpdateWithoutUserInput
+  >;
+};
+
+export type ApiKeyUpdateManyWithWhereWithoutUserInput = {
+  where: Prisma.ApiKeyScalarWhereInput;
+  data: Prisma.XOR<
+    Prisma.ApiKeyUpdateManyMutationInput,
+    Prisma.ApiKeyUncheckedUpdateManyWithoutUserInput
+  >;
+};
+
+export type ApiKeyScalarWhereInput = {
+  AND?: Prisma.ApiKeyScalarWhereInput | Prisma.ApiKeyScalarWhereInput[];
+  OR?: Prisma.ApiKeyScalarWhereInput[];
+  NOT?: Prisma.ApiKeyScalarWhereInput | Prisma.ApiKeyScalarWhereInput[];
+  id?: Prisma.StringFilter<"ApiKey"> | string;
+  key?: Prisma.StringFilter<"ApiKey"> | string;
+  name?: Prisma.StringNullableFilter<"ApiKey"> | string | null;
+  enabled?: Prisma.BoolFilter<"ApiKey"> | boolean;
+  rateLimit?: Prisma.IntFilter<"ApiKey"> | number;
+  createdAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string;
+  updatedAt?: Prisma.DateTimeFilter<"ApiKey"> | Date | string;
+  userId?: Prisma.StringNullableFilter<"ApiKey"> | string | null;
+};
+
 export type ApiKeyCreateWithoutRequestsInput = {
   id?: string;
   key: string;
@@ -462,6 +631,7 @@ export type ApiKeyCreateWithoutRequestsInput = {
   rateLimit?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  user?: Prisma.UserCreateNestedOneWithoutApiKeysInput;
 };
 
 export type ApiKeyUncheckedCreateWithoutRequestsInput = {
@@ -472,6 +642,7 @@ export type ApiKeyUncheckedCreateWithoutRequestsInput = {
   rateLimit?: number;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  userId?: string | null;
 };
 
 export type ApiKeyCreateOrConnectWithoutRequestsInput = {
@@ -510,9 +681,53 @@ export type ApiKeyUpdateWithoutRequestsInput = {
   rateLimit?: Prisma.IntFieldUpdateOperationsInput | number;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  user?: Prisma.UserUpdateOneWithoutApiKeysNestedInput;
 };
 
 export type ApiKeyUncheckedUpdateWithoutRequestsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  key?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  rateLimit?: Prisma.IntFieldUpdateOperationsInput | number;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+};
+
+export type ApiKeyCreateManyUserInput = {
+  id?: string;
+  key: string;
+  name?: string | null;
+  enabled?: boolean;
+  rateLimit?: number;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+};
+
+export type ApiKeyUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  key?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  rateLimit?: Prisma.IntFieldUpdateOperationsInput | number;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  requests?: Prisma.RequestUpdateManyWithoutApiKeyNestedInput;
+};
+
+export type ApiKeyUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  key?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+  rateLimit?: Prisma.IntFieldUpdateOperationsInput | number;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  requests?: Prisma.RequestUncheckedUpdateManyWithoutApiKeyNestedInput;
+};
+
+export type ApiKeyUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string;
   key?: Prisma.StringFieldUpdateOperationsInput | string;
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
@@ -568,6 +783,8 @@ export type ApiKeySelect<
     rateLimit?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    userId?: boolean;
+    user?: boolean | Prisma.ApiKey$userArgs<ExtArgs>;
     requests?: boolean | Prisma.ApiKey$requestsArgs<ExtArgs>;
     _count?: boolean | Prisma.ApiKeyCountOutputTypeDefaultArgs<ExtArgs>;
   },
@@ -585,6 +802,8 @@ export type ApiKeySelectCreateManyAndReturn<
     rateLimit?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    userId?: boolean;
+    user?: boolean | Prisma.ApiKey$userArgs<ExtArgs>;
   },
   ExtArgs["result"]["apiKey"]
 >;
@@ -600,6 +819,8 @@ export type ApiKeySelectUpdateManyAndReturn<
     rateLimit?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
+    userId?: boolean;
+    user?: boolean | Prisma.ApiKey$userArgs<ExtArgs>;
   },
   ExtArgs["result"]["apiKey"]
 >;
@@ -612,32 +833,39 @@ export type ApiKeySelectScalar = {
   rateLimit?: boolean;
   createdAt?: boolean;
   updatedAt?: boolean;
+  userId?: boolean;
 };
 
 export type ApiKeyOmit<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = runtime.Types.Extensions.GetOmit<
-  "id" | "key" | "name" | "enabled" | "rateLimit" | "createdAt" | "updatedAt",
+  "id" | "key" | "name" | "enabled" | "rateLimit" | "createdAt" | "updatedAt" | "userId",
   ExtArgs["result"]["apiKey"]
 >;
 export type ApiKeyInclude<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
+  user?: boolean | Prisma.ApiKey$userArgs<ExtArgs>;
   requests?: boolean | Prisma.ApiKey$requestsArgs<ExtArgs>;
   _count?: boolean | Prisma.ApiKeyCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type ApiKeyIncludeCreateManyAndReturn<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {};
+> = {
+  user?: boolean | Prisma.ApiKey$userArgs<ExtArgs>;
+};
 export type ApiKeyIncludeUpdateManyAndReturn<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {};
+> = {
+  user?: boolean | Prisma.ApiKey$userArgs<ExtArgs>;
+};
 
 export type $ApiKeyPayload<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
   name: "ApiKey";
   objects: {
+    user: Prisma.$UserPayload<ExtArgs> | null;
     requests: Prisma.$RequestPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
@@ -649,6 +877,7 @@ export type $ApiKeyPayload<
       rateLimit: number;
       createdAt: Date;
       updatedAt: Date;
+      userId: string | null;
     },
     ExtArgs["result"]["apiKey"]
   >;
@@ -1159,6 +1388,19 @@ export interface Prisma__ApiKeyClient<
   GlobalOmitOptions = {},
 > extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise";
+  user<T extends Prisma.ApiKey$userArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.ApiKey$userArgs<ExtArgs>>
+  ): Prisma.Prisma__UserClient<
+    runtime.Types.Result.GetResult<
+      Prisma.$UserPayload<ExtArgs>,
+      T,
+      "findUniqueOrThrow",
+      GlobalOmitOptions
+    > | null,
+    null,
+    ExtArgs,
+    GlobalOmitOptions
+  >;
   requests<T extends Prisma.ApiKey$requestsArgs<ExtArgs> = {}>(
     args?: Prisma.Subset<T, Prisma.ApiKey$requestsArgs<ExtArgs>>
   ): Prisma.PrismaPromise<
@@ -1208,6 +1450,7 @@ export interface ApiKeyFieldRefs {
   readonly rateLimit: Prisma.FieldRef<"ApiKey", "Int">;
   readonly createdAt: Prisma.FieldRef<"ApiKey", "DateTime">;
   readonly updatedAt: Prisma.FieldRef<"ApiKey", "DateTime">;
+  readonly userId: Prisma.FieldRef<"ApiKey", "String">;
 }
 
 // Custom InputTypes
@@ -1472,6 +1715,10 @@ export type ApiKeyCreateManyAndReturnArgs<
    */
   data: Prisma.ApiKeyCreateManyInput | Prisma.ApiKeyCreateManyInput[];
   skipDuplicates?: boolean;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ApiKeyIncludeCreateManyAndReturn<ExtArgs> | null;
 };
 
 /**
@@ -1548,6 +1795,10 @@ export type ApiKeyUpdateManyAndReturnArgs<
    * Limit how many ApiKeys to update.
    */
   limit?: number;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ApiKeyIncludeUpdateManyAndReturn<ExtArgs> | null;
 };
 
 /**
@@ -1620,6 +1871,27 @@ export type ApiKeyDeleteManyArgs<
    * Limit how many ApiKeys to delete.
    */
   limit?: number;
+};
+
+/**
+ * ApiKey.user
+ */
+export type ApiKey$userArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null;
+  where?: Prisma.UserWhereInput;
 };
 
 /**

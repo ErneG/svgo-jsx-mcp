@@ -1,6 +1,5 @@
 import { optimize } from "svgo";
-import { sanitizeSvg, checkSvgSecurity } from "./security/sanitizer.js";
-import { validateContentSize } from "./security/limits.js";
+import { sanitizeSvg, checkSvgSecurity, validateContentSize } from "./sanitizer.js";
 
 export interface OptimizeSvgArgs {
   content: string;
@@ -10,6 +9,22 @@ export interface OptimizeSvgArgs {
   sanitize?: boolean;
   /** Maximum content size in bytes (default: 1MB) */
   maxSize?: number;
+}
+
+export interface OptimizeResult {
+  success: boolean;
+  filename: string;
+  optimization: {
+    originalSize: number;
+    optimizedSize: number;
+    savedBytes: number;
+    savedPercent: string;
+    ratio: string;
+  };
+  camelCaseApplied: boolean;
+  sanitized: boolean;
+  securityWarnings?: string[];
+  result: string;
 }
 
 /**
@@ -35,15 +50,15 @@ function convertAttributesToCamelCase(svg: string): string {
 }
 
 /**
- * Handle SVG optimization request
+ * Optimize SVG content using SVGO with optional sanitization and camelCase conversion
  */
-export async function handleOptimizeSvg({
+export function optimizeSvg({
   content,
   filename,
   camelCase = true,
   sanitize = false,
   maxSize,
-}: OptimizeSvgArgs): Promise<string> {
+}: OptimizeSvgArgs): OptimizeResult {
   // Validate input
   const trimmedContent = content.trim();
   if (!trimmedContent.startsWith("<svg") && !trimmedContent.startsWith("<?xml")) {
@@ -88,23 +103,19 @@ export async function handleOptimizeSvg({
   const savedPercent = ((savedBytes / originalSize) * 100).toFixed(1);
   const ratio = (optimizedSize / originalSize).toFixed(3);
 
-  return JSON.stringify(
-    {
-      success: true,
-      filename: filename || "untitled.svg",
-      optimization: {
-        originalSize,
-        optimizedSize,
-        savedBytes,
-        savedPercent: `${savedPercent}%`,
-        ratio,
-      },
-      camelCaseApplied,
-      sanitized: sanitize,
-      securityWarnings: securityWarnings.length > 0 ? securityWarnings : undefined,
-      result: optimizedSvg,
+  return {
+    success: true,
+    filename: filename || "untitled.svg",
+    optimization: {
+      originalSize,
+      optimizedSize,
+      savedBytes,
+      savedPercent: `${savedPercent}%`,
+      ratio,
     },
-    null,
-    2
-  );
+    camelCaseApplied,
+    sanitized: sanitize,
+    securityWarnings: securityWarnings.length > 0 ? securityWarnings : undefined,
+    result: optimizedSvg,
+  };
 }

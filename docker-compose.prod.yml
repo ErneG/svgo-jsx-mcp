@@ -8,13 +8,9 @@ services:
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
       - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://api:3001}
-      - ADMIN_SECRET=${ADMIN_SECRET}
     depends_on:
       db:
         condition: service_healthy
-      api:
-        condition: service_started
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/"]
@@ -24,29 +20,6 @@ services:
       start_period: 40s
     expose:
       - "3000"
-
-  api:
-    build:
-      context: .
-      dockerfile: packages/api/Dockerfile
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-svgo}
-      - API_KEYS=${API_KEYS:-}
-      - PORT=3001
-      - CORS_ORIGINS=${CORS_ORIGINS}
-      - ADMIN_SECRET=${ADMIN_SECRET}
-    depends_on:
-      db:
-        condition: service_healthy
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    expose:
-      - "3001"
 
   db:
     image: postgres:16-alpine

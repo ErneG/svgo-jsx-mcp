@@ -52,6 +52,9 @@ export const ModelName = {
   Session: "Session",
   Account: "Account",
   Verification: "Verification",
+  ApiKey: "ApiKey",
+  Request: "Request",
+  Stats: "Stats",
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -126,6 +129,47 @@ export const VerificationScalarFieldEnum = {
 
 export type VerificationScalarFieldEnum =
   (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum];
+
+export const ApiKeyScalarFieldEnum = {
+  id: "id",
+  key: "key",
+  name: "name",
+  enabled: "enabled",
+  rateLimit: "rateLimit",
+  createdAt: "createdAt",
+  updatedAt: "updatedAt",
+  userId: "userId",
+} as const;
+
+export type ApiKeyScalarFieldEnum =
+  (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum];
+
+export const RequestScalarFieldEnum = {
+  id: "id",
+  apiKeyId: "apiKeyId",
+  filename: "filename",
+  originalSize: "originalSize",
+  optimizedSize: "optimizedSize",
+  savedBytes: "savedBytes",
+  camelCase: "camelCase",
+  success: "success",
+  errorMessage: "errorMessage",
+  createdAt: "createdAt",
+} as const;
+
+export type RequestScalarFieldEnum =
+  (typeof RequestScalarFieldEnum)[keyof typeof RequestScalarFieldEnum];
+
+export const StatsScalarFieldEnum = {
+  id: "id",
+  totalRequests: "totalRequests",
+  totalBytesSaved: "totalBytesSaved",
+  successCount: "successCount",
+  errorCount: "errorCount",
+  updatedAt: "updatedAt",
+} as const;
+
+export type StatsScalarFieldEnum = (typeof StatsScalarFieldEnum)[keyof typeof StatsScalarFieldEnum];
 
 export const SortOrder = {
   asc: "asc",

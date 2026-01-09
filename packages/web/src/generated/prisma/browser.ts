@@ -36,3 +36,18 @@ export type Account = Prisma.AccountModel;
  *
  */
 export type Verification = Prisma.VerificationModel;
+/**
+ * Model ApiKey
+ *
+ */
+export type ApiKey = Prisma.ApiKeyModel;
+/**
+ * Model Request
+ *
+ */
+export type Request = Prisma.RequestModel;
+/**
+ * Model Stats
+ *
+ */
+export type Stats = Prisma.StatsModel;

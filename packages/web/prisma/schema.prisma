@@ -7,6 +7,10 @@ datasource db {
   provider = "postgresql"
 }
 
+// ============================================
+// Better Auth Models
+// ============================================
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -18,6 +22,7 @@ model User {
 
   sessions Session[]
   accounts Account[]
+  apiKeys  ApiKey[]
 }
 
 model Session {
@@ -56,4 +61,52 @@ model Verification {
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+}
+
+// ============================================
+// API Key Management
+// ============================================
+
+model ApiKey {
+  id        String    @id @default(cuid())
+  key       String    @unique
+  name      String?
+  enabled   Boolean   @default(true)
+  rateLimit Int       @default(100)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Link to user who created it (optional for migrated keys)
+  userId    String?
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  requests  Request[]
+
+  @@index([userId])
+}
+
+model Request {
+  id            String   @id @default(cuid())
+  apiKeyId      String
+  apiKey        ApiKey   @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  filename      String?
+  originalSize  Int
+  optimizedSize Int
+  savedBytes    Int
+  camelCase     Boolean
+  success       Boolean
+  errorMessage  String?
+  createdAt     DateTime @default(now())
+
+  @@index([apiKeyId])
+  @@index([createdAt])
+}
+
+model Stats {
+  id              String   @id @default("global")
+  totalRequests   Int      @default(0)
+  totalBytesSaved BigInt   @default(0)
+  successCount    Int      @default(0)
+  errorCount      Int      @default(0)
+  updatedAt       DateTime @updatedAt
 }

@@ -1,6 +1,6 @@
 import path from "node:path";
 import ora from "ora";
-import { handleOptimizeSvg } from "../../optimize.js";
+import { optimizeSvg } from "@svgo-jsx/shared";
 import { readFromFile, writeToFile, getSvgFiles } from "../utils/file-handler.js";
 import {
   printBatchSummary,
@@ -60,13 +60,11 @@ export async function batchCommand(directory: string, options: BatchOptions): Pr
       try {
         const content = await readFromFile(file);
 
-        const resultJson = await handleOptimizeSvg({
+        const result = optimizeSvg({
           content,
           filename,
           camelCase: camelcase,
         });
-
-        const result = JSON.parse(resultJson);
 
         // Generate output content
         let outputContent: string;

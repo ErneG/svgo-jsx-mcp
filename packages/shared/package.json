@@ -15,7 +15,11 @@
     "build": "tsc",
     "dev": "tsc --watch"
   },
+  "dependencies": {
+    "svgo": "^3.3.2"
+  },
   "devDependencies": {
+    "@types/node": "^22.15.21",
     "typescript": "^5.9.2"
   }
 }

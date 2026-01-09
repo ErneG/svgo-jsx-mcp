@@ -3,7 +3,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { handleOptimizeSvg } from "./optimize.js";
+import { optimizeSvg } from "@svgo-jsx/shared";
 
 const server = new McpServer({
   name: "SvgoJsxServer",
@@ -25,9 +25,9 @@ server.tool(
   },
   async ({ content, filename, camelCase }) => {
     try {
-      const result = await handleOptimizeSvg({ content, filename, camelCase });
+      const result = optimizeSvg({ content, filename, camelCase });
       return {
-        content: [{ type: "text", text: result }],
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
       };
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";

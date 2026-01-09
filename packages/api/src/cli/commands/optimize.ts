@@ -1,5 +1,5 @@
 import path from "node:path";
-import { handleOptimizeSvg } from "../../optimize.js";
+import { optimizeSvg } from "@svgo-jsx/shared";
 import { readFromFile, readFromStdin, writeToFile, hasStdinData } from "../utils/file-handler.js";
 import { printResult, printError, printInfo } from "../utils/progress.js";
 import { generateReactComponent, filenameToComponentName } from "../templates/react-component.js";
@@ -43,13 +43,11 @@ export async function optimizeCommand(
     }
 
     // Optimize the SVG
-    const resultJson = await handleOptimizeSvg({
+    const result = optimizeSvg({
       content,
       filename,
       camelCase: camelcase,
     });
-
-    const result = JSON.parse(resultJson);
 
     // Generate output content
     let outputContent: string;

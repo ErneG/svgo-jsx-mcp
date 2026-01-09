@@ -290,3 +290,29 @@ export function checkSvgSecurity(svg: string): string[] {
 
   return warnings;
 }
+
+/**
+ * Validate SVG content size
+ */
+export function validateContentSize(content: string, maxSize: number = 1024 * 1024): void {
+  const size = Buffer.byteLength(content, "utf8");
+  if (size > maxSize) {
+    throw new Error(
+      `SVG content too large (${formatBytes(size)}). Maximum size is ${formatBytes(maxSize)}.`
+    );
+  }
+}
+
+/**
+ * Format bytes to human-readable string
+ */
+export function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 B";
+
+  const units = ["B", "KB", "MB", "GB"];
+  const k = 1024;
+  const i = Math.floor(Math.log(Math.abs(bytes)) / Math.log(k));
+  const size = bytes / Math.pow(k, i);
+
+  return `${size.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
+}
