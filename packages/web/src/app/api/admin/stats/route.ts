@@ -24,10 +24,16 @@ export async function GET() {
 
   const userKeyIds = userKeys.map((k) => k.id);
 
-  // Get stats for user's keys
-  const [globalStats, userRequests24h, userKeyStats] = await Promise.all([
-    // Global stats (read-only view)
-    prisma.stats.findUnique({ where: { id: "global" } }),
+  // Get stats for user's keys - computed from Request table for accuracy
+  const [userStats, userRequests24h, userKeyStats] = await Promise.all([
+    // User's aggregate stats computed from Request table
+    prisma.request.aggregate({
+      where: {
+        apiKeyId: { in: userKeyIds },
+      },
+      _count: { id: true },
+      _sum: { savedBytes: true },
+    }),
 
     // User's requests in last 24 hours
     prisma.request.count({
@@ -49,6 +55,22 @@ export async function GET() {
     }),
   ]);
 
+  // Get success/error counts separately (Prisma aggregate doesn't support conditional counts)
+  const [successCount, errorCount] = await Promise.all([
+    prisma.request.count({
+      where: {
+        apiKeyId: { in: userKeyIds },
+        success: true,
+      },
+    }),
+    prisma.request.count({
+      where: {
+        apiKeyId: { in: userKeyIds },
+        success: false,
+      },
+    }),
+  ]);
+
   // Get key names for the breakdown
   const keyDetails = await prisma.apiKey.findMany({
     where: { id: { in: userKeyIds } },
@@ -59,13 +81,16 @@ export async function GET() {
     keyDetails.map((k) => [k.id, k.name || k.key.substring(0, 12) + "..."])
   );
 
+  const totalRequests = userStats._count.id || 0;
+  const totalBytesSaved = userStats._sum.savedBytes || 0;
+
   return NextResponse.json({
     global: {
-      totalRequests: globalStats?.totalRequests || 0,
-      totalBytesSaved: globalStats?.totalBytesSaved?.toString() || "0",
-      successCount: globalStats?.successCount || 0,
-      errorCount: globalStats?.errorCount || 0,
-      updatedAt: globalStats?.updatedAt?.toISOString() || null,
+      totalRequests,
+      totalBytesSaved: totalBytesSaved.toString(),
+      successCount,
+      errorCount,
+      updatedAt: new Date().toISOString(),
     },
     user: {
       last24Hours: {
