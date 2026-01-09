@@ -1,0 +1,176 @@
+{
+  "project": "SVGO JSX Statistics Panel",
+  "description": "Comprehensive statistics dashboard with accurate data, multiple charts, and detailed analytics for API usage",
+  "feedback_loops": {
+    "typecheck": "cd packages/web && npx tsc --noEmit",
+    "test": "cd packages/web && pnpm test",
+    "lint": "pnpm lint",
+    "build": "pnpm build"
+  },
+  "tasks": [
+    {
+      "id": "1.1",
+      "phase": 1,
+      "title": "Fix stats API to compute from Request table",
+      "description": "The /api/admin/stats endpoint reads from an empty Stats aggregate table. Modify it to compute totals from the Request table directly for the user's API keys, ensuring stat cards show accurate data.",
+      "passes": true,
+      "hitl": false,
+      "verification": [
+        "totalRequests returns actual count from Request table for user's keys",
+        "totalBytesSaved sums savedBytes from Request table",
+        "successCount counts requests where success=true",
+        "errorCount counts requests where success=false",
+        "API returns correct data when tested locally"
+      ],
+      "files": ["packages/web/src/app/api/admin/stats/route.ts"]
+    },
+    {
+      "id": "1.2",
+      "phase": 1,
+      "title": "Fix percentage calculation in Usage by API Key",
+      "description": "The percentage shows 0% because it divides by global totalRequests (0). Fix to use sum of user's actual requests as denominator.",
+      "passes": true,
+      "hitl": false,
+      "verification": [
+        "Percentage correctly shows each key's share of user's total requests",
+        "Progress bar width matches the percentage",
+        "Works with single key (shows 100%) and multiple keys"
+      ],
+      "files": ["packages/web/src/app/admin/stats/page.tsx"]
+    },
+    {
+      "id": "1.3",
+      "phase": 1,
+      "title": "Add user-specific stats to API response",
+      "description": "Extend the stats API to include user-specific totals computed from their requests, separate from global stats. This ensures the stats page shows accurate data for the logged-in user.",
+      "passes": true,
+      "hitl": false,
+      "verification": [
+        "API response includes user.totalRequests computed from Request table",
+        "API response includes user.totalBytesSaved",
+        "API response includes user.successCount and user.errorCount",
+        "Stats page uses user stats for the cards"
+      ],
+      "files": [
+        "packages/web/src/app/api/admin/stats/route.ts",
+        "packages/web/src/hooks/use-stats.ts",
+        "packages/web/src/app/admin/stats/page.tsx"
+      ]
+    },
+    {
+      "id": "2.1",
+      "phase": 2,
+      "title": "Add bytes saved to time-series chart",
+      "description": "Enhance the Usage Over Time chart to show both requests and bytes saved as dual Y-axis or toggle. Currently only shows requests.",
+      "passes": true,
+      "hitl": false,
+      "verification": [
+        "Chart shows bytes saved data alongside requests",
+        "Bytes saved is formatted human-readable (KB, MB)",
+        "Legend distinguishes between requests and bytes",
+        "Tooltip shows both values"
+      ],
+      "files": ["packages/web/src/app/admin/stats/page.tsx"]
+    },
+    {
+      "id": "2.2",
+      "phase": 2,
+      "title": "Add success/error pie chart",
+      "description": "Add a pie or donut chart showing the breakdown of successful vs failed requests for visual clarity.",
+      "passes": true,
+      "hitl": false,
+      "verification": [
+        "Pie/donut chart renders with success/error breakdown",
+        "Chart shows percentages and counts",
+        "Handles edge case of 0 requests gracefully",
+        "Colors distinguish success (green) from error (red)"
+      ],
+      "files": ["packages/web/src/app/admin/stats/page.tsx"]
+    },
+    {
+      "id": "2.3",
+      "phase": 2,
+      "title": "Add average optimization percentage card",
+      "description": "Add a stat card showing average optimization percentage (bytes saved / original size) across all requests.",
+      "passes": true,
+      "hitl": false,
+      "verification": [
+        "API returns averageOptimizationPercent",
+        "New stat card displays average optimization",
+        "Percentage is computed correctly from sum(savedBytes)/sum(originalSize)"
+      ],
+      "files": [
+        "packages/web/src/app/api/admin/stats/route.ts",
+        "packages/web/src/app/admin/stats/page.tsx"
+      ]
+    },
+    {
+      "id": "2.4",
+      "phase": 2,
+      "title": "Enhance Usage by API Key section",
+      "description": "Improve the API key breakdown with better visuals: show bytes saved per key, success rate per key, and use a proper bar chart instead of basic progress bars.",
+      "passes": true,
+      "hitl": false,
+      "verification": [
+        "Each key shows request count, bytes saved, and success rate",
+        "Visual bar chart or improved progress bars",
+        "Keys sorted by usage (most used first)",
+        "Empty state handled gracefully"
+      ],
+      "files": [
+        "packages/web/src/app/api/admin/stats/route.ts",
+        "packages/web/src/app/admin/stats/page.tsx"
+      ]
+    },
+    {
+      "id": "3.1",
+      "phase": 3,
+      "title": "Add time period selector",
+      "description": "Allow users to select different time periods for the charts (7 days, 30 days, 90 days, all time).",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Dropdown/tabs to select time period",
+        "Charts update when period changes",
+        "Stat cards reflect selected period",
+        "URL state persists selection (optional)"
+      ],
+      "files": ["packages/web/src/app/admin/stats/page.tsx", "packages/web/src/hooks/use-stats.ts"]
+    },
+    {
+      "id": "3.2",
+      "phase": 3,
+      "title": "Add recent requests table",
+      "description": "Add a table showing recent API requests with details: timestamp, filename, original size, optimized size, savings percentage, success status.",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Table shows last 10-20 requests",
+        "Columns: time, filename, original, optimized, saved %, status",
+        "Pagination or 'load more' for older requests",
+        "Empty state if no requests"
+      ],
+      "files": [
+        "packages/web/src/app/api/admin/stats/route.ts",
+        "packages/web/src/app/admin/stats/page.tsx"
+      ]
+    },
+    {
+      "id": "4.1",
+      "phase": 4,
+      "title": "Test locally and verify all features work",
+      "description": "Start local dev server, navigate to stats page, verify all cards show correct data, charts render, and interactions work.",
+      "passes": false,
+      "hitl": true,
+      "verification": [
+        "Stat cards show accurate numbers",
+        "Time-series chart renders with data",
+        "Success/error breakdown displays",
+        "API key breakdown shows correct percentages",
+        "Time period selector works",
+        "Recent requests table loads"
+      ],
+      "files": []
+    }
+  ]
+}
