@@ -56,7 +56,7 @@ export async function GET() {
   ]);
 
   // Get success/error counts separately (Prisma aggregate doesn't support conditional counts)
-  const [successCount, errorCount] = await Promise.all([
+  const [successCount, errorCount, keySuccessCounts] = await Promise.all([
     prisma.request.count({
       where: {
         apiKeyId: { in: userKeyIds },
@@ -69,7 +69,19 @@ export async function GET() {
         success: false,
       },
     }),
+    // Success counts per key for success rate calculation
+    prisma.request.groupBy({
+      by: ["apiKeyId"],
+      where: {
+        apiKeyId: { in: userKeyIds },
+        success: true,
+      },
+      _count: { id: true },
+    }),
   ]);
+
+  // Map key success counts for lookup
+  const keySuccessMap = new Map(keySuccessCounts.map((k) => [k.apiKeyId, k._count.id]));
 
   // Get key names for the breakdown
   const keyDetails = await prisma.apiKey.findMany({
@@ -111,12 +123,20 @@ export async function GET() {
       last24Hours: {
         requests: userRequests24h,
       },
-      keyStats: userKeyStats.map((k) => ({
-        apiKeyId: k.apiKeyId,
-        keyName: keyNameMap.get(k.apiKeyId) || "Unknown",
-        requestCount: k._count.id,
-        bytesSaved: k._sum.savedBytes || 0,
-      })),
+      keyStats: userKeyStats.map((k) => {
+        const keyRequestCount = k._count.id;
+        const keySuccessCount = keySuccessMap.get(k.apiKeyId) || 0;
+        const keySuccessRate =
+          keyRequestCount > 0 ? ((keySuccessCount / keyRequestCount) * 100).toFixed(1) : "0";
+        return {
+          apiKeyId: k.apiKeyId,
+          keyName: keyNameMap.get(k.apiKeyId) || "Unknown",
+          requestCount: keyRequestCount,
+          bytesSaved: k._sum.savedBytes || 0,
+          successCount: keySuccessCount,
+          successRate: keySuccessRate,
+        };
+      }),
     },
   });
 }

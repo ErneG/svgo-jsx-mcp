@@ -8,6 +8,7 @@ import {
   BarChart3,
   PieChart as PieChartIcon,
   Percent,
+  Key,
 } from "lucide-react";
 import { useStats, useTimeSeries } from "@/hooks/use-stats";
 import { formatBytes } from "@/lib/utils";
@@ -25,6 +26,8 @@ import {
   PieChart,
   Pie,
   Cell,
+  BarChart,
+  Bar,
 } from "recharts";
 
 interface StatCardProps {
@@ -319,48 +322,101 @@ export default function StatsPage() {
       </Card>
 
       {/* Per-Key Stats */}
-      {stats?.user?.keyStats && stats.user.keyStats.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Usage by API Key</CardTitle>
-            <CardDescription>Breakdown of requests per API key</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {(() => {
-                // Compute total from keyStats for accurate percentage calculation
-                const userTotalRequests = stats.user.keyStats.reduce(
-                  (sum, k) => sum + (k?.requestCount ?? 0),
-                  0
-                );
-                return stats.user.keyStats.map((keyStat) => {
-                  const keyRequestCount = keyStat?.requestCount ?? 0;
-                  const percentage =
-                    userTotalRequests > 0
-                      ? ((keyRequestCount / userTotalRequests) * 100).toFixed(1)
-                      : "0";
-                  return (
-                    <div key={keyStat?.apiKeyId ?? "unknown"} className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium">{keyStat?.keyName || "Unnamed Key"}</span>
-                        <span className="text-[rgb(var(--muted-foreground))]">
-                          {keyRequestCount.toLocaleString()} requests ({percentage}%)
-                        </span>
-                      </div>
-                      <div className="h-2 rounded-full bg-[rgb(var(--muted))] overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-[rgb(var(--primary))]"
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Key className="h-5 w-5" />
+            Usage by API Key
+          </CardTitle>
+          <CardDescription>
+            Breakdown of requests, bytes saved, and success rate per API key
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <Skeleton className="h-[200px] w-full" />
+          ) : stats?.user?.keyStats && stats.user.keyStats.length > 0 ? (
+            <>
+              {/* Bar Chart */}
+              <div className="h-[200px] mb-6">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={stats.user.keyStats.map((k) => ({
+                      name: k.keyName,
+                      requests: k.requestCount,
+                      bytesSaved: k.bytesSaved,
+                    }))}
+                    layout="vertical"
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-[rgb(var(--border))]" />
+                    <XAxis type="number" fontSize={12} stroke="rgb(var(--muted-foreground))" />
+                    <YAxis
+                      dataKey="name"
+                      type="category"
+                      width={100}
+                      fontSize={12}
+                      stroke="rgb(var(--muted-foreground))"
+                      tickLine={false}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "rgb(var(--card))",
+                        borderColor: "rgb(var(--border))",
+                        borderRadius: "0.5rem",
+                      }}
+                      formatter={(value, name) => {
+                        const numValue = typeof value === "number" ? value : 0;
+                        if (name === "bytesSaved") {
+                          return [formatBytes(numValue), "Bytes Saved"];
+                        }
+                        return [numValue.toLocaleString(), "Requests"];
+                      }}
+                    />
+                    <Legend />
+                    <Bar dataKey="requests" fill="rgb(232 121 249)" name="Requests" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Detailed breakdown */}
+              <div className="space-y-3 border-t border-[rgb(var(--border))] pt-4">
+                {stats.user.keyStats.map((keyStat) => (
+                  <div
+                    key={keyStat.apiKeyId}
+                    className="flex items-center justify-between text-sm p-3 rounded-lg bg-[rgb(var(--muted))]/30"
+                  >
+                    <div className="font-medium">{keyStat.keyName}</div>
+                    <div className="flex items-center gap-4 text-[rgb(var(--muted-foreground))]">
+                      <span>{keyStat.requestCount.toLocaleString()} requests</span>
+                      <span className="text-emerald-500">
+                        {formatBytes(keyStat.bytesSaved)} saved
+                      </span>
+                      <span
+                        className={
+                          parseFloat(keyStat.successRate) >= 90
+                            ? "text-green-500"
+                            : parseFloat(keyStat.successRate) >= 70
+                              ? "text-amber-500"
+                              : "text-red-500"
+                        }
+                      >
+                        {keyStat.successRate}% success
+                      </span>
                     </div>
-                  );
-                });
-              })()}
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="h-[200px] flex flex-col items-center justify-center text-[rgb(var(--muted-foreground))]">
+              <Key className="h-12 w-12 mb-4 opacity-50" />
+              <p className="text-sm">No API keys with requests</p>
+              <p className="text-xs">Create an API key and start making requests</p>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

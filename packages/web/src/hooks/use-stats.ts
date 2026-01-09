@@ -14,6 +14,8 @@ export interface KeyStat {
   keyName: string;
   requestCount: number;
   bytesSaved: number;
+  successCount: number;
+  successRate: string;
 }
 
 export interface UserStats {
