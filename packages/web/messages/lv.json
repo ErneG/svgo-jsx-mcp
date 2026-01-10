@@ -38,7 +38,7 @@
     "subtitle": "Uzlabota SVG optimizācija ar Monaco redaktoru",
     "inputTitle": "Ievades SVG",
     "outputTitle": "Optimizēta izvade",
-    "samples": "Paraugi",
+    "samplesButton": "Paraugi",
     "export": "Eksportēt",
     "exportAsImage": "Eksportēt kā attēlu",
     "optimizing": "Optimizē...",

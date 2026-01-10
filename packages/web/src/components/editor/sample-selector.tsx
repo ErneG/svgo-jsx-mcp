@@ -44,7 +44,7 @@ export function SampleSelector({ onSelect }: SampleSelectorProps) {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm">
           <FileImage className="h-4 w-4 mr-2" />
-          {t("editor.samples")}
+          {t("editor.samplesButton")}
           <ChevronDown className="h-4 w-4 ml-2" />
         </Button>
       </DropdownMenuTrigger>

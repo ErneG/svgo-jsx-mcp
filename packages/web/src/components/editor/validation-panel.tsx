@@ -38,7 +38,13 @@ const severityConfig: Record<
   },
 };
 
-function ValidationIssueItem({ issue, t }: { issue: ValidationIssue; t: (key: string) => string }) {
+function ValidationIssueItem({
+  issue,
+  severityLabel,
+}: {
+  issue: ValidationIssue;
+  severityLabel: string;
+}) {
   const config = severityConfig[issue.severity];
   const Icon = config.icon;
 
@@ -47,7 +53,7 @@ function ValidationIssueItem({ issue, t }: { issue: ValidationIssue; t: (key: st
       <Icon className={`h-4 w-4 mt-0.5 flex-shrink-0 ${config.color}`} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className={`text-xs font-medium ${config.color}`}>{t(config.labelKey)}</span>
+          <span className={`text-xs font-medium ${config.color}`}>{severityLabel}</span>
           <span className="text-xs text-[rgb(var(--muted-foreground))] font-mono">
             {issue.code}
           </span>
@@ -136,7 +142,11 @@ export function ValidationPanel({ svg, className = "" }: ValidationPanelProps) {
             return order[a.severity] - order[b.severity];
           })
           .map((issue, index) => (
-            <ValidationIssueItem key={`${issue.code}-${index}`} issue={issue} t={t} />
+            <ValidationIssueItem
+              key={`${issue.code}-${index}`}
+              issue={issue}
+              severityLabel={t(severityConfig[issue.severity].labelKey)}
+            />
           ))}
       </div>
     </div>

@@ -38,7 +38,7 @@
     "subtitle": "Advanced SVG optimization with Monaco Editor",
     "inputTitle": "Input SVG",
     "outputTitle": "Optimized Output",
-    "samples": "Samples",
+    "samplesButton": "Samples",
     "export": "Export",
     "exportAsImage": "Export as Image",
     "optimizing": "Optimizing...",
