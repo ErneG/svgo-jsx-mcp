@@ -1,11 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Layers, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SvgCodeEditor } from "@/components/editor/svg-code-editor";
+
+const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <path fill="currentColor" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+</svg>`;
 
 export default function EditorPage() {
+  const [inputSvg, setInputSvg] = useState(SAMPLE_SVG);
+  const [outputSvg, _setOutputSvg] = useState("");
+
   return (
     <div className="min-h-screen bg-[rgb(var(--background))]">
       {/* Header */}
@@ -47,11 +56,9 @@ export default function EditorPage() {
               <CardTitle className="text-lg">Input SVG</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden">
-              {/* Monaco Editor placeholder - will be added in Task 1.3 */}
-              <div className="flex-1 border border-[rgb(var(--border))] rounded-lg bg-[rgb(var(--card))] flex items-center justify-center">
-                <p className="text-[rgb(var(--muted-foreground))]">
-                  Monaco Editor will be added here
-                </p>
+              {/* Monaco Editor for input */}
+              <div className="flex-1 min-h-0 border border-[rgb(var(--border))] rounded-lg overflow-hidden">
+                <SvgCodeEditor value={inputSvg} onChange={setInputSvg} language="xml" />
               </div>
               {/* SVG Preview placeholder - will be added in Task 1.5 */}
               <div className="h-48 border border-[rgb(var(--border))] rounded-lg bg-white flex items-center justify-center">
@@ -69,11 +76,13 @@ export default function EditorPage() {
               </div>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden">
-              {/* Monaco Editor placeholder (read-only) - will be added in Task 1.3 */}
-              <div className="flex-1 border border-[rgb(var(--border))] rounded-lg bg-[rgb(var(--card))] flex items-center justify-center">
-                <p className="text-[rgb(var(--muted-foreground))]">
-                  Optimized SVG will appear here
-                </p>
+              {/* Monaco Editor for output (read-only) */}
+              <div className="flex-1 min-h-0 border border-[rgb(var(--border))] rounded-lg overflow-hidden">
+                <SvgCodeEditor
+                  value={outputSvg || "// Optimized SVG will appear here..."}
+                  readOnly
+                  language="xml"
+                />
               </div>
               {/* SVG Preview placeholder - will be added in Task 1.5 */}
               <div className="h-48 border border-[rgb(var(--border))] rounded-lg bg-white flex items-center justify-center">

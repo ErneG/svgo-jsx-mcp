@@ -37,7 +37,7 @@
       "phase": 1,
       "title": "Add Monaco Editor component with SVG syntax",
       "description": "Create SVGCodeEditor component with Monaco, SVG syntax highlighting, dark theme",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Monaco editor renders",
