@@ -2,7 +2,17 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Upload, Download, Copy, Check, Loader2, RefreshCw, Layers, Settings } from "lucide-react";
+import {
+  Upload,
+  Download,
+  Copy,
+  Check,
+  Loader2,
+  RefreshCw,
+  Layers,
+  Settings,
+  Code2,
+} from "lucide-react";
 import { formatBytes, copyToClipboard, downloadFile } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -189,6 +199,13 @@ export function SvgEditor() {
           </div>
 
           <div className="flex items-center gap-4">
+            <Link href="/editor">
+              <Button variant="outline" size="sm">
+                <Code2 className="h-4 w-4 mr-2" />
+                Advanced Editor
+              </Button>
+            </Link>
+
             <div className="flex items-center gap-2">
               <Switch id="camelCase" checked={camelCase} onCheckedChange={setCamelCase} />
               <Label htmlFor="camelCase" className="text-sm cursor-pointer">
@@ -356,6 +373,13 @@ export function SvgEditor() {
         <div className="max-w-7xl mx-auto flex items-center justify-between text-sm text-[rgb(var(--muted-foreground))]">
           <span>Powered by SVGO</span>
           <div className="flex items-center gap-4">
+            <Link
+              href="/editor"
+              className="flex items-center gap-1 hover:text-[rgb(var(--foreground))] transition-colors"
+            >
+              <Code2 className="h-4 w-4" />
+              Advanced Editor
+            </Link>
             <Link
               href="/admin"
               className="flex items-center gap-1 hover:text-[rgb(var(--foreground))] transition-colors"
