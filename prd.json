@@ -27,7 +27,7 @@
       "phase": 1,
       "title": "Create basic /editor page route",
       "description": "Create the editor page with placeholder content at /editor",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": ["Page accessible at /editor", "Basic layout renders", "TypeScript compiles"],
       "files": ["packages/web/src/app/editor/page.tsx"]
