@@ -5,6 +5,7 @@ import { Layers, LayoutDashboard, Key, BarChart3, Code2 } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 // Force dynamic rendering to avoid build-time database access
 export const dynamic = "force-dynamic";
@@ -55,6 +56,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <span className="text-sm text-[rgb(var(--muted-foreground))]">
               {session.user.email}
             </span>
+            <ThemeToggle />
             <SignOutButton />
             <Button variant="outline" size="sm" asChild>
               <Link href="/" className="flex items-center gap-2">

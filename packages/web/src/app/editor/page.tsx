@@ -2,13 +2,15 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
-import { Layers, ArrowLeft, Loader2 } from "lucide-react";
+import { Layers, ArrowLeft, Loader2, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SvgCodeEditor } from "@/components/editor/svg-code-editor";
 import { SvgPreview } from "@/components/editor/svg-preview";
 import { SampleSelector } from "@/components/editor/sample-selector";
 import { FormatSelector } from "@/components/editor/format-selector";
+import { Dropzone } from "@/components/editor/dropzone";
+import { ThemeToggle } from "@/components/theme-toggle";
 import type { SampleSvg } from "@/lib/sample-svgs";
 // Import generators directly to avoid pulling in SVGO (Node.js only)
 import type { OutputFormat } from "@svgo-jsx/shared/generators/types";
@@ -62,12 +64,29 @@ export default function EditorPage() {
   const [stats, setStats] = useState<OptimizationStats | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("svg");
+  const [copied, setCopied] = useState(false);
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const handleSampleSelect = (sample: SampleSvg) => {
     setInputSvg(sample.content);
+  };
+
+  const handleFileDrop = (content: string) => {
+    setInputSvg(content);
+  };
+
+  const handleCopyOutput = async () => {
+    if (!formattedOutput || error) return;
+
+    try {
+      await navigator.clipboard.writeText(formattedOutput);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
   };
 
   // Generate formatted output based on selected format
@@ -101,6 +120,32 @@ export default function EditorPage() {
       return outputSvg;
     }
   }, [outputSvg, outputFormat, error]);
+
+  // Global paste handler for SVG content
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      // Only handle paste if not in an input/textarea/editor
+      const target = e.target as HTMLElement;
+      const isEditorOrInput =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.closest(".monaco-editor") !== null;
+
+      if (isEditorOrInput) {
+        // Let the element handle its own paste
+        return;
+      }
+
+      const text = e.clipboardData?.getData("text/plain");
+      if (text && (text.includes("<svg") || text.includes("<?xml"))) {
+        e.preventDefault();
+        setInputSvg(text);
+      }
+    };
+
+    document.addEventListener("paste", handlePaste);
+    return () => document.removeEventListener("paste", handlePaste);
+  }, []);
 
   // Auto-optimize when input changes (debounced)
   useEffect(() => {
@@ -203,7 +248,7 @@ export default function EditorPage() {
                 Optimizing...
               </div>
             )}
-            {/* Theme toggle will go here (Task 3.5) */}
+            <ThemeToggle />
           </div>
         </div>
       </header>
@@ -217,6 +262,8 @@ export default function EditorPage() {
               <CardTitle className="text-lg">Input SVG</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden">
+              {/* Dropzone for file upload */}
+              <Dropzone onFileDrop={handleFileDrop} />
               {/* Monaco Editor for input */}
               <div className="flex-1 min-h-0 border border-[rgb(var(--border))] rounded-lg overflow-hidden">
                 <SvgCodeEditor value={inputSvg} onChange={setInputSvg} language="xml" />
@@ -233,7 +280,25 @@ export default function EditorPage() {
             <CardHeader className="flex-shrink-0 pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Optimized Output</CardTitle>
-                {/* Copy/Download buttons will go here */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyOutput}
+                  disabled={!formattedOutput || !!error}
+                  className="gap-2"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 text-green-500" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      Copy
+                    </>
+                  )}
+                </Button>
               </div>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden">

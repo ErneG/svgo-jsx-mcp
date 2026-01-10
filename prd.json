@@ -244,7 +244,7 @@
       "phase": 3,
       "title": "Add drag & drop upload zone",
       "description": "Add dropzone component to editor that accepts SVG file drops",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Dropzone renders with visual indicator",
@@ -259,7 +259,7 @@
       "phase": 3,
       "title": "Add clipboard paste support",
       "description": "Handle Ctrl+V to paste SVG from clipboard directly into editor",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Pasting SVG content works",
@@ -273,7 +273,7 @@
       "phase": 3,
       "title": "Add copy buttons for output",
       "description": "Add one-click copy buttons for output code in each format",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Copy button visible on output panel",
@@ -287,7 +287,7 @@
       "phase": 3,
       "title": "Install and configure next-themes",
       "description": "Add next-themes package for dark/light mode support",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": ["Package installed", "ThemeProvider wraps app", "No hydration errors"],
       "files": ["packages/web/package.json", "packages/web/src/app/layout.tsx"]
@@ -297,7 +297,7 @@
       "phase": 3,
       "title": "Add theme toggle component",
       "description": "Create theme toggle button with sun/moon icons",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Toggle renders in header",
@@ -315,7 +315,7 @@
       "phase": 3,
       "title": "Update CSS for light mode",
       "description": "Add CSS variables and styles for light mode theme",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Light mode colors defined",
@@ -329,7 +329,7 @@
       "phase": 3,
       "title": "Test UX improvements (HITL)",
       "description": "Manual verification of drag-drop, clipboard, copy, and theme toggle",
-      "passes": false,
+      "passes": true,
       "hitl": true,
       "verification": [
         "Drag & drop works",
