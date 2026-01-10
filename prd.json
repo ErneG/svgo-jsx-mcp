@@ -108,7 +108,7 @@
       "phase": 1,
       "title": "Add sample SVG library",
       "description": "Create collection of 10 sample SVGs users can load to test optimization",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Sample library data file exists",

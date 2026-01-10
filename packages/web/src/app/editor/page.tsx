@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SvgCodeEditor } from "@/components/editor/svg-code-editor";
 import { SvgPreview } from "@/components/editor/svg-preview";
+import { SampleSelector } from "@/components/editor/sample-selector";
+import type { SampleSvg } from "@/lib/sample-svgs";
 
 const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
   <path fill="currentColor" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
@@ -37,6 +39,10 @@ export default function EditorPage() {
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  const handleSampleSelect = (sample: SampleSvg) => {
+    setInputSvg(sample.content);
+  };
 
   // Auto-optimize when input changes (debounced)
   useEffect(() => {
@@ -131,6 +137,7 @@ export default function EditorPage() {
           </div>
 
           <div className="flex items-center gap-4">
+            <SampleSelector onSelect={handleSampleSelect} />
             {isOptimizing && (
               <div className="flex items-center gap-2 text-sm text-[rgb(var(--muted-foreground))]">
                 <Loader2 className="h-4 w-4 animate-spin" />
