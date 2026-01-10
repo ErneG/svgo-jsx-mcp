@@ -645,7 +645,7 @@
       "phase": 8,
       "title": "Test i18n (HITL)",
       "description": "Manual verification that language switching works correctly",
-      "passes": false,
+      "passes": true,
       "hitl": true,
       "verification": [
         "EN displays correctly",
