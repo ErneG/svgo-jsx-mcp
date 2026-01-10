@@ -1,4 +1,4 @@
-# Project: SVGO JSX Statistics Panel
+# Project: SVGO JSX Feature Expansion
 # Started: 2026-01-10
 # Phase: 1
 
@@ -6,149 +6,38 @@
 
 ---
 
-### Task 1.1: Fix stats API to compute from Request table
-**Status**: COMPLETED
-**Commit**: 4720cf3
+## Previous Project (Statistics Panel) - COMPLETED
 
-**Changes made**:
-- Modified `/packages/web/src/app/api/admin/stats/route.ts`
-- Replaced query to empty `Stats` aggregate table with `prisma.request.aggregate()`
-- Now computes totalRequests from `_count.id` on Request table
-- Now computes totalBytesSaved from `_sum.savedBytes` on Request table
-- Added separate queries for successCount and errorCount using `prisma.request.count()` with `success: true/false` filters
-- All stats are now scoped to the user's API keys
-
-**Verification**:
-- [x] totalRequests returns actual count from Request table for user's keys
-- [x] totalBytesSaved sums savedBytes from Request table
-- [x] successCount counts requests where success=true
-- [x] errorCount counts requests where success=false
-- [x] TypeScript, tests, lint, and build all pass
+All statistics panel tasks completed:
+- Phase 1: Fixed stats API, percentage calculations, user-specific stats
+- Phase 2: Dual-axis chart, pie chart, optimization card, API key breakdown
+- Phase 3: Time period selector, recent requests table
+- Phase 4: Local testing verified
 
 ---
 
-### Task 1.2: Fix percentage calculation in Usage by API Key
-**Status**: COMPLETED
-**Commit**: 6553f8a
+## New Project: Feature Expansion
 
-**Changes made**:
-- Modified `/packages/web/src/app/admin/stats/page.tsx`
-- Replaced division by `totalRequests` (global) with computed sum from `keyStats.reduce()`
-- Each key now correctly shows its percentage of user's total requests
-- Single key will show 100%, multiple keys will sum to 100%
+### Phases Overview:
+- **Phase 1**: Interactive SVG Editor (9 tasks)
+- **Phase 2**: Multi-Framework Output (6 tasks)
+- **Phase 3**: UX Improvements (7 tasks)
+- **Phase 4**: Caching & Performance (3 tasks)
+- **Phase 5**: SVG Validator (3 tasks)
+- **Phase 6**: PNG/WebP Converter (5 tasks)
+- **Phase 7**: Webhooks Integration (4 tasks)
 
-**Verification**:
-- [x] Percentage correctly shows each key's share of user's total requests
-- [x] Progress bar width matches the percentage
-- [x] Works with single key (shows 100%) and multiple keys
-- [x] TypeScript, tests, lint, and build all pass
+**Total: 37 tasks across 7 phases**
 
 ---
 
-### Task 1.3: Add user-specific stats to API response
-**Status**: COMPLETED
-**Commit**: 40d2bf0
+### Phase 1: Interactive SVG Editor
 
-**Changes made**:
-- Modified `/packages/web/src/app/api/admin/stats/route.ts` - Added user.totalRequests, user.totalBytesSaved, user.successCount, user.errorCount to the API response
-- Modified `/packages/web/src/hooks/use-stats.ts` - Updated UserStats interface with new fields
-- Modified `/packages/web/src/app/admin/stats/page.tsx` - Changed stat cards to use user stats instead of global
-
-**Verification**:
-- [x] API response includes user.totalRequests computed from Request table
-- [x] API response includes user.totalBytesSaved
-- [x] API response includes user.successCount and user.errorCount
-- [x] Stats page uses user stats for the cards
-- [x] TypeScript, tests, lint, and build all pass
+#### Task 1.1: Install Monaco Editor dependency ✅
+- Installed @monaco-editor/react ^4.7.0 to packages/web
+- Fixed pre-existing test issue with path resolution in api-routes.test.ts
+- All feedback loops pass (types, tests, lint, build)
+- Date: 2026-01-10
 
 ---
 
-### Task 2.1: Add bytes saved to time-series chart
-**Status**: COMPLETED
-**Commit**: 8b0888c
-
-**Changes made**:
-- Modified `/packages/web/src/app/admin/stats/page.tsx`
-- Added second Area component for `bytesSaved` data with green color gradient
-- Added right Y-axis with `formatBytes` tick formatter for human-readable values
-- Added Legend component to distinguish between "Requests" and "Bytes Saved"
-- Updated Tooltip formatter to display bytes in human-readable format
-- Increased right margin to accommodate the bytes axis labels
-
-**Verification**:
-- [x] Chart shows bytes saved data alongside requests
-- [x] Bytes saved is formatted human-readable (KB, MB)
-- [x] Legend distinguishes between requests and bytes
-- [x] Tooltip shows both values
-- [x] TypeScript, tests, lint, and build all pass
-
----
-
-### Task 2.2: Add success/error pie chart
-**Status**: COMPLETED
-**Commit**: 89bd3e4
-
-**Changes made**:
-- Modified `/packages/web/src/app/admin/stats/page.tsx`
-- Added donut chart (PieChart with innerRadius) for success/error breakdown
-- Green color for successful requests, red for failed
-- Shows percentage labels on chart segments
-- Handles 0 requests edge case with empty state message
-- Includes tooltip showing request counts and legend
-
-**Verification**:
-- [x] Pie/donut chart renders with success/error breakdown
-- [x] Chart shows percentages and counts
-- [x] Handles edge case of 0 requests gracefully
-- [x] Colors distinguish success (green) from error (red)
-- [x] TypeScript, tests, lint, and build all pass
-
----
-
-### Task 2.3: Add average optimization percentage card
-**Status**: COMPLETED
-**Commit**: 1b3bef4
-
-**Changes made**:
-- Modified `/packages/web/src/app/api/admin/stats/route.ts` - Added _sum.originalSize to aggregate query, computed averageOptimizationPercent
-- Modified `/packages/web/src/hooks/use-stats.ts` - Added averageOptimizationPercent to GlobalStats and UserStats interfaces
-- Modified `/packages/web/src/app/admin/stats/page.tsx` - Added new stat card with amber color, updated grid to 5 columns
-
-**Verification**:
-- [x] API returns averageOptimizationPercent
-- [x] New stat card displays average optimization
-- [x] Percentage is computed correctly from sum(savedBytes)/sum(originalSize)
-- [x] TypeScript, tests, lint, and build all pass
-
----
-
-### Task 2.4: Enhance Usage by API Key section
-**Status**: COMPLETED
-**Commit**: e33cd1d
-
-**Changes made**:
-- Modified `/packages/web/src/app/api/admin/stats/route.ts` - Added keySuccessCounts groupBy query for per-key success rates
-- Modified `/packages/web/src/hooks/use-stats.ts` - Added successCount and successRate to KeyStat interface
-- Modified `/packages/web/src/app/admin/stats/page.tsx`:
-  - Replaced simple progress bars with horizontal BarChart using Recharts
-  - Added detailed breakdown showing requests, bytes saved (green), and success rate (color-coded)
-  - Success rate colors: green ≥90%, amber ≥70%, red <70%
-
-**Verification**:
-- [x] Each key shows request count, bytes saved, and success rate
-- [x] Visual bar chart for request counts per key
-- [x] Keys sorted by usage (most used first)
-- [x] Empty state handled gracefully
-- [x] TypeScript, tests, lint, and build all pass
-
----
-
-## Phase 2 Complete
-
-All Phase 2 tasks completed:
-- 2.1: Bytes saved in time-series chart ✓
-- 2.2: Success/error pie chart ✓
-- 2.3: Average optimization stat card ✓
-- 2.4: Enhanced API key breakdown ✓
-
----

@@ -1,9 +1,9 @@
 {
-  "project": "SVGO JSX Statistics Panel",
-  "description": "Comprehensive statistics dashboard with accurate data, multiple charts, and detailed analytics for API usage",
+  "project": "SVGO JSX Feature Expansion",
+  "description": "Major feature expansion: Interactive SVG Editor, Multi-Framework Output, UX Improvements, Caching, SVG Validator, PNG/WebP Converter, and Integrations",
   "feedback_loops": {
     "typecheck": "cd packages/web && npx tsc --noEmit",
-    "test": "cd packages/web && pnpm test",
+    "test": "pnpm test",
     "lint": "pnpm lint",
     "build": "pnpm build"
   },
@@ -11,144 +11,374 @@
     {
       "id": "1.1",
       "phase": 1,
-      "title": "Fix stats API to compute from Request table",
-      "description": "The /api/admin/stats endpoint reads from an empty Stats aggregate table. Modify it to compute totals from the Request table directly for the user's API keys, ensuring stat cards show accurate data.",
+      "title": "Install Monaco Editor dependency",
+      "description": "Add @monaco-editor/react to packages/web and verify it works",
       "passes": true,
       "hitl": false,
       "verification": [
-        "totalRequests returns actual count from Request table for user's keys",
-        "totalBytesSaved sums savedBytes from Request table",
-        "successCount counts requests where success=true",
-        "errorCount counts requests where success=false",
-        "API returns correct data when tested locally"
+        "Package installed in packages/web/package.json",
+        "No version conflicts",
+        "Build passes"
       ],
-      "files": ["packages/web/src/app/api/admin/stats/route.ts"]
+      "files": ["packages/web/package.json"]
     },
     {
       "id": "1.2",
       "phase": 1,
-      "title": "Fix percentage calculation in Usage by API Key",
-      "description": "The percentage shows 0% because it divides by global totalRequests (0). Fix to use sum of user's actual requests as denominator.",
-      "passes": true,
+      "title": "Create basic /editor page route",
+      "description": "Create the editor page with placeholder content at /editor",
+      "passes": false,
       "hitl": false,
-      "verification": [
-        "Percentage correctly shows each key's share of user's total requests",
-        "Progress bar width matches the percentage",
-        "Works with single key (shows 100%) and multiple keys"
-      ],
-      "files": ["packages/web/src/app/admin/stats/page.tsx"]
+      "verification": ["Page accessible at /editor", "Basic layout renders", "TypeScript compiles"],
+      "files": ["packages/web/src/app/editor/page.tsx"]
     },
     {
       "id": "1.3",
       "phase": 1,
-      "title": "Add user-specific stats to API response",
-      "description": "Extend the stats API to include user-specific totals computed from their requests, separate from global stats. This ensures the stats page shows accurate data for the logged-in user.",
-      "passes": true,
+      "title": "Add Monaco Editor component with SVG syntax",
+      "description": "Create SVGCodeEditor component with Monaco, SVG syntax highlighting, dark theme",
+      "passes": false,
       "hitl": false,
       "verification": [
-        "API response includes user.totalRequests computed from Request table",
-        "API response includes user.totalBytesSaved",
-        "API response includes user.successCount and user.errorCount",
-        "Stats page uses user stats for the cards"
+        "Monaco editor renders",
+        "SVG syntax highlighting works",
+        "onChange callback fires",
+        "Dynamic import to avoid SSR issues"
+      ],
+      "files": ["packages/web/src/components/editor/svg-code-editor.tsx"]
+    },
+    {
+      "id": "1.4",
+      "phase": 1,
+      "title": "Build split-pane editor layout",
+      "description": "Create left/right split pane with input editor on left, output on right",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Two-column layout renders",
+        "Responsive on smaller screens",
+        "Proper spacing and headers"
+      ],
+      "files": ["packages/web/src/app/editor/page.tsx"]
+    },
+    {
+      "id": "1.5",
+      "phase": 1,
+      "title": "Add SVG preview panels",
+      "description": "Add visual SVG preview below each code editor (input preview, output preview)",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "SVG renders visually in preview",
+        "Preview updates when code changes",
+        "Handles invalid SVG gracefully"
+      ],
+      "files": ["packages/web/src/components/editor/svg-preview.tsx"]
+    },
+    {
+      "id": "1.6",
+      "phase": 1,
+      "title": "Implement real-time optimization",
+      "description": "Optimize SVG on input change (debounced 300ms) using shared optimize function",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Output updates automatically",
+        "Debounced to avoid excessive calls",
+        "Shows loading state during optimization"
+      ],
+      "files": ["packages/web/src/app/editor/page.tsx"]
+    },
+    {
+      "id": "1.7",
+      "phase": 1,
+      "title": "Show optimization stats",
+      "description": "Display bytes saved, percentage reduction, original vs optimized size",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Stats card shows original size",
+        "Stats card shows optimized size",
+        "Stats card shows bytes saved and percentage"
+      ],
+      "files": ["packages/web/src/app/editor/page.tsx"]
+    },
+    {
+      "id": "1.8",
+      "phase": 1,
+      "title": "Add sample SVG library",
+      "description": "Create collection of 10 sample SVGs users can load to test optimization",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Sample library data file exists",
+        "Dropdown/grid to select sample",
+        "Loading sample populates editor"
       ],
       "files": [
-        "packages/web/src/app/api/admin/stats/route.ts",
-        "packages/web/src/hooks/use-stats.ts",
-        "packages/web/src/app/admin/stats/page.tsx"
+        "packages/web/src/lib/sample-svgs.ts",
+        "packages/web/src/components/editor/sample-selector.tsx"
       ]
+    },
+    {
+      "id": "1.9",
+      "phase": 1,
+      "title": "Test editor page locally (HITL)",
+      "description": "Manual verification that editor works end-to-end",
+      "passes": false,
+      "hitl": true,
+      "verification": [
+        "Can paste SVG and see optimization",
+        "Can select samples",
+        "Preview renders correctly",
+        "Stats are accurate"
+      ],
+      "files": []
     },
     {
       "id": "2.1",
       "phase": 2,
-      "title": "Add bytes saved to time-series chart",
-      "description": "Enhance the Usage Over Time chart to show both requests and bytes saved as dual Y-axis or toggle. Currently only shows requests.",
-      "passes": true,
+      "title": "Extract React generator to shared package",
+      "description": "Move existing React component generation to packages/shared/src/generators/react.ts",
+      "passes": false,
       "hitl": false,
       "verification": [
-        "Chart shows bytes saved data alongside requests",
-        "Bytes saved is formatted human-readable (KB, MB)",
-        "Legend distinguishes between requests and bytes",
-        "Tooltip shows both values"
+        "Generator function exists in shared package",
+        "Generates valid React component",
+        "Exported from shared index"
       ],
-      "files": ["packages/web/src/app/admin/stats/page.tsx"]
+      "files": [
+        "packages/shared/src/generators/react.ts",
+        "packages/shared/src/generators/index.ts",
+        "packages/shared/src/index.ts"
+      ]
     },
     {
       "id": "2.2",
       "phase": 2,
-      "title": "Add success/error pie chart",
-      "description": "Add a pie or donut chart showing the breakdown of successful vs failed requests for visual clarity.",
-      "passes": true,
+      "title": "Add Vue 3 SFC generator",
+      "description": "Create generator for Vue 3 Single File Components with <template> and <script setup>",
+      "passes": false,
       "hitl": false,
       "verification": [
-        "Pie/donut chart renders with success/error breakdown",
-        "Chart shows percentages and counts",
-        "Handles edge case of 0 requests gracefully",
-        "Colors distinguish success (green) from error (red)"
+        "Generates valid Vue 3 SFC",
+        "Includes <template> with SVG",
+        "Includes <script setup> with props",
+        "Unit test passes"
       ],
-      "files": ["packages/web/src/app/admin/stats/page.tsx"]
+      "files": [
+        "packages/shared/src/generators/vue.ts",
+        "packages/shared/src/__tests__/generators.test.ts"
+      ]
     },
     {
       "id": "2.3",
       "phase": 2,
-      "title": "Add average optimization percentage card",
-      "description": "Add a stat card showing average optimization percentage (bytes saved / original size) across all requests.",
-      "passes": true,
+      "title": "Add Svelte component generator",
+      "description": "Create generator for Svelte components",
+      "passes": false,
       "hitl": false,
       "verification": [
-        "API returns averageOptimizationPercent",
-        "New stat card displays average optimization",
-        "Percentage is computed correctly from sum(savedBytes)/sum(originalSize)"
+        "Generates valid Svelte component",
+        "Exports props correctly",
+        "Unit test passes"
       ],
       "files": [
-        "packages/web/src/app/api/admin/stats/route.ts",
-        "packages/web/src/app/admin/stats/page.tsx"
+        "packages/shared/src/generators/svelte.ts",
+        "packages/shared/src/__tests__/generators.test.ts"
       ]
     },
     {
       "id": "2.4",
       "phase": 2,
-      "title": "Enhance Usage by API Key section",
-      "description": "Improve the API key breakdown with better visuals: show bytes saved per key, success rate per key, and use a proper bar chart instead of basic progress bars.",
-      "passes": true,
+      "title": "Add Web Components generator",
+      "description": "Create generator for vanilla Web Components (custom elements)",
+      "passes": false,
       "hitl": false,
       "verification": [
-        "Each key shows request count, bytes saved, and success rate",
-        "Visual bar chart or improved progress bars",
-        "Keys sorted by usage (most used first)",
-        "Empty state handled gracefully"
+        "Generates valid Web Component class",
+        "Uses customElements.define",
+        "Renders SVG in shadow DOM",
+        "Unit test passes"
       ],
       "files": [
-        "packages/web/src/app/api/admin/stats/route.ts",
-        "packages/web/src/app/admin/stats/page.tsx"
+        "packages/shared/src/generators/web-component.ts",
+        "packages/shared/src/__tests__/generators.test.ts"
       ]
+    },
+    {
+      "id": "2.5",
+      "phase": 2,
+      "title": "Add format selector to editor",
+      "description": "Add dropdown to select output format (Raw SVG, React, Vue, Svelte, Web Component)",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Dropdown renders with all options",
+        "Selecting format changes output code",
+        "Monaco syntax highlighting updates"
+      ],
+      "files": [
+        "packages/web/src/components/editor/format-selector.tsx",
+        "packages/web/src/app/editor/page.tsx"
+      ]
+    },
+    {
+      "id": "2.6",
+      "phase": 2,
+      "title": "Test multi-format output (HITL)",
+      "description": "Verify all output formats work correctly in editor",
+      "passes": false,
+      "hitl": true,
+      "verification": [
+        "Raw SVG output is valid",
+        "React component is valid JSX",
+        "Vue SFC is valid",
+        "Svelte component is valid",
+        "Web Component is valid"
+      ],
+      "files": []
     },
     {
       "id": "3.1",
       "phase": 3,
-      "title": "Add time period selector",
-      "description": "Allow users to select different time periods for the charts (7 days, 30 days, 90 days, all time).",
-      "passes": true,
+      "title": "Add drag & drop upload zone",
+      "description": "Add dropzone component to editor that accepts SVG file drops",
+      "passes": false,
       "hitl": false,
       "verification": [
-        "Dropdown/tabs to select time period",
-        "Charts update when period changes",
-        "Stat cards reflect selected period",
-        "URL state persists selection (optional)"
+        "Dropzone renders with visual indicator",
+        "Dropping SVG file loads content",
+        "Shows error for non-SVG files",
+        "Multiple files show batch options"
       ],
-      "files": ["packages/web/src/app/admin/stats/page.tsx", "packages/web/src/hooks/use-stats.ts"]
+      "files": ["packages/web/src/components/editor/dropzone.tsx"]
     },
     {
       "id": "3.2",
       "phase": 3,
-      "title": "Add recent requests table",
-      "description": "Add a table showing recent API requests with details: timestamp, filename, original size, optimized size, savings percentage, success status.",
-      "passes": true,
+      "title": "Add clipboard paste support",
+      "description": "Handle Ctrl+V to paste SVG from clipboard directly into editor",
+      "passes": false,
       "hitl": false,
       "verification": [
-        "Table shows last 10-20 requests",
-        "Columns: time, filename, original, optimized, saved %, status",
-        "Pagination or 'load more' for older requests",
-        "Empty state if no requests"
+        "Pasting SVG content works",
+        "Focus handling is correct",
+        "Works alongside normal editor input"
+      ],
+      "files": ["packages/web/src/app/editor/page.tsx"]
+    },
+    {
+      "id": "3.3",
+      "phase": 3,
+      "title": "Add copy buttons for output",
+      "description": "Add one-click copy buttons for output code in each format",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Copy button visible on output panel",
+        "Clicking copies to clipboard",
+        "Shows success feedback"
+      ],
+      "files": ["packages/web/src/app/editor/page.tsx"]
+    },
+    {
+      "id": "3.4",
+      "phase": 3,
+      "title": "Install and configure next-themes",
+      "description": "Add next-themes package for dark/light mode support",
+      "passes": false,
+      "hitl": false,
+      "verification": ["Package installed", "ThemeProvider wraps app", "No hydration errors"],
+      "files": ["packages/web/package.json", "packages/web/src/app/layout.tsx"]
+    },
+    {
+      "id": "3.5",
+      "phase": 3,
+      "title": "Add theme toggle component",
+      "description": "Create theme toggle button with sun/moon icons",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Toggle renders in header",
+        "Clicking toggles theme",
+        "System preference option available",
+        "Preference persists across sessions"
+      ],
+      "files": [
+        "packages/web/src/components/theme-toggle.tsx",
+        "packages/web/src/components/admin/admin-header.tsx"
+      ]
+    },
+    {
+      "id": "3.6",
+      "phase": 3,
+      "title": "Update CSS for light mode",
+      "description": "Add CSS variables and styles for light mode theme",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Light mode colors defined",
+        "All pages look good in light mode",
+        "Charts and graphs visible in both modes"
+      ],
+      "files": ["packages/web/src/app/globals.css"]
+    },
+    {
+      "id": "3.7",
+      "phase": 3,
+      "title": "Test UX improvements (HITL)",
+      "description": "Manual verification of drag-drop, clipboard, copy, and theme toggle",
+      "passes": false,
+      "hitl": true,
+      "verification": [
+        "Drag & drop works",
+        "Paste works",
+        "Copy buttons work",
+        "Theme toggle works in both modes"
+      ],
+      "files": []
+    },
+    {
+      "id": "4.1",
+      "phase": 4,
+      "title": "Create cache utility with content hashing",
+      "description": "Create cache module that hashes SVG content + options for cache key",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Hash function produces consistent keys",
+        "Same content + options = same hash",
+        "Different options = different hash"
+      ],
+      "files": ["packages/web/src/lib/cache.ts"]
+    },
+    {
+      "id": "4.2",
+      "phase": 4,
+      "title": "Add in-memory cache layer to API",
+      "description": "Add LRU cache to optimize endpoint, check cache before processing",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Cache hit returns immediately",
+        "Cache miss processes and stores result",
+        "Cache has size limit",
+        "Response includes cache-hit header"
+      ],
+      "files": ["packages/web/src/app/api/v1/optimize/route.ts"]
+    },
+    {
+      "id": "4.3",
+      "phase": 4,
+      "title": "Add cache stats to admin dashboard",
+      "description": "Show cache hit rate and size in stats page",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Cache stats endpoint exists",
+        "Stats page shows cache metrics",
+        "Hit rate displayed as percentage"
       ],
       "files": [
         "packages/web/src/app/api/admin/stats/route.ts",
@@ -156,19 +386,166 @@
       ]
     },
     {
-      "id": "4.1",
-      "phase": 4,
-      "title": "Test locally and verify all features work",
-      "description": "Start local dev server, navigate to stats page, verify all cards show correct data, charts render, and interactions work.",
-      "passes": true,
+      "id": "5.1",
+      "phase": 5,
+      "title": "Create SVG validator module",
+      "description": "Create validator that checks for common SVG issues and accessibility",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Checks for missing <title>",
+        "Checks for missing <desc>",
+        "Checks for inline styles",
+        "Returns array of warnings"
+      ],
+      "files": ["packages/shared/src/validator.ts"]
+    },
+    {
+      "id": "5.2",
+      "phase": 5,
+      "title": "Add validation panel to editor",
+      "description": "Show validation warnings in editor UI",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Warnings panel renders",
+        "Warnings update when SVG changes",
+        "Color-coded by severity"
+      ],
+      "files": ["packages/web/src/components/editor/validation-panel.tsx"]
+    },
+    {
+      "id": "5.3",
+      "phase": 5,
+      "title": "Test validator (HITL)",
+      "description": "Verify validator catches real issues in sample SVGs",
+      "passes": false,
       "hitl": true,
       "verification": [
-        "Stat cards show accurate numbers",
-        "Time-series chart renders with data",
-        "Success/error breakdown displays",
-        "API key breakdown shows correct percentages",
-        "Time period selector works",
-        "Recent requests table loads"
+        "Missing title detected",
+        "Inline styles detected",
+        "Valid SVGs show no warnings"
+      ],
+      "files": []
+    },
+    {
+      "id": "6.1",
+      "phase": 6,
+      "title": "Install sharp and resvg-js dependencies",
+      "description": "Add image processing dependencies for SVG to raster conversion",
+      "passes": false,
+      "hitl": false,
+      "verification": ["sharp installed", "@resvg/resvg-js installed", "Build passes"],
+      "files": ["packages/web/package.json"]
+    },
+    {
+      "id": "6.2",
+      "phase": 6,
+      "title": "Create SVG to PNG/WebP converter module",
+      "description": "Create converter that renders SVG to raster formats",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Converts to PNG",
+        "Converts to WebP",
+        "Supports multiple sizes (1x, 2x, 3x)",
+        "Quality settings work"
+      ],
+      "files": ["packages/shared/src/converter.ts"]
+    },
+    {
+      "id": "6.3",
+      "phase": 6,
+      "title": "Create /api/v1/convert endpoint",
+      "description": "API endpoint to convert SVG to raster format",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "POST endpoint works",
+        "Accepts SVG content and options",
+        "Returns image buffer with correct content-type",
+        "Authenticated with API key"
+      ],
+      "files": ["packages/web/src/app/api/v1/convert/route.ts"]
+    },
+    {
+      "id": "6.4",
+      "phase": 6,
+      "title": "Add export options to editor",
+      "description": "Add buttons to export optimized SVG as PNG/WebP",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Export dropdown in editor",
+        "PNG download works",
+        "WebP download works",
+        "Size options available"
+      ],
+      "files": ["packages/web/src/app/editor/page.tsx"]
+    },
+    {
+      "id": "6.5",
+      "phase": 6,
+      "title": "Test converter (HITL)",
+      "description": "Verify PNG/WebP conversion works correctly",
+      "passes": false,
+      "hitl": true,
+      "verification": [
+        "PNG renders correctly",
+        "WebP renders correctly",
+        "2x size is double dimensions",
+        "Quality affects file size"
+      ],
+      "files": []
+    },
+    {
+      "id": "7.1",
+      "phase": 7,
+      "title": "Add webhookUrl field to ApiKey model",
+      "description": "Add optional webhook URL to API key schema for notifications",
+      "passes": false,
+      "hitl": false,
+      "verification": ["Schema migration created", "Field nullable", "Migration runs successfully"],
+      "files": ["packages/web/prisma/schema.prisma"]
+    },
+    {
+      "id": "7.2",
+      "phase": 7,
+      "title": "Create webhook dispatcher",
+      "description": "Create module to fire webhooks on optimization events",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Fires POST to webhook URL",
+        "Includes optimization stats in payload",
+        "Handles failures gracefully",
+        "Timeout prevents blocking"
+      ],
+      "files": ["packages/web/src/lib/webhooks.ts"]
+    },
+    {
+      "id": "7.3",
+      "phase": 7,
+      "title": "Add webhook URL to API key form",
+      "description": "Allow users to configure webhook URL when creating/editing API keys",
+      "passes": false,
+      "hitl": false,
+      "verification": ["Input field in API key form", "URL validation", "Saves to database"],
+      "files": ["packages/web/src/app/admin/keys/page.tsx"]
+    },
+    {
+      "id": "7.4",
+      "phase": 7,
+      "title": "Final integration test (HITL)",
+      "description": "Full end-to-end verification of all new features",
+      "passes": false,
+      "hitl": true,
+      "verification": [
+        "Editor works with all formats",
+        "Caching improves response time",
+        "Validator catches issues",
+        "Converter exports work",
+        "Webhooks fire correctly"
       ],
       "files": []
     }

@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { existsSync, readFileSync } from "fs";
-import { join } from "path";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
  * This test verifies that all API endpoints referenced by hooks actually exist.
@@ -21,11 +25,14 @@ const HOOK_API_DEPENDENCIES = {
   ],
 };
 
+// Get the packages/web/src directory (go up from __tests__)
+const WEB_SRC_DIR = join(__dirname, "..");
+
 // Convert API path to file system path
 function apiPathToFilePath(apiPath: string): string {
   // Remove /api prefix and convert to file path
   const relativePath = apiPath.replace("/api/", "");
-  return join(process.cwd(), "src/app/api", relativePath);
+  return join(WEB_SRC_DIR, "app/api", relativePath);
 }
 
 // Check if an API route exists
