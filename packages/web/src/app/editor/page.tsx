@@ -26,6 +26,105 @@ const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
 
 const DEBOUNCE_MS = 300;
 
+// Map of SVG attributes that need camelCase conversion for JSX
+const SVG_ATTR_CAMEL_CASE_MAP: Record<string, string> = {
+  "accent-height": "accentHeight",
+  "alignment-baseline": "alignmentBaseline",
+  "arabic-form": "arabicForm",
+  "baseline-shift": "baselineShift",
+  "cap-height": "capHeight",
+  "clip-path": "clipPath",
+  "clip-rule": "clipRule",
+  "color-interpolation": "colorInterpolation",
+  "color-interpolation-filters": "colorInterpolationFilters",
+  "color-profile": "colorProfile",
+  "color-rendering": "colorRendering",
+  "dominant-baseline": "dominantBaseline",
+  "enable-background": "enableBackground",
+  "fill-opacity": "fillOpacity",
+  "fill-rule": "fillRule",
+  "flood-color": "floodColor",
+  "flood-opacity": "floodOpacity",
+  "font-family": "fontFamily",
+  "font-size": "fontSize",
+  "font-size-adjust": "fontSizeAdjust",
+  "font-stretch": "fontStretch",
+  "font-style": "fontStyle",
+  "font-variant": "fontVariant",
+  "font-weight": "fontWeight",
+  "glyph-name": "glyphName",
+  "glyph-orientation-horizontal": "glyphOrientationHorizontal",
+  "glyph-orientation-vertical": "glyphOrientationVertical",
+  "horiz-adv-x": "horizAdvX",
+  "horiz-origin-x": "horizOriginX",
+  "image-rendering": "imageRendering",
+  "letter-spacing": "letterSpacing",
+  "lighting-color": "lightingColor",
+  "marker-end": "markerEnd",
+  "marker-mid": "markerMid",
+  "marker-start": "markerStart",
+  "overline-position": "overlinePosition",
+  "overline-thickness": "overlineThickness",
+  "paint-order": "paintOrder",
+  "panose-1": "panose1",
+  "pointer-events": "pointerEvents",
+  "rendering-intent": "renderingIntent",
+  "shape-rendering": "shapeRendering",
+  "stop-color": "stopColor",
+  "stop-opacity": "stopOpacity",
+  "strikethrough-position": "strikethroughPosition",
+  "strikethrough-thickness": "strikethroughThickness",
+  "stroke-dasharray": "strokeDasharray",
+  "stroke-dashoffset": "strokeDashoffset",
+  "stroke-linecap": "strokeLinecap",
+  "stroke-linejoin": "strokeLinejoin",
+  "stroke-miterlimit": "strokeMiterlimit",
+  "stroke-opacity": "strokeOpacity",
+  "stroke-width": "strokeWidth",
+  "text-anchor": "textAnchor",
+  "text-decoration": "textDecoration",
+  "text-rendering": "textRendering",
+  "underline-position": "underlinePosition",
+  "underline-thickness": "underlineThickness",
+  "unicode-bidi": "unicodeBidi",
+  "unicode-range": "unicodeRange",
+  "units-per-em": "unitsPerEm",
+  "v-alphabetic": "vAlphabetic",
+  "v-hanging": "vHanging",
+  "v-ideographic": "vIdeographic",
+  "v-mathematical": "vMathematical",
+  "vert-adv-y": "vertAdvY",
+  "vert-origin-x": "vertOriginX",
+  "vert-origin-y": "vertOriginY",
+  "word-spacing": "wordSpacing",
+  "writing-mode": "writingMode",
+  "x-height": "xHeight",
+  "xlink:actuate": "xlinkActuate",
+  "xlink:arcrole": "xlinkArcrole",
+  "xlink:href": "xlinkHref",
+  "xlink:role": "xlinkRole",
+  "xlink:show": "xlinkShow",
+  "xlink:title": "xlinkTitle",
+  "xlink:type": "xlinkType",
+  "xml:base": "xmlBase",
+  "xml:lang": "xmlLang",
+  "xml:space": "xmlSpace",
+  "xmlns:xlink": "xmlnsXlink",
+};
+
+/**
+ * Convert SVG attribute names from kebab-case to camelCase for JSX
+ */
+function convertSvgToCamelCase(svg: string): string {
+  let result = svg;
+  for (const [kebab, camel] of Object.entries(SVG_ATTR_CAMEL_CASE_MAP)) {
+    // Match attribute="value" or attribute='value' patterns
+    const regex = new RegExp(`(\\s)${kebab}(=)`, "g");
+    result = result.replace(regex, `$1${camel}$2`);
+  }
+  return result;
+}
+
 interface OptimizationStats {
   originalSize: number;
   optimizedSize: number;
@@ -95,26 +194,29 @@ export default function EditorPage() {
     if (!outputSvg || error) return outputSvg;
 
     const componentName = filenameToComponentName("SvgIcon.svg");
+    // Convert to camelCase only for component formats (not raw SVG)
+    const camelCaseSvg = convertSvgToCamelCase(outputSvg);
 
     try {
       switch (outputFormat) {
         case "react": {
-          const result = generateReactComponent(outputSvg, { componentName });
+          const result = generateReactComponent(camelCaseSvg, { componentName });
           return result.code;
         }
         case "vue": {
-          const result = generateVueComponent(outputSvg, { componentName });
+          const result = generateVueComponent(camelCaseSvg, { componentName });
           return result.code;
         }
         case "svelte": {
-          const result = generateSvelteComponent(outputSvg, { componentName });
+          const result = generateSvelteComponent(camelCaseSvg, { componentName });
           return result.code;
         }
         case "web-component": {
-          const result = generateWebComponent(outputSvg, { componentName });
+          const result = generateWebComponent(camelCaseSvg, { componentName });
           return result.code;
         }
         default:
+          // Raw SVG - keep original kebab-case attributes for browser compatibility
           return outputSvg;
       }
     } catch {
@@ -182,7 +284,7 @@ export default function EditorPage() {
         const response = await fetch("/api/public/optimize", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content: trimmedInput, camelCase: true }),
+          body: JSON.stringify({ content: trimmedInput, camelCase: false }),
           signal: controller.signal,
         });
 
