@@ -30,9 +30,18 @@ export interface UserStats {
   keyStats: KeyStat[];
 }
 
+export interface CacheStats {
+  hits: number;
+  misses: number;
+  size: number;
+  maxSize: number;
+  hitRate: string;
+}
+
 export interface Stats {
   global: GlobalStats;
   user: UserStats;
+  cache: CacheStats;
 }
 
 export interface TimeSeriesDataPoint {

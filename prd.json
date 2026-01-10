@@ -344,7 +344,7 @@
       "phase": 4,
       "title": "Create cache utility with content hashing",
       "description": "Create cache module that hashes SVG content + options for cache key",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Hash function produces consistent keys",
@@ -358,7 +358,7 @@
       "phase": 4,
       "title": "Add in-memory cache layer to API",
       "description": "Add LRU cache to optimize endpoint, check cache before processing",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Cache hit returns immediately",
@@ -373,7 +373,7 @@
       "phase": 4,
       "title": "Add cache stats to admin dashboard",
       "description": "Show cache hit rate and size in stats page",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Cache stats endpoint exists",

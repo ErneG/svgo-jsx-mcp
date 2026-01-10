@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { optimizeSvg } from "@svgo-jsx/shared";
+import { svgCache } from "@/lib/cache";
 
 export async function POST(request: NextRequest) {
   // 1. Validate API key
@@ -59,9 +60,58 @@ export async function POST(request: NextRequest) {
   }
 
   const originalSize = Buffer.byteLength(body.content, "utf8");
+  const cacheOptions = { camelCase: body.camelCase ?? true };
+
+  // 4. Check cache first
+  const cachedEntry = svgCache.get(body.content, cacheOptions);
+  if (cachedEntry) {
+    // Log cached request (still count it)
+    await prisma.request.create({
+      data: {
+        apiKeyId: key.id,
+        filename: body.filename || null,
+        originalSize: cachedEntry.originalSize,
+        optimizedSize: cachedEntry.optimizedSize,
+        savedBytes: cachedEntry.originalSize - cachedEntry.optimizedSize,
+        camelCase: cacheOptions.camelCase,
+        success: true,
+      },
+    });
+
+    // Update global stats
+    await prisma.stats.upsert({
+      where: { id: "global" },
+      create: {
+        id: "global",
+        totalRequests: 1,
+        totalBytesSaved: BigInt(cachedEntry.originalSize - cachedEntry.optimizedSize),
+        successCount: 1,
+        errorCount: 0,
+      },
+      update: {
+        totalRequests: { increment: 1 },
+        totalBytesSaved: { increment: cachedEntry.originalSize - cachedEntry.optimizedSize },
+        successCount: { increment: 1 },
+      },
+    });
+
+    const response = NextResponse.json({
+      success: true,
+      result: cachedEntry.result,
+      optimization: {
+        originalSize: cachedEntry.originalSize,
+        optimizedSize: cachedEntry.optimizedSize,
+        savedBytes: cachedEntry.originalSize - cachedEntry.optimizedSize,
+        savedPercent: `${(((cachedEntry.originalSize - cachedEntry.optimizedSize) / cachedEntry.originalSize) * 100).toFixed(1)}%`,
+      },
+      camelCaseApplied: cacheOptions.camelCase,
+    });
+    response.headers.set("X-Cache", "HIT");
+    return response;
+  }
 
   try {
-    // 4. Optimize SVG
+    // 5. Optimize SVG (cache miss)
     const result = optimizeSvg({
       content: body.content,
       filename: body.filename,
@@ -70,7 +120,14 @@ export async function POST(request: NextRequest) {
       maxSize: 1024 * 1024, // 1MB limit
     });
 
-    // 5. Log request
+    // 6. Store in cache
+    svgCache.set(body.content, cacheOptions, {
+      result: result.result,
+      originalSize: result.optimization.originalSize,
+      optimizedSize: result.optimization.optimizedSize,
+    });
+
+    // 7. Log request
     await prisma.request.create({
       data: {
         apiKeyId: key.id,
@@ -83,7 +140,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 6. Update global stats
+    // 8. Update global stats
     await prisma.stats.upsert({
       where: { id: "global" },
       create: {
@@ -100,7 +157,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(result);
+    const response = NextResponse.json(result);
+    response.headers.set("X-Cache", "MISS");
+    return response;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
 

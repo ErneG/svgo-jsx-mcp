@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   XCircle,
   ChevronRight,
+  Database,
 } from "lucide-react";
 import { useStats, useTimeSeries, useRecentRequests } from "@/hooks/use-stats";
 import { formatBytes } from "@/lib/utils";
@@ -118,6 +119,9 @@ export default function StatsPage() {
   const last24hRequests = stats?.user?.last24Hours?.requests ?? 0;
   const avgOptimization = stats?.user?.averageOptimizationPercent ?? "0";
 
+  // Cache stats
+  const cacheStats = stats?.cache;
+
   const successRate = totalRequests > 0 ? ((successCount / totalRequests) * 100).toFixed(1) : "0";
 
   const selectedPeriod = TIME_PERIODS.find((p) => p.days === selectedDays) ?? TIME_PERIODS[0];
@@ -150,9 +154,10 @@ export default function StatsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
         {isLoading ? (
           <>
+            <StatCardSkeleton />
             <StatCardSkeleton />
             <StatCardSkeleton />
             <StatCardSkeleton />
@@ -195,6 +200,13 @@ export default function StatsPage() {
               description="Failed requests"
               icon={<AlertCircle className="h-4 w-4 text-[rgb(var(--destructive))]" />}
               iconBgColor="bg-[rgb(var(--destructive))]/10"
+            />
+            <StatCard
+              title="Cache Hit Rate"
+              value={cacheStats?.hitRate ?? "0%"}
+              description={`${cacheStats?.size ?? 0}/${cacheStats?.maxSize ?? 1000} entries`}
+              icon={<Database className="h-4 w-4 text-violet-500" />}
+              iconBgColor="bg-violet-500/10"
             />
           </>
         )}

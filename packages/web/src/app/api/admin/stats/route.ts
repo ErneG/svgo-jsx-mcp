@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
+import { svgCache } from "@/lib/cache";
 
 async function getSession() {
   const session = await auth.api.getSession({
@@ -115,6 +116,9 @@ export async function GET(request: NextRequest) {
       ? ((Number(totalBytesSaved) / Number(totalOriginalSize)) * 100).toFixed(1)
       : "0";
 
+  // Get cache stats
+  const cacheStats = svgCache.getStats();
+
   return NextResponse.json({
     // Keep global for backward compatibility (same as user stats for now)
     global: {
@@ -150,5 +154,6 @@ export async function GET(request: NextRequest) {
         };
       }),
     },
+    cache: cacheStats,
   });
 }
