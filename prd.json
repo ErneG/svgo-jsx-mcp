@@ -52,7 +52,7 @@
       "phase": 1,
       "title": "Build split-pane editor layout",
       "description": "Create left/right split pane with input editor on left, output on right",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Two-column layout renders",
