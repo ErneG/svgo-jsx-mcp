@@ -26,6 +26,7 @@ export async function GET() {
       name: true,
       enabled: true,
       rateLimit: true,
+      webhookUrl: true,
       createdAt: true,
       _count: {
         select: { requests: true },
@@ -40,6 +41,7 @@ export async function GET() {
       name: k.name,
       enabled: k.enabled,
       rateLimit: k.rateLimit,
+      webhookUrl: k.webhookUrl,
       createdAt: k.createdAt.toISOString(),
       requestCount: k._count.requests,
     }))
@@ -52,11 +54,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: { name?: string; rateLimit?: number };
+  let body: { name?: string; rateLimit?: number; webhookUrl?: string };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  // Validate webhook URL if provided
+  if (body.webhookUrl) {
+    try {
+      const url = new URL(body.webhookUrl);
+      const isHttps = url.protocol === "https:";
+      const isLocalhost =
+        url.protocol === "http:" && (url.hostname === "localhost" || url.hostname === "127.0.0.1");
+      if (!isHttps && !isLocalhost) {
+        return NextResponse.json(
+          { error: "Webhook URL must use HTTPS (or HTTP for localhost)" },
+          { status: 400 }
+        );
+      }
+    } catch {
+      return NextResponse.json({ error: "Invalid webhook URL" }, { status: 400 });
+    }
   }
 
   const key = `sk_${randomBytes(24).toString("hex")}`;
@@ -66,6 +86,7 @@ export async function POST(request: NextRequest) {
       key,
       name: body.name || null,
       rateLimit: body.rateLimit || 100,
+      webhookUrl: body.webhookUrl || null,
       userId: session.user.id,
     },
   });
@@ -76,6 +97,7 @@ export async function POST(request: NextRequest) {
     name: apiKey.name,
     enabled: apiKey.enabled,
     rateLimit: apiKey.rateLimit,
+    webhookUrl: apiKey.webhookUrl,
     createdAt: apiKey.createdAt.toISOString(),
     requestCount: 0,
   });

@@ -32,17 +32,38 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  let body: { enabled?: boolean; rateLimit?: number; name?: string };
+  let body: { enabled?: boolean; rateLimit?: number; name?: string; webhookUrl?: string | null };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  // Validate webhook URL if provided (and not being cleared)
+  if (body.webhookUrl !== undefined && body.webhookUrl !== null && body.webhookUrl !== "") {
+    try {
+      const url = new URL(body.webhookUrl);
+      const isHttps = url.protocol === "https:";
+      const isLocalhost =
+        url.protocol === "http:" && (url.hostname === "localhost" || url.hostname === "127.0.0.1");
+      if (!isHttps && !isLocalhost) {
+        return NextResponse.json(
+          { error: "Webhook URL must use HTTPS (or HTTP for localhost)" },
+          { status: 400 }
+        );
+      }
+    } catch {
+      return NextResponse.json({ error: "Invalid webhook URL" }, { status: 400 });
+    }
+  }
+
   const updateData: Record<string, unknown> = {};
   if (typeof body.enabled === "boolean") updateData.enabled = body.enabled;
   if (typeof body.rateLimit === "number") updateData.rateLimit = body.rateLimit;
   if (typeof body.name === "string") updateData.name = body.name;
+  if (body.webhookUrl !== undefined) {
+    updateData.webhookUrl = body.webhookUrl === "" ? null : body.webhookUrl;
+  }
 
   const apiKey = await prisma.apiKey.update({
     where: { id },
@@ -60,6 +81,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     name: apiKey.name,
     enabled: apiKey.enabled,
     rateLimit: apiKey.rateLimit,
+    webhookUrl: apiKey.webhookUrl,
     createdAt: apiKey.createdAt.toISOString(),
     requestCount: apiKey._count.requests,
   });

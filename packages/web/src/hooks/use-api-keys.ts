@@ -6,6 +6,7 @@ export interface ApiKey {
   name: string | null;
   enabled: boolean;
   rateLimit: number;
+  webhookUrl: string | null;
   createdAt: string;
   requestCount: number;
 }
@@ -13,12 +14,14 @@ export interface ApiKey {
 export interface CreateApiKeyInput {
   name?: string;
   rateLimit?: number;
+  webhookUrl?: string;
 }
 
 export interface UpdateApiKeyInput {
   enabled?: boolean;
   rateLimit?: number;
   name?: string;
+  webhookUrl?: string | null;
 }
 
 export function useApiKeys() {

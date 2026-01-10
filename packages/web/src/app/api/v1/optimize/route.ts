@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { optimizeSvg } from "@svgo-jsx/shared";
 import { svgCache } from "@/lib/cache";
+import { createOptimizationPayload, fireWebhookAsync } from "@/lib/webhooks";
 
 export async function POST(request: NextRequest) {
   // 1. Validate API key
@@ -95,6 +96,22 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Fire webhook if configured (async, non-blocking)
+    if (key.webhookUrl) {
+      const payload = createOptimizationPayload(
+        {
+          filename: body.filename,
+          originalSize: cachedEntry.originalSize,
+          optimizedSize: cachedEntry.optimizedSize,
+          savedBytes: cachedEntry.originalSize - cachedEntry.optimizedSize,
+          camelCase: cacheOptions.camelCase,
+          success: true,
+        },
+        { id: key.id, name: key.name }
+      );
+      fireWebhookAsync(key.webhookUrl, payload);
+    }
+
     const response = NextResponse.json({
       success: true,
       result: cachedEntry.result,
@@ -157,6 +174,22 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Fire webhook if configured (async, non-blocking)
+    if (key.webhookUrl) {
+      const payload = createOptimizationPayload(
+        {
+          filename: body.filename,
+          originalSize: result.optimization.originalSize,
+          optimizedSize: result.optimization.optimizedSize,
+          savedBytes: result.optimization.savedBytes,
+          camelCase: result.camelCaseApplied,
+          success: true,
+        },
+        { id: key.id, name: key.name }
+      );
+      fireWebhookAsync(key.webhookUrl, payload);
+    }
+
     const response = NextResponse.json(result);
     response.headers.set("X-Cache", "MISS");
     return response;
@@ -192,6 +225,23 @@ export async function POST(request: NextRequest) {
         errorCount: { increment: 1 },
       },
     });
+
+    // Fire webhook for error if configured (async, non-blocking)
+    if (key.webhookUrl) {
+      const payload = createOptimizationPayload(
+        {
+          filename: body.filename,
+          originalSize,
+          optimizedSize: 0,
+          savedBytes: 0,
+          camelCase: body.camelCase ?? true,
+          success: false,
+          errorMessage,
+        },
+        { id: key.id, name: key.name }
+      );
+      fireWebhookAsync(key.webhookUrl, payload);
+    }
 
     return NextResponse.json({ success: false, error: errorMessage }, { status: 400 });
   }

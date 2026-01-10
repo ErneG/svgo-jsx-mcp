@@ -68,13 +68,14 @@ model Verification {
 // ============================================
 
 model ApiKey {
-  id        String    @id @default(cuid())
-  key       String    @unique
-  name      String?
-  enabled   Boolean   @default(true)
-  rateLimit Int       @default(100)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id         String    @id @default(cuid())
+  key        String    @unique
+  name       String?
+  enabled    Boolean   @default(true)
+  rateLimit  Int       @default(100)
+  webhookUrl String?   // Optional URL to receive webhook notifications on optimization events
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   // Link to user who created it (optional for migrated keys)
   userId    String?

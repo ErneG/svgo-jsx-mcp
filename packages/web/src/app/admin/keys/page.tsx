@@ -1,7 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Copy, Check, Trash2, ToggleLeft, ToggleRight, Key, Loader2 } from "lucide-react";
+import {
+  Plus,
+  Copy,
+  Check,
+  Trash2,
+  ToggleLeft,
+  ToggleRight,
+  Key,
+  Loader2,
+  Webhook,
+  Pencil,
+} from "lucide-react";
 import {
   useApiKeys,
   useCreateApiKey,
@@ -36,7 +47,10 @@ export default function ApiKeysPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
   const [newKeyRateLimit, setNewKeyRateLimit] = useState(100);
+  const [newKeyWebhookUrl, setNewKeyWebhookUrl] = useState("");
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [editingKey, setEditingKey] = useState<string | null>(null);
+  const [editWebhookUrl, setEditWebhookUrl] = useState("");
 
   const { data: keys, isLoading, error } = useApiKeys();
   const createMutation = useCreateApiKey();
@@ -53,10 +67,26 @@ export default function ApiKeysPage() {
     await createMutation.mutateAsync({
       name: newKeyName || undefined,
       rateLimit: newKeyRateLimit,
+      webhookUrl: newKeyWebhookUrl || undefined,
     });
     setShowCreate(false);
     setNewKeyName("");
     setNewKeyRateLimit(100);
+    setNewKeyWebhookUrl("");
+  };
+
+  const handleEditWebhook = (key: { id: string; webhookUrl: string | null }) => {
+    setEditingKey(key.id);
+    setEditWebhookUrl(key.webhookUrl || "");
+  };
+
+  const handleSaveWebhook = async (id: string) => {
+    await updateMutation.mutateAsync({
+      id,
+      data: { webhookUrl: editWebhookUrl || null },
+    });
+    setEditingKey(null);
+    setEditWebhookUrl("");
   };
 
   const handleToggleKey = async (id: string, enabled: boolean) => {
@@ -123,6 +153,19 @@ export default function ApiKeysPage() {
                   max={10000}
                 />
               </div>
+              <div className="grid gap-2">
+                <Label htmlFor="webhookUrl">Webhook URL (optional)</Label>
+                <Input
+                  id="webhookUrl"
+                  type="url"
+                  value={newKeyWebhookUrl}
+                  onChange={(e) => setNewKeyWebhookUrl(e.target.value)}
+                  placeholder="https://example.com/webhook"
+                />
+                <p className="text-xs text-[rgb(var(--muted-foreground))]">
+                  Receive notifications when SVGs are optimized
+                </p>
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowCreate(false)}>
@@ -162,6 +205,7 @@ export default function ApiKeysPage() {
                   <TableHead>Name</TableHead>
                   <TableHead>API Key</TableHead>
                   <TableHead>Rate Limit</TableHead>
+                  <TableHead>Webhook</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
@@ -192,6 +236,57 @@ export default function ApiKeysPage() {
                       </div>
                     </TableCell>
                     <TableCell>{key.rateLimit}/min</TableCell>
+                    <TableCell>
+                      {editingKey === key.id ? (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="url"
+                            value={editWebhookUrl}
+                            onChange={(e) => setEditWebhookUrl(e.target.value)}
+                            placeholder="https://..."
+                            className="h-8 w-48 text-sm"
+                          />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => handleSaveWebhook(key.id)}
+                            disabled={updateMutation.isPending}
+                          >
+                            <Check className="h-4 w-4 text-emerald-500" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setEditingKey(null)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          {key.webhookUrl ? (
+                            <>
+                              <Webhook className="h-4 w-4 text-emerald-500" />
+                              <span className="text-xs text-[rgb(var(--muted-foreground))] max-w-32 truncate">
+                                {new URL(key.webhookUrl).hostname}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-xs text-[rgb(var(--muted-foreground))]">—</span>
+                          )}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => handleEditWebhook(key)}
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Badge variant={key.enabled ? "success" : "destructive"}>
                         {key.enabled ? "Active" : "Disabled"}
