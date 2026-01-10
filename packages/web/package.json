@@ -30,6 +30,8 @@
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@resvg/resvg-js": "^2.6.2",
+    "@resvg/resvg-js-darwin-arm64": "^2.6.2",
     "@svgo-jsx/shared": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@tanstack/react-form": "^1.27.7",
@@ -49,6 +51,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "recharts": "^3.6.0",
+    "sharp": "^0.34.5",
     "tailwind-merge": "^3.3.0",
     "zod": "^3.25.76"
   },

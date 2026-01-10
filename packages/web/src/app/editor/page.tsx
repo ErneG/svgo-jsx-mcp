@@ -11,6 +11,7 @@ import { SampleSelector } from "@/components/editor/sample-selector";
 import { FormatSelector } from "@/components/editor/format-selector";
 import { Dropzone } from "@/components/editor/dropzone";
 import { ValidationPanel } from "@/components/editor/validation-panel";
+import { ExportDropdown } from "@/components/editor/export-dropdown";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { SampleSvg } from "@/lib/sample-svgs";
 // Import generators directly to avoid pulling in SVGO (Node.js only)
@@ -383,25 +384,28 @@ export default function EditorPage() {
             <CardHeader className="flex-shrink-0 pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Optimized Output</CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopyOutput}
-                  disabled={!formattedOutput || !!error}
-                  className="gap-2"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="h-4 w-4 text-green-500" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4" />
-                      Copy
-                    </>
-                  )}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <ExportDropdown svg={outputSvg} disabled={!outputSvg || !!error} />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCopyOutput}
+                    disabled={!formattedOutput || !!error}
+                    className="gap-2"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="h-4 w-4 text-green-500" />
+                        Copied!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4" />
+                        Copy
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden">
