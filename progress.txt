@@ -343,3 +343,55 @@ All 3 tasks in Phase 5 (SVG Validator) have been completed:
 
 ---
 
+### Phase 6: PNG/WebP Converter
+
+#### Task 6.1: Install sharp and resvg-js dependencies ✅
+- Installed sharp and @resvg/resvg-js via pnpm
+- Added platform-specific binary @resvg/resvg-js-darwin-arm64
+- Date: 2026-01-10
+
+#### Task 6.2: Create SVG to PNG/WebP converter module ✅
+- Created packages/web/src/lib/converter.ts
+- Uses @resvg/resvg-js for SVG rendering to PNG
+- Uses sharp for format conversion (WebP, JPEG) and quality settings
+- Supports 1x, 2x, 3x scale options
+- Returns buffer with metadata (format, width, height)
+- Date: 2026-01-10
+
+#### Task 6.3: Create /api/v1/convert endpoint ✅
+- Created /api/public/convert for public access (rate limited 30/min, 100KB max)
+- Created /api/v1/convert for authenticated access
+- Returns image binary with appropriate Content-Type header
+- Accepts SVG content, format, scale, and quality options
+- Date: 2026-01-10
+
+#### Task 6.4: Add export options to editor ✅
+- Created ExportDropdown component at packages/web/src/components/editor/export-dropdown.tsx
+- Dropdown with PNG/WebP/JPEG options at 1x/2x/3x scales
+- Added DropdownMenuLabel and DropdownMenuSeparator to dropdown-menu.tsx
+- Triggers download with appropriate filename (svg-export-{scale}.{format})
+- Date: 2026-01-10
+
+#### Task 6.5: Test converter (HITL) ✅
+- Manual verification via Playwright browser testing
+- Tested all three formats and scales:
+  - ✅ PNG (1x): 24x24 pixels, valid PNG file (169 bytes)
+  - ✅ WebP (2x): 48x48 pixels, valid WebP file (176 bytes)
+  - ✅ JPEG (1x): 24x24 pixels, valid JPEG file (613 bytes)
+  - ✅ PNG (3x): 150x150 pixels for 50x50 SVG spinner (2447 bytes)
+- Fixed native module resolution by adding serverExternalPackages to next.config.ts
+- Date: 2026-01-10
+
+---
+
+## Phase 6 COMPLETE ✅
+
+All 5 tasks in Phase 6 (PNG/WebP Converter) have been completed:
+1. sharp and resvg-js dependencies installed
+2. Converter module created with multi-format support
+3. API endpoints created (public and authenticated)
+4. Export dropdown added to editor
+5. HITL verification passed for all formats and scales
+
+---
+

@@ -433,7 +433,7 @@
       "phase": 6,
       "title": "Install sharp and resvg-js dependencies",
       "description": "Add image processing dependencies for SVG to raster conversion",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": ["sharp installed", "@resvg/resvg-js installed", "Build passes"],
       "files": ["packages/web/package.json"]
@@ -443,7 +443,7 @@
       "phase": 6,
       "title": "Create SVG to PNG/WebP converter module",
       "description": "Create converter that renders SVG to raster formats",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Converts to PNG",
@@ -458,7 +458,7 @@
       "phase": 6,
       "title": "Create /api/v1/convert endpoint",
       "description": "API endpoint to convert SVG to raster format",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "POST endpoint works",
@@ -473,7 +473,7 @@
       "phase": 6,
       "title": "Add export options to editor",
       "description": "Add buttons to export optimized SVG as PNG/WebP",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Export dropdown in editor",
@@ -488,7 +488,7 @@
       "phase": 6,
       "title": "Test converter (HITL)",
       "description": "Verify PNG/WebP conversion works correctly",
-      "passes": false,
+      "passes": true,
       "hitl": true,
       "verification": [
         "PNG renders correctly",
