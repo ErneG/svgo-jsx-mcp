@@ -548,6 +548,112 @@
         "Webhooks fire correctly"
       ],
       "files": []
+    },
+    {
+      "id": "8.1",
+      "phase": 8,
+      "title": "Install and configure next-intl",
+      "description": "Add next-intl package and configure i18n middleware for EN/LV locales",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "next-intl package installed",
+        "Middleware configured for locale detection",
+        "Default locale set to EN"
+      ],
+      "files": [
+        "packages/web/package.json",
+        "packages/web/src/middleware.ts",
+        "packages/web/src/i18n/config.ts"
+      ]
+    },
+    {
+      "id": "8.2",
+      "phase": 8,
+      "title": "Create English translation file",
+      "description": "Create EN translation JSON with all UI strings",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "EN translations file exists",
+        "All major UI strings included",
+        "Organized by page/component"
+      ],
+      "files": ["packages/web/messages/en.json"]
+    },
+    {
+      "id": "8.3",
+      "phase": 8,
+      "title": "Create Latvian translation file",
+      "description": "Create LV translation JSON with all UI strings",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "LV translations file exists",
+        "All strings translated to Latvian",
+        "Same structure as EN file"
+      ],
+      "files": ["packages/web/messages/lv.json"]
+    },
+    {
+      "id": "8.4",
+      "phase": 8,
+      "title": "Add language switcher component",
+      "description": "Create language toggle/dropdown in header to switch between EN/LV",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Language switcher renders in header",
+        "Switching changes locale",
+        "Preference persists across sessions"
+      ],
+      "files": ["packages/web/src/components/language-switcher.tsx"]
+    },
+    {
+      "id": "8.5",
+      "phase": 8,
+      "title": "Update editor page with translations",
+      "description": "Replace hardcoded strings in editor page with translated messages",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "All editor UI strings use translations",
+        "Sample names translated",
+        "Error messages translated"
+      ],
+      "files": ["packages/web/src/app/editor/page.tsx"]
+    },
+    {
+      "id": "8.6",
+      "phase": 8,
+      "title": "Update admin pages with translations",
+      "description": "Replace hardcoded strings in admin dashboard with translated messages",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Stats page translated",
+        "API keys page translated",
+        "Navigation translated"
+      ],
+      "files": [
+        "packages/web/src/app/admin/stats/page.tsx",
+        "packages/web/src/app/admin/keys/page.tsx"
+      ]
+    },
+    {
+      "id": "8.7",
+      "phase": 8,
+      "title": "Test i18n (HITL)",
+      "description": "Manual verification that language switching works correctly",
+      "passes": false,
+      "hitl": true,
+      "verification": [
+        "EN displays correctly",
+        "LV displays correctly",
+        "Language persists on refresh",
+        "All pages translated"
+      ],
+      "files": []
     }
   ]
 }

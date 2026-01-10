@@ -1,0 +1,163 @@
+{
+  "common": {
+    "back": "Atpakaļ",
+    "copy": "Kopēt",
+    "copied": "Nokopēts!",
+    "cancel": "Atcelt",
+    "save": "Saglabāt",
+    "delete": "Dzēst",
+    "create": "Izveidot",
+    "edit": "Rediģēt",
+    "loading": "Ielādē...",
+    "error": "Kļūda",
+    "success": "Veiksmīgi",
+    "actions": "Darbības"
+  },
+  "nav": {
+    "home": "Sākums",
+    "editor": "Redaktors",
+    "admin": "Administrācija",
+    "stats": "Statistika",
+    "apiKeys": "API atslēgas",
+    "signIn": "Pieslēgties",
+    "signOut": "Izrakstīties"
+  },
+  "theme": {
+    "toggle": "Mainīt tēmu",
+    "light": "Gaišs",
+    "dark": "Tumšs",
+    "system": "Sistēmas"
+  },
+  "language": {
+    "label": "Valoda",
+    "en": "English",
+    "lv": "Latviešu"
+  },
+  "editor": {
+    "title": "SVG redaktors",
+    "subtitle": "Uzlabota SVG optimizācija ar Monaco redaktoru",
+    "inputTitle": "Ievades SVG",
+    "outputTitle": "Optimizēta izvade",
+    "samples": "Paraugi",
+    "export": "Eksportēt",
+    "exportAsImage": "Eksportēt kā attēlu",
+    "optimizing": "Optimizē...",
+    "dropzone": {
+      "title": "Velciet un nometiet SVG failus",
+      "subtitle": "vai noklikšķiniet, lai pārlūkotu (maks. 500KB failam)"
+    },
+    "preview": {
+      "input": "Ievades priekšskatījums",
+      "output": "Izvades priekšskatījums",
+      "invalid": "Nederīgs SVG",
+      "empty": "SVG priekšskatījums parādīsies šeit"
+    },
+    "stats": {
+      "placeholder": "Optimizācijas statistika parādīsies pēc apstrādes",
+      "original": "Oriģināls: {size} baiti",
+      "optimized": "Optimizēts: {size} baiti",
+      "saved": "Ietaupīts: {bytes} baiti ({percent}%)"
+    },
+    "format": {
+      "svg": "Neapstrādāts SVG",
+      "react": "React",
+      "vue": "Vue",
+      "svelte": "Svelte",
+      "webComponent": "Web komponents"
+    },
+    "exportFormat": {
+      "png": "PNG (Bez zudumiem)",
+      "webp": "WebP (Mazāks izmērs)",
+      "jpeg": "JPEG (Bez caurspīdīguma)"
+    },
+    "samples": {
+      "layersIcon": "Slāņu ikona",
+      "layersIconDesc": "Vienkārša slāņota ikona",
+      "heartIcon": "Sirsniņa",
+      "heartIconDesc": "Aizpildīta sirds forma",
+      "starIcon": "Zvaigzne",
+      "starIconDesc": "5 staru zvaigzne",
+      "circlePattern": "Apļu raksts",
+      "circlePatternDesc": "Pārklājoši apļi",
+      "complexLogo": "Sarežģīts logo",
+      "complexLogoDesc": "Logo ar gradientiem un efektiem",
+      "checkBadge": "Verifikācijas nozīme",
+      "checkBadgeDesc": "Verifikācijas nozīme ar ķeksīti",
+      "arrowGroup": "Bultu grupa",
+      "arrowGroupDesc": "Vairākas virziena bultas",
+      "weatherIcon": "Laika ikona",
+      "weatherIconDesc": "Saule un mākoņi",
+      "loadingSpinner": "Ielādes indikators",
+      "loadingSpinnerDesc": "Animēts ielādes indikators",
+      "barChart": "Joslu diagramma",
+      "barChartDesc": "Vienkārša joslu diagrammas vizualizācija"
+    }
+  },
+  "validation": {
+    "title": "Validācija",
+    "issuesFound": "Atrasti {count} problēmas",
+    "noIssues": "Problēmas nav atrastas",
+    "severity": {
+      "error": "Kļūda",
+      "warning": "Brīdinājums",
+      "info": "Informācija"
+    }
+  },
+  "admin": {
+    "dashboard": "Vadības panelis",
+    "overview": "Pārskats",
+    "statistics": {
+      "title": "Statistika",
+      "subtitle": "Uzraugiet savu SVG optimizācijas lietojumu",
+      "totalRequests": "Kopējie pieprasījumi",
+      "totalBytesSaved": "Kopā ietaupītie baiti",
+      "successRate": "Veiksmīgo īpatsvars",
+      "avgOptimization": "Vid. optimizācija",
+      "cacheHitRate": "Kešatmiņas trāpījumu īpatsvars",
+      "entries": "ieraksti",
+      "period": {
+        "24h": "Pēdējās 24 stundas",
+        "7d": "Pēdējās 7 dienas",
+        "30d": "Pēdējās 30 dienas",
+        "all": "Visu laiku"
+      }
+    },
+    "apiKeys": {
+      "title": "API atslēgas",
+      "subtitle": "Pārvaldiet savas API atslēgas autentifikācijai",
+      "yourKeys": "Jūsu API atslēgas",
+      "description": "Izmantojiet šīs atslēgas API pieprasījumu autentifikācijai. Glabājiet tās drošībā.",
+      "noKeys": "Vēl nav API atslēgu",
+      "noKeysDescription": "Izveidojiet savu pirmo API atslēgu, lai sāktu.",
+      "createKey": "Izveidot atslēgu",
+      "createTitle": "Izveidot API atslēgu",
+      "createDescription": "Izveidojiet jaunu API atslēgu pieprasījumu autentifikācijai.",
+      "name": "Nosaukums (neobligāts)",
+      "namePlaceholder": "Mana lietotne",
+      "rateLimit": "Ātruma ierobežojums (pieprasījumi/min)",
+      "webhookUrl": "Webhook URL (neobligāts)",
+      "webhookUrlPlaceholder": "https://example.com/webhook",
+      "webhookDescription": "Saņemiet paziņojumus, kad SVG tiek optimizēti",
+      "status": {
+        "active": "Aktīvs",
+        "disabled": "Atspējots"
+      },
+      "columns": {
+        "name": "Nosaukums",
+        "apiKey": "API atslēga",
+        "rateLimit": "Ātruma limits",
+        "webhook": "Webhook",
+        "status": "Statuss",
+        "created": "Izveidots"
+      },
+      "confirmDelete": "Vai tiešām vēlaties dzēst šo API atslēgu?"
+    }
+  },
+  "errors": {
+    "unauthorized": "Nav autorizēts",
+    "notFound": "Nav atrasts",
+    "invalidInput": "Nederīga ievade",
+    "rateLimitExceeded": "Ātruma limits pārsniegts",
+    "serverError": "Servera kļūda"
+  }
+}

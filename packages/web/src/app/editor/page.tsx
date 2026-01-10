@@ -13,6 +13,7 @@ import { Dropzone } from "@/components/editor/dropzone";
 import { ValidationPanel } from "@/components/editor/validation-panel";
 import { ExportDropdown } from "@/components/editor/export-dropdown";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import type { SampleSvg } from "@/lib/sample-svgs";
 // Import generators directly to avoid pulling in SVGO (Node.js only)
 import type { OutputFormat } from "@svgo-jsx/shared/generators/types";
@@ -352,6 +353,7 @@ export default function EditorPage() {
                 Optimizing...
               </div>
             )}
+            <LanguageSwitcher />
             <ThemeToggle />
           </div>
         </div>
