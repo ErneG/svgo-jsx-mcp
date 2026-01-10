@@ -503,7 +503,7 @@
       "phase": 7,
       "title": "Add webhookUrl field to ApiKey model",
       "description": "Add optional webhook URL to API key schema for notifications",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": ["Schema migration created", "Field nullable", "Migration runs successfully"],
       "files": ["packages/web/prisma/schema.prisma"]
@@ -513,7 +513,7 @@
       "phase": 7,
       "title": "Create webhook dispatcher",
       "description": "Create module to fire webhooks on optimization events",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Fires POST to webhook URL",
@@ -528,7 +528,7 @@
       "phase": 7,
       "title": "Add webhook URL to API key form",
       "description": "Allow users to configure webhook URL when creating/editing API keys",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": ["Input field in API key form", "URL validation", "Saves to database"],
       "files": ["packages/web/src/app/admin/keys/page.tsx"]
@@ -538,7 +538,7 @@
       "phase": 7,
       "title": "Final integration test (HITL)",
       "description": "Full end-to-end verification of all new features",
-      "passes": false,
+      "passes": true,
       "hitl": true,
       "verification": [
         "Editor works with all formats",
