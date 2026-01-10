@@ -80,7 +80,7 @@
       "phase": 1,
       "title": "Implement real-time optimization",
       "description": "Optimize SVG on input change (debounced 300ms) using shared optimize function",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Output updates automatically",
@@ -94,7 +94,7 @@
       "phase": 1,
       "title": "Show optimization stats",
       "description": "Display bytes saved, percentage reduction, original vs optimized size",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Stats card shows original size",

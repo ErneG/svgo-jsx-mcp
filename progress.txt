@@ -73,5 +73,20 @@ All statistics panel tasks completed:
 - Integrated into both input and output panels
 - Date: 2026-01-10
 
+#### Task 1.6: Implement real-time optimization ✅
+- Created public API endpoint at /api/public/optimize (no auth required)
+- Rate limited to 60 requests/minute per IP
+- 100KB max content size for public endpoint
+- Debounced (300ms) optimization on input change
+- Loading state with spinner overlay
+- Cancels in-flight requests when input changes
+- Date: 2026-01-10
+
+#### Task 1.7: Show optimization stats ✅
+- Stats panel shows original size, optimized size, bytes saved, percentage
+- Updates automatically after each optimization
+- Shows placeholder when no optimization has occurred
+- Date: 2026-01-10
+
 ---
 

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Layers, ArrowLeft } from "lucide-react";
+import { Layers, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SvgCodeEditor } from "@/components/editor/svg-code-editor";
@@ -12,9 +12,98 @@ const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
   <path fill="currentColor" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
 </svg>`;
 
+const DEBOUNCE_MS = 300;
+
+interface OptimizationStats {
+  originalSize: number;
+  optimizedSize: number;
+  savedBytes: number;
+  savedPercent: string;
+}
+
+interface OptimizeResponse {
+  success: boolean;
+  result?: string;
+  optimization?: OptimizationStats;
+  error?: string;
+}
+
 export default function EditorPage() {
   const [inputSvg, setInputSvg] = useState(SAMPLE_SVG);
-  const [outputSvg, _setOutputSvg] = useState("");
+  const [outputSvg, setOutputSvg] = useState("");
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [stats, setStats] = useState<OptimizationStats | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Auto-optimize when input changes (debounced)
+  useEffect(() => {
+    // Clear any pending debounce
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    // Cancel any in-flight request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const trimmedInput = inputSvg.trim();
+
+    // Only optimize if input looks like SVG
+    if (!trimmedInput || (!trimmedInput.startsWith("<svg") && !trimmedInput.startsWith("<?xml"))) {
+      setOutputSvg("");
+      setStats(null);
+      setError(null);
+      return;
+    }
+
+    // Set loading state
+    setIsOptimizing(true);
+
+    // Debounce the optimization
+    debounceRef.current = setTimeout(async () => {
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
+      try {
+        const response = await fetch("/api/public/optimize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: trimmedInput, camelCase: true }),
+          signal: controller.signal,
+        });
+
+        const data: OptimizeResponse = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || "Optimization failed");
+        }
+
+        setOutputSvg(data.result || "");
+        setStats(data.optimization || null);
+        setError(null);
+      } catch (err) {
+        // Ignore abort errors
+        if (err instanceof Error && err.name === "AbortError") {
+          return;
+        }
+        setError(err instanceof Error ? err.message : "Optimization failed");
+        setOutputSvg("");
+        setStats(null);
+      } finally {
+        setIsOptimizing(false);
+      }
+    }, DEBOUNCE_MS);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [inputSvg]);
 
   return (
     <div className="min-h-screen bg-[rgb(var(--background))]">
@@ -42,6 +131,12 @@ export default function EditorPage() {
           </div>
 
           <div className="flex items-center gap-4">
+            {isOptimizing && (
+              <div className="flex items-center gap-2 text-sm text-[rgb(var(--muted-foreground))]">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Optimizing...
+              </div>
+            )}
             {/* Format selector will go here (Task 2.5) */}
             {/* Theme toggle will go here (Task 3.5) */}
           </div>
@@ -78,9 +173,17 @@ export default function EditorPage() {
             </CardHeader>
             <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden">
               {/* Monaco Editor for output (read-only) */}
-              <div className="flex-1 min-h-0 border border-[rgb(var(--border))] rounded-lg overflow-hidden">
+              <div className="flex-1 min-h-0 border border-[rgb(var(--border))] rounded-lg overflow-hidden relative">
+                {isOptimizing && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+                    <Loader2 className="h-8 w-8 animate-spin text-white" />
+                  </div>
+                )}
                 <SvgCodeEditor
-                  value={outputSvg || "// Optimized SVG will appear here..."}
+                  value={
+                    outputSvg ||
+                    (error ? `// Error: ${error}` : "// Optimized SVG will appear here...")
+                  }
                   readOnly
                   language="xml"
                 />
@@ -95,9 +198,23 @@ export default function EditorPage() {
 
         {/* Stats panel placeholder - will be added in Task 1.7 */}
         <div className="mt-4 p-4 border border-[rgb(var(--border))] rounded-lg bg-[rgb(var(--card))]">
-          <p className="text-sm text-[rgb(var(--muted-foreground))]">
-            Optimization stats will appear here after processing
-          </p>
+          {stats ? (
+            <div className="flex items-center gap-6 text-sm">
+              <span className="text-[rgb(var(--muted-foreground))]">
+                Original: {stats.originalSize} bytes
+              </span>
+              <span className="text-[rgb(var(--muted-foreground))]">
+                Optimized: {stats.optimizedSize} bytes
+              </span>
+              <span className="text-emerald-500 font-medium">
+                Saved: {stats.savedBytes} bytes ({stats.savedPercent})
+              </span>
+            </div>
+          ) : (
+            <p className="text-sm text-[rgb(var(--muted-foreground))]">
+              Optimization stats will appear here after processing
+            </p>
+          )}
         </div>
       </main>
     </div>
