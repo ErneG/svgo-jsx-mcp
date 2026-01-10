@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { Layers, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SvgCodeEditor } from "@/components/editor/svg-code-editor";
 import { SvgPreview } from "@/components/editor/svg-preview";
 import { SampleSelector } from "@/components/editor/sample-selector";
+import { FormatSelector } from "@/components/editor/format-selector";
 import type { SampleSvg } from "@/lib/sample-svgs";
+// Import generators directly to avoid pulling in SVGO (Node.js only)
+import type { OutputFormat } from "@svgo-jsx/shared/generators/types";
+import { generateReactComponent, filenameToComponentName } from "@svgo-jsx/shared/generators/react";
+import { generateVueComponent } from "@svgo-jsx/shared/generators/vue";
+import { generateSvelteComponent } from "@svgo-jsx/shared/generators/svelte";
+import { generateWebComponent } from "@svgo-jsx/shared/generators/web-component";
 
 const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
   <path fill="currentColor" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
@@ -30,12 +37,31 @@ interface OptimizeResponse {
   error?: string;
 }
 
+// Get Monaco language for format
+type EditorLanguage = "xml" | "javascript" | "typescript" | "html";
+
+function getLanguageForFormat(format: OutputFormat): EditorLanguage {
+  switch (format) {
+    case "react":
+      return "typescript";
+    case "vue":
+      return "html"; // Vue SFC is closest to HTML in Monaco
+    case "svelte":
+      return "html"; // Svelte is closest to HTML in Monaco
+    case "web-component":
+      return "typescript";
+    default:
+      return "xml";
+  }
+}
+
 export default function EditorPage() {
   const [inputSvg, setInputSvg] = useState(SAMPLE_SVG);
   const [outputSvg, setOutputSvg] = useState("");
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [stats, setStats] = useState<OptimizationStats | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>("svg");
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -43,6 +69,38 @@ export default function EditorPage() {
   const handleSampleSelect = (sample: SampleSvg) => {
     setInputSvg(sample.content);
   };
+
+  // Generate formatted output based on selected format
+  const formattedOutput = useMemo(() => {
+    if (!outputSvg || error) return outputSvg;
+
+    const componentName = filenameToComponentName("SvgIcon.svg");
+
+    try {
+      switch (outputFormat) {
+        case "react": {
+          const result = generateReactComponent(outputSvg, { componentName });
+          return result.code;
+        }
+        case "vue": {
+          const result = generateVueComponent(outputSvg, { componentName });
+          return result.code;
+        }
+        case "svelte": {
+          const result = generateSvelteComponent(outputSvg, { componentName });
+          return result.code;
+        }
+        case "web-component": {
+          const result = generateWebComponent(outputSvg, { componentName });
+          return result.code;
+        }
+        default:
+          return outputSvg;
+      }
+    } catch {
+      return outputSvg;
+    }
+  }, [outputSvg, outputFormat, error]);
 
   // Auto-optimize when input changes (debounced)
   useEffect(() => {
@@ -138,13 +196,13 @@ export default function EditorPage() {
 
           <div className="flex items-center gap-4">
             <SampleSelector onSelect={handleSampleSelect} />
+            <FormatSelector value={outputFormat} onChange={setOutputFormat} />
             {isOptimizing && (
               <div className="flex items-center gap-2 text-sm text-[rgb(var(--muted-foreground))]">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 Optimizing...
               </div>
             )}
-            {/* Format selector will go here (Task 2.5) */}
             {/* Theme toggle will go here (Task 3.5) */}
           </div>
         </div>
@@ -188,11 +246,11 @@ export default function EditorPage() {
                 )}
                 <SvgCodeEditor
                   value={
-                    outputSvg ||
+                    formattedOutput ||
                     (error ? `// Error: ${error}` : "// Optimized SVG will appear here...")
                   }
                   readOnly
-                  language="xml"
+                  language={getLanguageForFormat(outputFormat)}
                 />
               </div>
               {/* SVG Preview for output */}

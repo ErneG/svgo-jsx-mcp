@@ -9,6 +9,30 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./generators": {
+      "types": "./dist/generators/index.d.ts",
+      "import": "./dist/generators/index.js"
+    },
+    "./generators/types": {
+      "types": "./dist/generators/types.d.ts",
+      "import": "./dist/generators/types.js"
+    },
+    "./generators/react": {
+      "types": "./dist/generators/react.d.ts",
+      "import": "./dist/generators/react.js"
+    },
+    "./generators/vue": {
+      "types": "./dist/generators/vue.d.ts",
+      "import": "./dist/generators/vue.js"
+    },
+    "./generators/svelte": {
+      "types": "./dist/generators/svelte.d.ts",
+      "import": "./dist/generators/svelte.js"
+    },
+    "./generators/web-component": {
+      "types": "./dist/generators/web-component.d.ts",
+      "import": "./dist/generators/web-component.js"
     }
   },
   "scripts": {

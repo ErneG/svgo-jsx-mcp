@@ -140,7 +140,7 @@
       "phase": 2,
       "title": "Extract React generator to shared package",
       "description": "Move existing React component generation to packages/shared/src/generators/react.ts",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Generator function exists in shared package",
@@ -158,7 +158,7 @@
       "phase": 2,
       "title": "Add Vue 3 SFC generator",
       "description": "Create generator for Vue 3 Single File Components with <template> and <script setup>",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Generates valid Vue 3 SFC",
@@ -176,7 +176,7 @@
       "phase": 2,
       "title": "Add Svelte component generator",
       "description": "Create generator for Svelte components",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Generates valid Svelte component",
@@ -193,7 +193,7 @@
       "phase": 2,
       "title": "Add Web Components generator",
       "description": "Create generator for vanilla Web Components (custom elements)",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Generates valid Web Component class",
@@ -211,7 +211,7 @@
       "phase": 2,
       "title": "Add format selector to editor",
       "description": "Add dropdown to select output format (Raw SVG, React, Vue, Svelte, Web Component)",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Dropdown renders with all options",
@@ -228,7 +228,7 @@
       "phase": 2,
       "title": "Test multi-format output (HITL)",
       "description": "Verify all output formats work correctly in editor",
-      "passes": false,
+      "passes": true,
       "hitl": true,
       "verification": [
         "Raw SVG output is valid",
