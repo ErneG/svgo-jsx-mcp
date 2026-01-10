@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Upload, FileWarning, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +17,7 @@ interface FileError {
 }
 
 export function Dropzone({ onFileDrop, onMultipleFiles, className = "" }: DropzoneProps) {
+  const t = useTranslations();
   const [isDragOver, setIsDragOver] = useState(false);
   const [errors, setErrors] = useState<FileError[]>([]);
   const [pendingFiles, setPendingFiles] = useState<Array<{ content: string; filename: string }>>(
@@ -173,11 +175,9 @@ export function Dropzone({ onFileDrop, onMultipleFiles, className = "" }: Dropzo
               isDragOver ? "text-[rgb(var(--primary))]" : "text-[rgb(var(--muted-foreground))]"
             }`}
           />
-          <p className="text-sm font-medium">
-            {isDragOver ? "Drop SVG files here" : "Drag & drop SVG files"}
-          </p>
+          <p className="text-sm font-medium">{t("editor.dropzone.title")}</p>
           <p className="text-xs text-[rgb(var(--muted-foreground))]">
-            or click to browse (max 500KB per file)
+            {t("editor.dropzone.subtitle")}
           </p>
         </div>
       </div>

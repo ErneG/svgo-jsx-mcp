@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { AlertTriangle, AlertCircle, Info, CheckCircle2 } from "lucide-react";
 import {
   validateSvg,
@@ -15,29 +16,29 @@ interface ValidationPanelProps {
 
 const severityConfig: Record<
   ValidationSeverity,
-  { icon: typeof AlertCircle; color: string; bgColor: string; label: string }
+  { icon: typeof AlertCircle; color: string; bgColor: string; labelKey: string }
 > = {
   error: {
     icon: AlertCircle,
     color: "text-red-500",
     bgColor: "bg-red-500/10",
-    label: "Error",
+    labelKey: "validation.severity.error",
   },
   warning: {
     icon: AlertTriangle,
     color: "text-amber-500",
     bgColor: "bg-amber-500/10",
-    label: "Warning",
+    labelKey: "validation.severity.warning",
   },
   info: {
     icon: Info,
     color: "text-sky-500",
     bgColor: "bg-sky-500/10",
-    label: "Info",
+    labelKey: "validation.severity.info",
   },
 };
 
-function ValidationIssueItem({ issue }: { issue: ValidationIssue }) {
+function ValidationIssueItem({ issue, t }: { issue: ValidationIssue; t: (key: string) => string }) {
   const config = severityConfig[issue.severity];
   const Icon = config.icon;
 
@@ -46,7 +47,7 @@ function ValidationIssueItem({ issue }: { issue: ValidationIssue }) {
       <Icon className={`h-4 w-4 mt-0.5 flex-shrink-0 ${config.color}`} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className={`text-xs font-medium ${config.color}`}>{config.label}</span>
+          <span className={`text-xs font-medium ${config.color}`}>{t(config.labelKey)}</span>
           <span className="text-xs text-[rgb(var(--muted-foreground))] font-mono">
             {issue.code}
           </span>
@@ -61,6 +62,7 @@ function ValidationIssueItem({ issue }: { issue: ValidationIssue }) {
 }
 
 export function ValidationPanel({ svg, className = "" }: ValidationPanelProps) {
+  const t = useTranslations();
   const validation = useMemo(() => {
     if (!svg.trim()) {
       return null;
@@ -71,7 +73,7 @@ export function ValidationPanel({ svg, className = "" }: ValidationPanelProps) {
   if (!validation) {
     return (
       <div className={`p-4 text-center text-sm text-[rgb(var(--muted-foreground))] ${className}`}>
-        Enter SVG content to see validation results
+        {t("validation.title")}
       </div>
     );
   }
@@ -83,11 +85,8 @@ export function ValidationPanel({ svg, className = "" }: ValidationPanelProps) {
       <div className={`p-4 ${className}`}>
         <div className="flex items-center gap-2 text-emerald-500">
           <CheckCircle2 className="h-5 w-5" />
-          <span className="font-medium">No issues found</span>
+          <span className="font-medium">{t("validation.noIssues")}</span>
         </div>
-        <p className="text-sm text-[rgb(var(--muted-foreground))] mt-1">
-          Your SVG looks good! No accessibility or best practice issues detected.
-        </p>
       </div>
     );
   }
@@ -103,7 +102,7 @@ export function ValidationPanel({ svg, className = "" }: ValidationPanelProps) {
             <AlertCircle className="h-4 w-4 text-red-500" />
           )}
           <span className="text-sm font-medium">
-            {issues.length} {issues.length === 1 ? "issue" : "issues"} found
+            {t("validation.issuesFound", { count: issues.length })}
           </span>
         </div>
         <div className="flex items-center gap-3 text-xs">
@@ -137,7 +136,7 @@ export function ValidationPanel({ svg, className = "" }: ValidationPanelProps) {
             return order[a.severity] - order[b.severity];
           })
           .map((issue, index) => (
-            <ValidationIssueItem key={`${issue.code}-${index}`} issue={issue} />
+            <ValidationIssueItem key={`${issue.code}-${index}`} issue={issue} t={t} />
           ))}
       </div>
     </div>

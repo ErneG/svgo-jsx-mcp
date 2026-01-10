@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Layers, ArrowLeft, Loader2, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -160,6 +161,7 @@ function getLanguageForFormat(format: OutputFormat): EditorLanguage {
 }
 
 export default function EditorPage() {
+  const t = useTranslations();
   const [inputSvg, setInputSvg] = useState(SAMPLE_SVG);
   const [outputSvg, setOutputSvg] = useState("");
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -328,7 +330,7 @@ export default function EditorPage() {
             <Link href="/">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+                {t("common.back")}
               </Button>
             </Link>
             <div className="flex items-center gap-3">
@@ -336,9 +338,9 @@ export default function EditorPage() {
                 <Layers className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">SVG Editor</h1>
+                <h1 className="text-xl font-bold">{t("editor.title")}</h1>
                 <p className="text-sm text-[rgb(var(--muted-foreground))]">
-                  Advanced SVG optimization with Monaco Editor
+                  {t("editor.subtitle")}
                 </p>
               </div>
             </div>
@@ -350,7 +352,7 @@ export default function EditorPage() {
             {isOptimizing && (
               <div className="flex items-center gap-2 text-sm text-[rgb(var(--muted-foreground))]">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Optimizing...
+                {t("editor.optimizing")}
               </div>
             )}
             <LanguageSwitcher />
@@ -365,7 +367,7 @@ export default function EditorPage() {
           {/* Input panel */}
           <Card className="flex flex-col">
             <CardHeader className="flex-shrink-0 pb-2">
-              <CardTitle className="text-lg">Input SVG</CardTitle>
+              <CardTitle className="text-lg">{t("editor.inputTitle")}</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col gap-4 overflow-hidden">
               {/* Dropzone for file upload */}
@@ -376,7 +378,7 @@ export default function EditorPage() {
               </div>
               {/* SVG Preview for input */}
               <div className="h-48 border border-[rgb(var(--border))] rounded-lg overflow-hidden">
-                <SvgPreview svg={inputSvg} label="Input Preview" />
+                <SvgPreview svg={inputSvg} label={t("editor.preview.input")} />
               </div>
             </CardContent>
           </Card>
@@ -385,7 +387,7 @@ export default function EditorPage() {
           <Card className="flex flex-col">
             <CardHeader className="flex-shrink-0 pb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Optimized Output</CardTitle>
+                <CardTitle className="text-lg">{t("editor.outputTitle")}</CardTitle>
                 <div className="flex items-center gap-2">
                   <ExportDropdown svg={outputSvg} disabled={!outputSvg || !!error} />
                   <Button
@@ -398,12 +400,12 @@ export default function EditorPage() {
                     {copied ? (
                       <>
                         <Check className="h-4 w-4 text-green-500" />
-                        Copied!
+                        {t("common.copied")}
                       </>
                     ) : (
                       <>
                         <Copy className="h-4 w-4" />
-                        Copy
+                        {t("common.copy")}
                       </>
                     )}
                   </Button>
@@ -429,7 +431,7 @@ export default function EditorPage() {
               </div>
               {/* SVG Preview for output */}
               <div className="h-48 border border-[rgb(var(--border))] rounded-lg overflow-hidden">
-                <SvgPreview svg={outputSvg} label="Output Preview" />
+                <SvgPreview svg={outputSvg} label={t("editor.preview.output")} />
               </div>
             </CardContent>
           </Card>
@@ -440,18 +442,18 @@ export default function EditorPage() {
           {stats ? (
             <div className="flex items-center gap-6 text-sm">
               <span className="text-[rgb(var(--muted-foreground))]">
-                Original: {stats.originalSize} bytes
+                {t("editor.stats.original", { size: stats.originalSize })}
               </span>
               <span className="text-[rgb(var(--muted-foreground))]">
-                Optimized: {stats.optimizedSize} bytes
+                {t("editor.stats.optimized", { size: stats.optimizedSize })}
               </span>
               <span className="text-emerald-500 font-medium">
-                Saved: {stats.savedBytes} bytes ({stats.savedPercent})
+                {t("editor.stats.saved", { bytes: stats.savedBytes, percent: stats.savedPercent })}
               </span>
             </div>
           ) : (
             <p className="text-sm text-[rgb(var(--muted-foreground))]">
-              Optimization stats will appear here after processing
+              {t("editor.stats.placeholder")}
             </p>
           )}
         </div>

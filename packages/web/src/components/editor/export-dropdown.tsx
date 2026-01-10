@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Download, Loader2, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +39,7 @@ const exportOptions: ExportOption[] = [
 ];
 
 export function ExportDropdown({ svg, disabled }: ExportDropdownProps) {
+  const t = useTranslations();
   const [isExporting, setIsExporting] = useState(false);
   const [exportingLabel, setExportingLabel] = useState("");
 
@@ -92,12 +94,12 @@ export function ExportDropdown({ svg, disabled }: ExportDropdownProps) {
           {isExporting ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Exporting...
+              {t("common.loading")}
             </>
           ) : (
             <>
               <Download className="h-4 w-4 mr-2" />
-              Export
+              {t("editor.export")}
             </>
           )}
         </Button>
@@ -105,12 +107,12 @@ export function ExportDropdown({ svg, disabled }: ExportDropdownProps) {
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuLabel className="flex items-center gap-2">
           <ImageIcon className="h-4 w-4" />
-          Export as Image
+          {t("editor.exportAsImage")}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
 
         <DropdownMenuLabel className="text-xs text-[rgb(var(--muted-foreground))] font-normal">
-          PNG (Lossless)
+          {t("editor.exportFormat.png")}
         </DropdownMenuLabel>
         {exportOptions
           .filter((o) => o.format === "png")
@@ -131,7 +133,7 @@ export function ExportDropdown({ svg, disabled }: ExportDropdownProps) {
 
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-xs text-[rgb(var(--muted-foreground))] font-normal">
-          WebP (Smaller size)
+          {t("editor.exportFormat.webp")}
         </DropdownMenuLabel>
         {exportOptions
           .filter((o) => o.format === "webp")
@@ -152,7 +154,7 @@ export function ExportDropdown({ svg, disabled }: ExportDropdownProps) {
 
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-xs text-[rgb(var(--muted-foreground))] font-normal">
-          JPEG (No transparency)
+          {t("editor.exportFormat.jpeg")}
         </DropdownMenuLabel>
         {exportOptions
           .filter((o) => o.format === "jpeg")

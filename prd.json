@@ -554,7 +554,7 @@
       "phase": 8,
       "title": "Install and configure next-intl",
       "description": "Add next-intl package and configure i18n middleware for EN/LV locales",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "next-intl package installed",
@@ -572,7 +572,7 @@
       "phase": 8,
       "title": "Create English translation file",
       "description": "Create EN translation JSON with all UI strings",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "EN translations file exists",
@@ -586,7 +586,7 @@
       "phase": 8,
       "title": "Create Latvian translation file",
       "description": "Create LV translation JSON with all UI strings",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "LV translations file exists",
@@ -600,7 +600,7 @@
       "phase": 8,
       "title": "Add language switcher component",
       "description": "Create language toggle/dropdown in header to switch between EN/LV",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Language switcher renders in header",
@@ -614,7 +614,7 @@
       "phase": 8,
       "title": "Update editor page with translations",
       "description": "Replace hardcoded strings in editor page with translated messages",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "All editor UI strings use translations",
@@ -628,7 +628,7 @@
       "phase": 8,
       "title": "Update admin pages with translations",
       "description": "Replace hardcoded strings in admin dashboard with translated messages",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Stats page translated",

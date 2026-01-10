@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Plus,
   Copy,
@@ -44,6 +45,7 @@ import {
 } from "@/components/ui/table";
 
 export default function ApiKeysPage() {
+  const t = useTranslations();
   const [showCreate, setShowCreate] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
   const [newKeyRateLimit, setNewKeyRateLimit] = useState(100);
@@ -94,7 +96,7 @@ export default function ApiKeysPage() {
   };
 
   const handleDeleteKey = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this API key?")) return;
+    if (!confirm(t("admin.apiKeys.confirmDelete"))) return;
     await deleteMutation.mutateAsync(id);
   };
 
@@ -102,8 +104,8 @@ export default function ApiKeysPage() {
     return (
       <Card className="border-[rgb(var(--destructive))]">
         <CardHeader>
-          <CardTitle className="text-[rgb(var(--destructive))]">Error</CardTitle>
-          <CardDescription>Failed to load API keys. Please try again.</CardDescription>
+          <CardTitle className="text-[rgb(var(--destructive))]">{t("common.error")}</CardTitle>
+          <CardDescription>{t("errors.serverError")}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -113,37 +115,33 @@ export default function ApiKeysPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">API Keys</h1>
-          <p className="text-[rgb(var(--muted-foreground))]">
-            Manage your API keys for authentication
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("admin.apiKeys.title")}</h1>
+          <p className="text-[rgb(var(--muted-foreground))]">{t("admin.apiKeys.subtitle")}</p>
         </div>
         <Dialog open={showCreate} onOpenChange={setShowCreate}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Create Key
+              {t("admin.apiKeys.createKey")}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create API Key</DialogTitle>
-              <DialogDescription>
-                Create a new API key to authenticate your requests.
-              </DialogDescription>
+              <DialogTitle>{t("admin.apiKeys.createTitle")}</DialogTitle>
+              <DialogDescription>{t("admin.apiKeys.createDescription")}</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="name">Name (optional)</Label>
+                <Label htmlFor="name">{t("admin.apiKeys.name")}</Label>
                 <Input
                   id="name"
                   value={newKeyName}
                   onChange={(e) => setNewKeyName(e.target.value)}
-                  placeholder="My App"
+                  placeholder={t("admin.apiKeys.namePlaceholder")}
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="rateLimit">Rate Limit (requests/min)</Label>
+                <Label htmlFor="rateLimit">{t("admin.apiKeys.rateLimit")}</Label>
                 <Input
                   id="rateLimit"
                   type="number"
@@ -154,25 +152,25 @@ export default function ApiKeysPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="webhookUrl">Webhook URL (optional)</Label>
+                <Label htmlFor="webhookUrl">{t("admin.apiKeys.webhookUrl")}</Label>
                 <Input
                   id="webhookUrl"
                   type="url"
                   value={newKeyWebhookUrl}
                   onChange={(e) => setNewKeyWebhookUrl(e.target.value)}
-                  placeholder="https://example.com/webhook"
+                  placeholder={t("admin.apiKeys.webhookUrlPlaceholder")}
                 />
                 <p className="text-xs text-[rgb(var(--muted-foreground))]">
-                  Receive notifications when SVGs are optimized
+                  {t("admin.apiKeys.webhookDescription")}
                 </p>
               </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowCreate(false)}>
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button onClick={handleCreateKey} loading={createMutation.isPending}>
-                Create
+                {t("common.create")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -183,11 +181,9 @@ export default function ApiKeysPage() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-medium flex items-center gap-2">
             <Key className="h-4 w-4" />
-            Your API Keys
+            {t("admin.apiKeys.yourKeys")}
           </CardTitle>
-          <CardDescription>
-            Use these keys to authenticate API requests. Keep them secure.
-          </CardDescription>
+          <CardDescription>{t("admin.apiKeys.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -202,13 +198,13 @@ export default function ApiKeysPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>API Key</TableHead>
-                  <TableHead>Rate Limit</TableHead>
-                  <TableHead>Webhook</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t("admin.apiKeys.columns.name")}</TableHead>
+                  <TableHead>{t("admin.apiKeys.columns.apiKey")}</TableHead>
+                  <TableHead>{t("admin.apiKeys.columns.rateLimit")}</TableHead>
+                  <TableHead>{t("admin.apiKeys.columns.webhook")}</TableHead>
+                  <TableHead>{t("admin.apiKeys.columns.status")}</TableHead>
+                  <TableHead>{t("admin.apiKeys.columns.created")}</TableHead>
+                  <TableHead className="text-right">{t("common.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -289,7 +285,9 @@ export default function ApiKeysPage() {
                     </TableCell>
                     <TableCell>
                       <Badge variant={key.enabled ? "success" : "destructive"}>
-                        {key.enabled ? "Active" : "Disabled"}
+                        {key.enabled
+                          ? t("admin.apiKeys.status.active")
+                          : t("admin.apiKeys.status.disabled")}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-[rgb(var(--muted-foreground))]">
@@ -334,13 +332,13 @@ export default function ApiKeysPage() {
           ) : (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Key className="h-12 w-12 text-[rgb(var(--muted-foreground))] mb-4" />
-              <h3 className="text-lg font-medium">No API keys yet</h3>
+              <h3 className="text-lg font-medium">{t("admin.apiKeys.noKeys")}</h3>
               <p className="text-[rgb(var(--muted-foreground))] mb-4">
-                Create your first API key to get started.
+                {t("admin.apiKeys.noKeysDescription")}
               </p>
               <Button onClick={() => setShowCreate(true)}>
                 <Plus className="mr-2 h-4 w-4" />
-                Create Key
+                {t("admin.apiKeys.createKey")}
               </Button>
             </div>
           )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   TrendingUp,
   FileCheck,
@@ -81,13 +82,14 @@ function StatCardSkeleton() {
 }
 
 const TIME_PERIODS = [
-  { label: "7 days", days: 7 },
-  { label: "30 days", days: 30 },
-  { label: "90 days", days: 90 },
-  { label: "All time", days: 0 },
+  { labelKey: "admin.statistics.period.7d", days: 7 },
+  { labelKey: "admin.statistics.period.30d", days: 30 },
+  { labelKey: "admin.statistics.period.90d", days: 90 },
+  { labelKey: "admin.statistics.period.all", days: 0 },
 ] as const;
 
 export default function StatsPage() {
+  const t = useTranslations();
   const [selectedDays, setSelectedDays] = useState(7);
   const [requestsOffset, setRequestsOffset] = useState(0);
   const { data: stats, isLoading, error } = useStats(selectedDays);
@@ -102,9 +104,9 @@ export default function StatsPage() {
       <Card className="border-[rgb(var(--destructive))]">
         <CardHeader className="flex flex-col items-center text-center py-12">
           <AlertCircle className="w-12 h-12 text-[rgb(var(--destructive))] mb-4" />
-          <CardTitle className="text-[rgb(var(--destructive))]">Error Loading Stats</CardTitle>
+          <CardTitle className="text-[rgb(var(--destructive))]">{t("common.error")}</CardTitle>
           <CardDescription>
-            {error instanceof Error ? error.message : "Failed to fetch statistics"}
+            {error instanceof Error ? error.message : t("errors.serverError")}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -130,10 +132,8 @@ export default function StatsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Statistics</h1>
-          <p className="text-[rgb(var(--muted-foreground))]">
-            Overview of your API usage and performance
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("admin.statistics.title")}</h1>
+          <p className="text-[rgb(var(--muted-foreground))]">{t("admin.overview")}</p>
         </div>
 
         {/* Time Period Selector */}
@@ -147,7 +147,7 @@ export default function StatsPage() {
               onClick={() => setSelectedDays(period.days)}
               className="text-xs"
             >
-              {period.label}
+              {t(period.labelKey)}
             </Button>
           ))}
         </div>
@@ -167,44 +167,44 @@ export default function StatsPage() {
         ) : (
           <>
             <StatCard
-              title="Total Requests"
+              title={t("admin.statistics.totalRequests")}
               value={totalRequests.toLocaleString()}
-              description={`${last24hRequests.toLocaleString()} in last 24h`}
+              description={`${last24hRequests.toLocaleString()} ${t("admin.statistics.inLast24h")}`}
               icon={<TrendingUp className="h-4 w-4 text-[rgb(var(--primary))]" />}
               iconBgColor="bg-[rgb(var(--primary))]/10"
             />
             <StatCard
-              title="Bytes Saved"
+              title={t("admin.statistics.totalBytesSaved")}
               value={formatBytes(parseInt(String(totalBytesSaved), 10) || 0)}
-              description="Total savings"
+              description={t("admin.statistics.totalSavings")}
               icon={<HardDrive className="h-4 w-4 text-emerald-500" />}
               iconBgColor="bg-emerald-500/10"
             />
             <StatCard
-              title="Avg Optimization"
+              title={t("admin.statistics.avgOptimization")}
               value={`${avgOptimization}%`}
-              description="Size reduction"
+              description={t("admin.statistics.sizeReduction")}
               icon={<Percent className="h-4 w-4 text-amber-500" />}
               iconBgColor="bg-amber-500/10"
             />
             <StatCard
-              title="Success Rate"
+              title={t("admin.statistics.successRate")}
               value={`${successRate}%`}
-              description={`${successCount.toLocaleString()} successful`}
+              description={`${successCount.toLocaleString()} ${t("admin.statistics.successful")}`}
               icon={<FileCheck className="h-4 w-4 text-sky-500" />}
               iconBgColor="bg-sky-500/10"
             />
             <StatCard
-              title="Errors"
+              title={t("admin.statistics.errors")}
               value={errorCount.toLocaleString()}
-              description="Failed requests"
+              description={t("admin.statistics.failedRequests")}
               icon={<AlertCircle className="h-4 w-4 text-[rgb(var(--destructive))]" />}
               iconBgColor="bg-[rgb(var(--destructive))]/10"
             />
             <StatCard
-              title="Cache Hit Rate"
+              title={t("admin.statistics.cacheHitRate")}
               value={cacheStats?.hitRate ?? "0%"}
-              description={`${cacheStats?.size ?? 0}/${cacheStats?.maxSize ?? 1000} entries`}
+              description={`${cacheStats?.size ?? 0}/${cacheStats?.maxSize ?? 1000} ${t("admin.statistics.entries")}`}
               icon={<Database className="h-4 w-4 text-violet-500" />}
               iconBgColor="bg-violet-500/10"
             />
@@ -217,11 +217,10 @@ export default function StatsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
-            Usage Over Time
+            {t("admin.statistics.usageOverTime")}
           </CardTitle>
           <CardDescription>
-            Request volume and bytes saved{" "}
-            {selectedDays > 0 ? `over the last ${selectedPeriod.label}` : "all time"}
+            {t("admin.statistics.usageDescription")} - {t(selectedPeriod.labelKey)}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -311,8 +310,8 @@ export default function StatsPage() {
           ) : (
             <div className="h-[300px] flex flex-col items-center justify-center text-[rgb(var(--muted-foreground))]">
               <BarChart3 className="h-12 w-12 mb-4 opacity-50" />
-              <p className="text-sm">No data available yet</p>
-              <p className="text-xs">Start making API requests to see your usage trends</p>
+              <p className="text-sm">{t("admin.statistics.noDataYet")}</p>
+              <p className="text-xs">{t("admin.statistics.startMakingRequests")}</p>
             </div>
           )}
         </CardContent>
@@ -323,9 +322,9 @@ export default function StatsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <PieChartIcon className="h-5 w-5" />
-            Request Outcomes
+            {t("admin.statistics.requestOutcomes")}
           </CardTitle>
-          <CardDescription>Success vs error breakdown</CardDescription>
+          <CardDescription>{t("admin.statistics.successVsError")}</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -369,8 +368,8 @@ export default function StatsPage() {
           ) : (
             <div className="h-[200px] flex flex-col items-center justify-center text-[rgb(var(--muted-foreground))]">
               <PieChartIcon className="h-12 w-12 mb-4 opacity-50" />
-              <p className="text-sm">No requests yet</p>
-              <p className="text-xs">Start making API requests to see the breakdown</p>
+              <p className="text-sm">{t("admin.statistics.noRequestsYet")}</p>
+              <p className="text-xs">{t("admin.statistics.startMakingRequests")}</p>
             </div>
           )}
         </CardContent>
@@ -381,11 +380,9 @@ export default function StatsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Key className="h-5 w-5" />
-            Usage by API Key
+            {t("admin.statistics.usageByKey")}
           </CardTitle>
-          <CardDescription>
-            Breakdown of requests, bytes saved, and success rate per API key
-          </CardDescription>
+          <CardDescription>{t("admin.statistics.usageByKeyDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -443,9 +440,11 @@ export default function StatsPage() {
                   >
                     <div className="font-medium">{keyStat.keyName}</div>
                     <div className="flex items-center gap-4 text-[rgb(var(--muted-foreground))]">
-                      <span>{keyStat.requestCount.toLocaleString()} requests</span>
+                      <span>
+                        {keyStat.requestCount.toLocaleString()} {t("admin.statistics.requests")}
+                      </span>
                       <span className="text-emerald-500">
-                        {formatBytes(keyStat.bytesSaved)} saved
+                        {formatBytes(keyStat.bytesSaved)} {t("admin.statistics.saved")}
                       </span>
                       <span
                         className={
@@ -456,7 +455,7 @@ export default function StatsPage() {
                               : "text-red-500"
                         }
                       >
-                        {keyStat.successRate}% success
+                        {keyStat.successRate}% {t("admin.statistics.success")}
                       </span>
                     </div>
                   </div>
@@ -466,8 +465,8 @@ export default function StatsPage() {
           ) : (
             <div className="h-[200px] flex flex-col items-center justify-center text-[rgb(var(--muted-foreground))]">
               <Key className="h-12 w-12 mb-4 opacity-50" />
-              <p className="text-sm">No API keys with requests</p>
-              <p className="text-xs">Create an API key and start making requests</p>
+              <p className="text-sm">{t("admin.statistics.noKeysWithRequests")}</p>
+              <p className="text-xs">{t("admin.statistics.createKeyStart")}</p>
             </div>
           )}
         </CardContent>
@@ -478,9 +477,9 @@ export default function StatsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Table className="h-5 w-5" />
-            Recent Requests
+            {t("admin.statistics.recentRequests")}
           </CardTitle>
-          <CardDescription>Latest API requests with optimization details</CardDescription>
+          <CardDescription>{t("admin.statistics.recentRequestsDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           {isRequestsLoading ? (
@@ -492,22 +491,22 @@ export default function StatsPage() {
                   <thead>
                     <tr className="border-b border-[rgb(var(--border))]">
                       <th className="text-left py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
-                        Time
+                        {t("admin.statistics.table.time")}
                       </th>
                       <th className="text-left py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
-                        Filename
+                        {t("admin.statistics.table.filename")}
                       </th>
                       <th className="text-right py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
-                        Original
+                        {t("admin.statistics.table.original")}
                       </th>
                       <th className="text-right py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
-                        Optimized
+                        {t("admin.statistics.table.optimized")}
                       </th>
                       <th className="text-right py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
-                        Saved
+                        {t("admin.statistics.table.saved")}
                       </th>
                       <th className="text-center py-3 px-2 font-medium text-[rgb(var(--muted-foreground))]">
-                        Status
+                        {t("admin.statistics.table.status")}
                       </th>
                     </tr>
                   </thead>
@@ -550,12 +549,12 @@ export default function StatsPage() {
               {recentRequests.pagination.total > 20 && (
                 <div className="flex items-center justify-between mt-4 pt-4 border-t border-[rgb(var(--border))]">
                   <p className="text-sm text-[rgb(var(--muted-foreground))]">
-                    Showing {requestsOffset + 1} -{" "}
+                    {t("admin.statistics.table.showing")} {requestsOffset + 1} -{" "}
                     {Math.min(
                       requestsOffset + recentRequests.requests.length,
                       recentRequests.pagination.total
                     )}{" "}
-                    of {recentRequests.pagination.total}
+                    {t("admin.statistics.table.of")} {recentRequests.pagination.total}
                   </p>
                   <div className="flex gap-2">
                     <Button
@@ -564,7 +563,7 @@ export default function StatsPage() {
                       onClick={() => setRequestsOffset(Math.max(0, requestsOffset - 20))}
                       disabled={requestsOffset === 0}
                     >
-                      Previous
+                      {t("admin.statistics.table.previous")}
                     </Button>
                     <Button
                       variant="outline"
@@ -572,7 +571,7 @@ export default function StatsPage() {
                       onClick={() => setRequestsOffset(requestsOffset + 20)}
                       disabled={!recentRequests.pagination.hasMore}
                     >
-                      Next
+                      {t("admin.statistics.table.next")}
                       <ChevronRight className="h-4 w-4 ml-1" />
                     </Button>
                   </div>
@@ -582,8 +581,8 @@ export default function StatsPage() {
           ) : (
             <div className="h-[200px] flex flex-col items-center justify-center text-[rgb(var(--muted-foreground))]">
               <Table className="h-12 w-12 mb-4 opacity-50" />
-              <p className="text-sm">No requests yet</p>
-              <p className="text-xs">Start making API requests to see them here</p>
+              <p className="text-sm">{t("admin.statistics.noRequestsYet")}</p>
+              <p className="text-xs">{t("admin.statistics.startMakingRequests")}</p>
             </div>
           )}
         </CardContent>
