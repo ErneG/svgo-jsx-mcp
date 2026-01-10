@@ -6,6 +6,7 @@ import { Layers, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SvgCodeEditor } from "@/components/editor/svg-code-editor";
+import { SvgPreview } from "@/components/editor/svg-preview";
 
 const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
   <path fill="currentColor" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
@@ -60,9 +61,9 @@ export default function EditorPage() {
               <div className="flex-1 min-h-0 border border-[rgb(var(--border))] rounded-lg overflow-hidden">
                 <SvgCodeEditor value={inputSvg} onChange={setInputSvg} language="xml" />
               </div>
-              {/* SVG Preview placeholder - will be added in Task 1.5 */}
-              <div className="h-48 border border-[rgb(var(--border))] rounded-lg bg-white flex items-center justify-center">
-                <p className="text-gray-400">Input Preview</p>
+              {/* SVG Preview for input */}
+              <div className="h-48 border border-[rgb(var(--border))] rounded-lg overflow-hidden">
+                <SvgPreview svg={inputSvg} label="Input Preview" />
               </div>
             </CardContent>
           </Card>
@@ -84,9 +85,9 @@ export default function EditorPage() {
                   language="xml"
                 />
               </div>
-              {/* SVG Preview placeholder - will be added in Task 1.5 */}
-              <div className="h-48 border border-[rgb(var(--border))] rounded-lg bg-white flex items-center justify-center">
-                <p className="text-gray-400">Output Preview</p>
+              {/* SVG Preview for output */}
+              <div className="h-48 border border-[rgb(var(--border))] rounded-lg overflow-hidden">
+                <SvgPreview svg={outputSvg} label="Output Preview" />
               </div>
             </CardContent>
           </Card>
