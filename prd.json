@@ -390,7 +390,7 @@
       "phase": 5,
       "title": "Create SVG validator module",
       "description": "Create validator that checks for common SVG issues and accessibility",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Checks for missing <title>",
@@ -405,7 +405,7 @@
       "phase": 5,
       "title": "Add validation panel to editor",
       "description": "Show validation warnings in editor UI",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Warnings panel renders",
@@ -419,7 +419,7 @@
       "phase": 5,
       "title": "Test validator (HITL)",
       "description": "Verify validator catches real issues in sample SVGs",
-      "passes": false,
+      "passes": true,
       "hitl": true,
       "verification": [
         "Missing title detected",

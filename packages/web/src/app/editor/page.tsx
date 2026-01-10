@@ -10,6 +10,7 @@ import { SvgPreview } from "@/components/editor/svg-preview";
 import { SampleSelector } from "@/components/editor/sample-selector";
 import { FormatSelector } from "@/components/editor/format-selector";
 import { Dropzone } from "@/components/editor/dropzone";
+import { ValidationPanel } from "@/components/editor/validation-panel";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { SampleSvg } from "@/lib/sample-svgs";
 // Import generators directly to avoid pulling in SVGO (Node.js only)
@@ -326,7 +327,7 @@ export default function EditorPage() {
           </Card>
         </div>
 
-        {/* Stats panel placeholder - will be added in Task 1.7 */}
+        {/* Stats panel */}
         <div className="mt-4 p-4 border border-[rgb(var(--border))] rounded-lg bg-[rgb(var(--card))]">
           {stats ? (
             <div className="flex items-center gap-6 text-sm">
@@ -345,6 +346,11 @@ export default function EditorPage() {
               Optimization stats will appear here after processing
             </p>
           )}
+        </div>
+
+        {/* Validation panel */}
+        <div className="mt-4 border border-[rgb(var(--border))] rounded-lg bg-[rgb(var(--card))]">
+          <ValidationPanel svg={inputSvg} />
         </div>
       </main>
     </div>

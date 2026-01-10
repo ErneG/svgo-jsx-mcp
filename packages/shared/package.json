@@ -33,6 +33,10 @@
     "./generators/web-component": {
       "types": "./dist/generators/web-component.d.ts",
       "import": "./dist/generators/web-component.js"
+    },
+    "./validator": {
+      "types": "./dist/validator.d.ts",
+      "import": "./dist/validator.js"
     }
   },
   "scripts": {
