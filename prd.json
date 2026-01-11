@@ -681,7 +681,7 @@
       "phase": 9,
       "title": "Create popup UI with paste/drop input",
       "description": "Build main popup interface with SVG input area, drop zone, and basic styling",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Popup HTML and React entry point",
@@ -701,7 +701,7 @@
       "phase": 9,
       "title": "Add format selector and optimization",
       "description": "Implement format selector (SVG, React, Vue, Svelte, Web Component) with client-side SVGO",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Format selector buttons/dropdown",
@@ -716,7 +716,7 @@
       "phase": 9,
       "title": "Add copy to clipboard functionality",
       "description": "Copy optimized output to clipboard with visual feedback",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Copy button in output area",
@@ -730,7 +730,7 @@
       "phase": 9,
       "title": "Implement context menu integration",
       "description": "Right-click menu to optimize SVGs on any webpage",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Context menu registered on install",
@@ -744,7 +744,7 @@
       "phase": 9,
       "title": "Create content script for SVG extraction",
       "description": "Detect and extract SVGs from webpage DOM (inline, img, object)",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Detects inline <svg> elements",
@@ -759,7 +759,7 @@
       "phase": 9,
       "title": "Add dark/light theme support",
       "description": "Theme toggle matching browser/system preference",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Theme toggle button",
