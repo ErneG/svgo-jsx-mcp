@@ -776,7 +776,7 @@
       "phase": 9,
       "title": "Test extension locally (HITL)",
       "description": "Load unpacked extension in Chrome and verify all MVP features",
-      "passes": false,
+      "passes": true,
       "hitl": true,
       "verification": [
         "Extension loads without errors",

@@ -1,15 +1,14 @@
 /**
  * Chrome Storage Wrapper
+ * Falls back to localStorage when not in extension context
  */
 
 import type { StorageData, HistoryItem, OutputFormat } from "@/types";
 
-const STORAGE_KEYS = {
-  theme: "theme",
-  defaultFormat: "defaultFormat",
-  history: "history",
-  favorites: "favorites",
-} as const;
+// Check if running in Chrome extension context
+const isExtensionContext = typeof chrome !== "undefined" && chrome.storage?.local;
+
+const STORAGE_PREFIX = "svgo-jsx-";
 
 const DEFAULT_STORAGE: StorageData = {
   theme: "system",
@@ -19,34 +18,61 @@ const DEFAULT_STORAGE: StorageData = {
 };
 
 /**
- * Get a value from Chrome storage
+ * Get a value from Chrome storage or localStorage
  */
 export async function getStorageValue<K extends keyof StorageData>(
   key: K
 ): Promise<StorageData[K]> {
-  const result = await chrome.storage.local.get(key);
-  return (result[key] as StorageData[K]) ?? DEFAULT_STORAGE[key];
+  if (isExtensionContext) {
+    const result = await chrome.storage.local.get(key);
+    return (result[key] as StorageData[K]) ?? DEFAULT_STORAGE[key];
+  }
+
+  // Fallback to localStorage
+  const stored = localStorage.getItem(STORAGE_PREFIX + key);
+  if (stored) {
+    try {
+      return JSON.parse(stored) as StorageData[K];
+    } catch {
+      return DEFAULT_STORAGE[key];
+    }
+  }
+  return DEFAULT_STORAGE[key];
 }
 
 /**
- * Set a value in Chrome storage
+ * Set a value in Chrome storage or localStorage
  */
 export async function setStorageValue<K extends keyof StorageData>(
   key: K,
   value: StorageData[K]
 ): Promise<void> {
-  await chrome.storage.local.set({ [key]: value });
+  if (isExtensionContext) {
+    await chrome.storage.local.set({ [key]: value });
+  } else {
+    localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+  }
 }
 
 /**
  * Get all storage data
  */
 export async function getAllStorage(): Promise<StorageData> {
-  const result = await chrome.storage.local.get(Object.keys(STORAGE_KEYS));
+  if (isExtensionContext) {
+    const result = await chrome.storage.local.get(Object.keys(DEFAULT_STORAGE));
+    return {
+      ...DEFAULT_STORAGE,
+      ...result,
+    } as StorageData;
+  }
+
+  // Fallback to localStorage
   return {
-    ...DEFAULT_STORAGE,
-    ...result,
-  } as StorageData;
+    theme: await getStorageValue("theme"),
+    defaultFormat: await getStorageValue("defaultFormat"),
+    history: await getStorageValue("history"),
+    favorites: await getStorageValue("favorites"),
+  };
 }
 
 /**

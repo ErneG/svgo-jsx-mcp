@@ -4,6 +4,9 @@ import { optimizeSvg } from "@/shared/optimizer";
 import { getStorageValue, setStorageValue, addToHistory } from "@/shared/storage";
 import type { OutputFormat, OptimizationResult } from "@/types";
 
+// Check if running in Chrome extension context
+const isExtensionContext = typeof chrome !== "undefined" && chrome.runtime?.id;
+
 const FORMATS: { value: OutputFormat; label: string; extension: string }[] = [
   { value: "svg", label: "SVG", extension: ".svg" },
   { value: "react", label: "React", extension: ".tsx" },
@@ -26,6 +29,15 @@ export function Popup() {
   // Load preferences on mount
   useEffect(() => {
     async function loadPreferences() {
+      // Use system preference as fallback when not in extension context
+      if (!isExtensionContext) {
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          setIsDark(true);
+          document.documentElement.classList.add("dark");
+        }
+        return;
+      }
+
       const theme = await getStorageValue("theme");
       const defaultFormat = await getStorageValue("defaultFormat");
 
@@ -55,8 +67,10 @@ export function Popup() {
     loadPreferences();
   }, []);
 
-  // Listen for messages from background script
+  // Listen for messages from background script (only in extension context)
   useEffect(() => {
+    if (!isExtensionContext) return;
+
     function handleMessage(message: { type: string }) {
       if (message.type === "PASTE_AND_OPTIMIZE") {
         navigator.clipboard.readText().then((text) => {
