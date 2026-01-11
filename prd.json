@@ -654,6 +654,139 @@
         "All pages translated"
       ],
       "files": []
+    },
+    {
+      "id": "9.1",
+      "phase": 9,
+      "title": "Set up extension scaffold with Vite + React + CRXJS",
+      "description": "Create packages/extension with manifest.json, vite config, tsconfig, and basic structure",
+      "passes": true,
+      "hitl": false,
+      "verification": [
+        "package.json created with dependencies",
+        "manifest.json with MV3 configuration",
+        "vite.config.ts with CRXJS plugin",
+        "TypeScript compiles without errors",
+        "Extension builds successfully"
+      ],
+      "files": [
+        "packages/extension/package.json",
+        "packages/extension/manifest.json",
+        "packages/extension/vite.config.ts",
+        "packages/extension/tsconfig.json"
+      ]
+    },
+    {
+      "id": "9.2",
+      "phase": 9,
+      "title": "Create popup UI with paste/drop input",
+      "description": "Build main popup interface with SVG input area, drop zone, and basic styling",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Popup HTML and React entry point",
+        "Input textarea for pasting SVG",
+        "Drop zone for file upload",
+        "Tailwind CSS styling"
+      ],
+      "files": [
+        "packages/extension/src/popup/index.html",
+        "packages/extension/src/popup/main.tsx",
+        "packages/extension/src/popup/Popup.tsx",
+        "packages/extension/src/popup/styles.css"
+      ]
+    },
+    {
+      "id": "9.3",
+      "phase": 9,
+      "title": "Add format selector and optimization",
+      "description": "Implement format selector (SVG, React, Vue, Svelte, Web Component) with client-side SVGO",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Format selector buttons/dropdown",
+        "Client-side SVGO optimization",
+        "Code generators for all formats",
+        "Shows optimization statistics"
+      ],
+      "files": ["packages/extension/src/shared/optimizer.ts"]
+    },
+    {
+      "id": "9.4",
+      "phase": 9,
+      "title": "Add copy to clipboard functionality",
+      "description": "Copy optimized output to clipboard with visual feedback",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Copy button in output area",
+        "Clipboard API integration",
+        "Success feedback (Copied!)"
+      ],
+      "files": ["packages/extension/src/popup/Popup.tsx"]
+    },
+    {
+      "id": "9.5",
+      "phase": 9,
+      "title": "Implement context menu integration",
+      "description": "Right-click menu to optimize SVGs on any webpage",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Context menu registered on install",
+        "Menu items for each output format",
+        "Triggers optimization flow"
+      ],
+      "files": ["packages/extension/src/background/service-worker.ts"]
+    },
+    {
+      "id": "9.6",
+      "phase": 9,
+      "title": "Create content script for SVG extraction",
+      "description": "Detect and extract SVGs from webpage DOM (inline, img, object)",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Detects inline <svg> elements",
+        "Handles img[src=*.svg] tags",
+        "Handles data URIs",
+        "Message passing with background"
+      ],
+      "files": ["packages/extension/src/content/content-script.ts"]
+    },
+    {
+      "id": "9.7",
+      "phase": 9,
+      "title": "Add dark/light theme support",
+      "description": "Theme toggle matching browser/system preference",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Theme toggle button",
+        "CSS variables for themes",
+        "Persists preference in storage"
+      ],
+      "files": [
+        "packages/extension/src/popup/styles.css",
+        "packages/extension/src/shared/storage.ts"
+      ]
+    },
+    {
+      "id": "9.8",
+      "phase": 9,
+      "title": "Test extension locally (HITL)",
+      "description": "Load unpacked extension in Chrome and verify all MVP features",
+      "passes": false,
+      "hitl": true,
+      "verification": [
+        "Extension loads without errors",
+        "Popup opens and accepts SVG input",
+        "Optimization produces correct output",
+        "Copy to clipboard works",
+        "Context menu appears on right-click",
+        "Theme toggle works"
+      ],
+      "files": []
     }
   ]
 }

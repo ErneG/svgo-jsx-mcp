@@ -1,0 +1,50 @@
+{
+  "manifest_version": 3,
+  "name": "SVGO JSX - SVG Optimizer",
+  "version": "1.0.0",
+  "description": "Optimize SVGs and generate React, Vue, Svelte components instantly from any webpage",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    },
+    "default_title": "SVGO JSX"
+  },
+  "permissions": ["activeTab", "contextMenus", "storage", "clipboardWrite"],
+  "background": {
+    "service_worker": "src/background/service-worker.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/content-script.ts"],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "optimize-clipboard": {
+      "suggested_key": {
+        "default": "Alt+Shift+O",
+        "mac": "Alt+Shift+O"
+      },
+      "description": "Optimize SVG from clipboard"
+    },
+    "scan-page": {
+      "suggested_key": {
+        "default": "Alt+Shift+S",
+        "mac": "Alt+Shift+S"
+      },
+      "description": "Scan page for SVGs"
+    }
+  }
+}

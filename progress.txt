@@ -532,3 +532,28 @@ All 44 tasks across 8 phases completed successfully!
 
 ### Project Completed: 2026-01-11
 
+---
+
+## New Project: Browser Extension
+
+### Phases Overview:
+- **Phase 1**: MVP (8 tasks) - Core optimization functionality
+- **Phase 2**: Authentication & Polish (8 tasks) - User accounts and enhanced UX
+- **Phase 3**: Advanced Features (7 tasks) - Power user features
+
+**Total: 23 tasks across 3 phases**
+
+---
+
+### Phase 1: MVP (Phase 9 in prd.json)
+
+#### Task 9.1: Set up extension scaffold with Vite + React + CRXJS ✅
+- Created packages/extension directory structure
+- package.json with React 19, Vite, CRXJS, Tailwind, Zustand dependencies
+- manifest.json with Manifest V3 configuration (permissions, background, content scripts)
+- vite.config.ts with CRXJS plugin for extension building
+- tsconfig.json with Chrome types and path aliases
+- Generated PNG icons (16, 32, 48, 128px) from SVG source
+- All feedback loops pass (typecheck, lint, tests, build)
+- Date: 2026-01-11
+
