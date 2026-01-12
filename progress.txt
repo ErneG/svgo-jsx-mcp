@@ -633,3 +633,21 @@ All 8 tasks in Phase 9 (Browser Extension MVP) have been completed:
 - Dark/light theme with system preference support
 - Chrome storage for preferences and history
 
+---
+
+### Phase 10: Extension Polish & Features
+
+#### Task 10.1: Add page scanner feature ✅
+- Added tabbed interface to popup (Optimize / Scan Page)
+- Scan Page tab automatically scans current page for SVGs
+- Displays list of found SVGs with:
+  - Preview thumbnails
+  - Source type (inline, img, object)
+  - Dimensions
+  - CORS status indicator
+- Selection checkboxes for future batch operations
+- Select All / Deselect controls
+- Individual "Optimize" button per SVG
+- Clicking Optimize loads SVG into Optimize tab
+- Date: 2026-01-12
+

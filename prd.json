@@ -787,6 +787,122 @@
         "Theme toggle works"
       ],
       "files": []
+    },
+    {
+      "id": "10.1",
+      "phase": 10,
+      "title": "Add page scanner feature",
+      "description": "Scan current page for all SVGs, display list with thumbnails, allow batch selection",
+      "passes": true,
+      "hitl": false,
+      "verification": [
+        "Scan Page button in popup",
+        "Lists all found SVGs with previews",
+        "Can select individual or all SVGs",
+        "Shows count of found SVGs"
+      ],
+      "files": [
+        "packages/extension/src/popup/Popup.tsx",
+        "packages/extension/src/content/content-script.ts"
+      ]
+    },
+    {
+      "id": "10.2",
+      "phase": 10,
+      "title": "Implement toast notification system",
+      "description": "Add toast notifications for success, error, and progress feedback",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Success toast on copy",
+        "Error toast on failures",
+        "Toasts auto-dismiss after 3s",
+        "Different colors for different types"
+      ],
+      "files": ["packages/extension/src/popup/Popup.tsx", "packages/extension/src/shared/toast.ts"]
+    },
+    {
+      "id": "10.3",
+      "phase": 10,
+      "title": "Create options/settings page",
+      "description": "Add options page for configuring default format, theme, and keyboard shortcuts",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Options page accessible from popup",
+        "Can set default output format",
+        "Can configure theme preference",
+        "Settings persist across sessions"
+      ],
+      "files": [
+        "packages/extension/src/options/Options.tsx",
+        "packages/extension/src/options/index.html",
+        "packages/extension/manifest.json"
+      ]
+    },
+    {
+      "id": "10.4",
+      "phase": 10,
+      "title": "Add history panel",
+      "description": "Store and display last 50 optimized SVGs with ability to re-copy",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "History tab in popup",
+        "Shows recent optimizations",
+        "Can re-copy from history",
+        "Can clear history"
+      ],
+      "files": [
+        "packages/extension/src/popup/History.tsx",
+        "packages/extension/src/shared/storage.ts"
+      ]
+    },
+    {
+      "id": "10.5",
+      "phase": 10,
+      "title": "Improve SVG detection for edge cases",
+      "description": "Better handling of SVG in img tags, object embeds, use elements, and data URIs",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Detects img[src$=.svg] elements",
+        "Handles data:image/svg+xml URIs",
+        "Extracts from object embeds",
+        "Handles SVG sprite use elements"
+      ],
+      "files": ["packages/extension/src/content/content-script.ts"]
+    },
+    {
+      "id": "10.6",
+      "phase": 10,
+      "title": "Add batch download as ZIP",
+      "description": "Allow downloading multiple optimized SVGs as a ZIP file",
+      "passes": false,
+      "hitl": false,
+      "verification": [
+        "Download ZIP button when multiple selected",
+        "ZIP contains all selected files",
+        "Files named appropriately",
+        "Works with different output formats"
+      ],
+      "files": ["packages/extension/src/popup/Popup.tsx", "packages/extension/src/shared/zip.ts"]
+    },
+    {
+      "id": "10.7",
+      "phase": 10,
+      "title": "Test Phase 10 features (HITL)",
+      "description": "Manual verification of all Phase 10 features in Chrome",
+      "passes": false,
+      "hitl": true,
+      "verification": [
+        "Page scanner finds all SVGs",
+        "Toast notifications work",
+        "Options page saves settings",
+        "History shows recent items",
+        "ZIP download works"
+      ],
+      "files": []
     }
   ]
 }
