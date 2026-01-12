@@ -30,6 +30,7 @@
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@react-email/components": "^1.0.4",
     "@resvg/resvg-js": "^2.6.2",
     "@resvg/resvg-js-darwin-arm64": "^2.6.2",
     "@svgo-jsx/shared": "workspace:*",
@@ -47,6 +48,7 @@
     "next": "16.1.1",
     "next-intl": "^4.7.0",
     "next-themes": "^0.4.6",
+    "nodemailer": "^7.0.12",
     "pg": "^8.13.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -58,6 +60,7 @@
   "devDependencies": {
     "@testing-library/react": "^16.3.1",
     "@types/node": "^24",
+    "@types/nodemailer": "^7.0.5",
     "@types/pg": "^8.11.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
