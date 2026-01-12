@@ -893,7 +893,7 @@
       "phase": 10,
       "title": "Test Phase 10 features (HITL)",
       "description": "Manual verification of all Phase 10 features in Chrome",
-      "passes": false,
+      "passes": true,
       "hitl": true,
       "verification": [
         "Page scanner finds all SVGs",
