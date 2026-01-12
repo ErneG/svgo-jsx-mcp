@@ -12,6 +12,7 @@ import {
   RefreshCw,
   CheckSquare,
   Square,
+  Settings,
 } from "lucide-react";
 import { optimizeSvg } from "@/shared/optimizer";
 import { getStorageValue, setStorageValue, addToHistory } from "@/shared/storage";
@@ -313,13 +314,24 @@ export function Popup() {
           <Sparkles className="w-5 h-5 text-blue-500" />
           <h1 className="font-semibold text-lg">SVGO JSX</h1>
         </div>
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-lg hover:bg-[hsl(var(--secondary))] transition-colors"
-          aria-label="Toggle theme"
-        >
-          {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg hover:bg-[hsl(var(--secondary))] transition-colors"
+            aria-label="Toggle theme"
+          >
+            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+          {isExtensionContext && (
+            <button
+              onClick={() => chrome.runtime.openOptionsPage()}
+              className="p-2 rounded-lg hover:bg-[hsl(var(--secondary))] transition-colors"
+              aria-label="Settings"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Tabs */}

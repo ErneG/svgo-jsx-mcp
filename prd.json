@@ -826,7 +826,7 @@
       "phase": 10,
       "title": "Create options/settings page",
       "description": "Add options page for configuring default format, theme, and keyboard shortcuts",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Options page accessible from popup",
