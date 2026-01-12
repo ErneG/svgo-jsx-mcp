@@ -42,11 +42,11 @@ function getSvgAtPosition(x: number, y: number): string | null {
 }
 
 /**
- * Fetch SVG content from URL (for img src)
+ * Fetch SVG content from URL or data URI
  */
 function fetchSvgFromUrl(url: string): string | null {
   if (url.startsWith("data:image/svg+xml")) {
-    // Handle data URI
+    // Handle data URI - base64 encoded
     const base64Match = url.match(/data:image\/svg\+xml;base64,(.+)/);
     if (base64Match?.[1]) {
       try {
@@ -56,7 +56,8 @@ function fetchSvgFromUrl(url: string): string | null {
       }
     }
 
-    const encodedMatch = url.match(/data:image\/svg\+xml,(.+)/);
+    // Handle data URI - URL encoded (with optional charset)
+    const encodedMatch = url.match(/data:image\/svg\+xml(?:;[^,]*)?,(.+)/);
     if (encodedMatch?.[1]) {
       try {
         return decodeURIComponent(encodedMatch[1]);
@@ -68,6 +69,50 @@ function fetchSvgFromUrl(url: string): string | null {
 
   // For external URLs, we can't fetch due to CORS
   // Return null and let the user know
+  return null;
+}
+
+/**
+ * Extract SVG from a use element by finding the referenced symbol
+ */
+function extractSvgFromUseElement(useEl: SVGUseElement): string | null {
+  // Get the href attribute (could be href or xlink:href)
+  const href = useEl.getAttribute("href") || useEl.getAttribute("xlink:href");
+  if (!href) return null;
+
+  // Check if it's an internal reference (starts with #)
+  if (href.startsWith("#")) {
+    const symbolId = href.substring(1);
+    const symbol = document.getElementById(symbolId);
+
+    if (symbol && (symbol.tagName === "symbol" || symbol.tagName === "svg")) {
+      // Create a standalone SVG from the symbol
+      const viewBox = symbol.getAttribute("viewBox") || "";
+      const width = useEl.getAttribute("width") || symbol.getAttribute("width") || "24";
+      const height = useEl.getAttribute("height") || symbol.getAttribute("height") || "24";
+
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="${width}" height="${height}">${symbol.innerHTML}</svg>`;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Extract SVG from CSS background-image
+ */
+function extractSvgFromBackgroundImage(element: Element): string | null {
+  const style = getComputedStyle(element);
+  const bgImage = style.backgroundImage;
+
+  if (bgImage && bgImage.startsWith('url("data:image/svg+xml')) {
+    // Extract the data URI from url("...")
+    const match = bgImage.match(/url\("(.+?)"\)/);
+    if (match?.[1]) {
+      return fetchSvgFromUrl(match[1]);
+    }
+  }
+
   return null;
 }
 
@@ -146,6 +191,98 @@ function scanPageForSvgs(): SVGInfo[] {
           content: "",
           source: "object",
           url: objEl.data,
+          dimensions: { width: rect.width, height: rect.height },
+        });
+      }
+    }
+  });
+
+  // Find embed elements with SVG
+  document.querySelectorAll('embed[type="image/svg+xml"], embed[src$=".svg"]').forEach((embed) => {
+    const embedEl = embed as HTMLEmbedElement;
+    const rect = embedEl.getBoundingClientRect();
+
+    if (rect.width > 0 && rect.height > 0) {
+      try {
+        const svgDoc = embedEl.getSVGDocument?.();
+        if (svgDoc) {
+          const innerSvg = svgDoc.querySelector("svg");
+          if (innerSvg) {
+            svgs.push({
+              id: `svg-${idCounter++}`,
+              content: innerSvg.outerHTML,
+              source: "object", // Using "object" as the type since embed is similar
+              url: embedEl.src,
+              dimensions: { width: rect.width, height: rect.height },
+            });
+            return; // Skip adding another entry for this element
+          }
+        }
+      } catch {
+        // Cross-origin embed, can't access
+      }
+
+      // Record the embed even if we can't access it
+      svgs.push({
+        id: `svg-${idCounter++}`,
+        content: "",
+        source: "object",
+        url: embedEl.src,
+        dimensions: { width: rect.width, height: rect.height },
+      });
+    }
+  });
+
+  // Find SVG sprite use elements (standalone use elements that reference symbols)
+  document.querySelectorAll("use[href], use[xlink\\:href]").forEach((use) => {
+    const useEl = use as SVGUseElement;
+    const parentSvg = useEl.closest("svg");
+
+    // Only process if the use element is in a simple wrapper SVG
+    // (not already captured as part of a larger inline SVG)
+    if (parentSvg) {
+      const rect = parentSvg.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        // Check if this SVG only contains this use element (icon usage pattern)
+        const children = parentSvg.children;
+        const isSimpleIcon = children.length === 1 && children[0] === useEl;
+
+        if (isSimpleIcon) {
+          const extractedSvg = extractSvgFromUseElement(useEl);
+          if (extractedSvg) {
+            // Check if we already have this SVG (from inline detection)
+            const alreadyExists = svgs.some(
+              (s) =>
+                s.source === "inline" &&
+                s.dimensions?.width === rect.width &&
+                s.dimensions?.height === rect.height
+            );
+
+            if (!alreadyExists) {
+              svgs.push({
+                id: `svg-${idCounter++}`,
+                content: extractedSvg,
+                source: "inline",
+                dimensions: { width: rect.width, height: rect.height },
+              });
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Find elements with SVG background images (limited to visible elements)
+  const elementsWithBg = document.querySelectorAll("[style*='background']");
+  elementsWithBg.forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      const svgContent = extractSvgFromBackgroundImage(el);
+      if (svgContent) {
+        svgs.push({
+          id: `svg-${idCounter++}`,
+          content: svgContent,
+          source: "background" as const,
           dimensions: { width: rect.width, height: rect.height },
         });
       }

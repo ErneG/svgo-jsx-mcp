@@ -863,7 +863,7 @@
       "phase": 10,
       "title": "Improve SVG detection for edge cases",
       "description": "Better handling of SVG in img tags, object embeds, use elements, and data URIs",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Detects img[src$=.svg] elements",

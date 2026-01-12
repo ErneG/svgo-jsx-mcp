@@ -696,3 +696,15 @@ All 8 tasks in Phase 9 (Browser Extension MVP) have been completed:
 - History persists in Chrome storage
 - Date: 2026-01-12
 
+#### Task 10.5: Improve SVG detection for edge cases ✅
+- Enhanced content-script.ts with better SVG detection:
+  - **Data URIs**: Improved regex to handle optional charset in data:image/svg+xml URIs
+  - **SVG sprite use elements**: Extract symbols from `<use href="#id">` references
+  - **Embed elements**: Added detection for `<embed type="image/svg+xml">`
+  - **Background images**: Extract SVGs from CSS background-image data URIs
+- New helper functions:
+  - `extractSvgFromUseElement()`: Resolves symbol references and creates standalone SVGs
+  - `extractSvgFromBackgroundImage()`: Parses computed styles for SVG data URIs
+- Content script now detects more SVG sources on page scan
+- Date: 2026-01-12
+
