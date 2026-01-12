@@ -13,12 +13,14 @@ import {
   CheckSquare,
   Square,
   Settings,
+  Clock,
 } from "lucide-react";
 import { optimizeSvg } from "@/shared/optimizer";
-import { getStorageValue, setStorageValue, addToHistory } from "@/shared/storage";
+import { getStorageValue, setStorageValue, addToHistory, clearHistory } from "@/shared/storage";
 import { createToastId, TOAST_DURATIONS, type Toast } from "@/shared/toast";
 import { ToastContainer } from "./Toast";
-import type { OutputFormat, OptimizationResult, SVGInfo } from "@/types";
+import { History } from "./History";
+import type { OutputFormat, OptimizationResult, SVGInfo, HistoryItem } from "@/types";
 
 // Check if running in Chrome extension context
 const isExtensionContext = typeof chrome !== "undefined" && chrome.runtime?.id;
@@ -31,7 +33,7 @@ const FORMATS: { value: OutputFormat; label: string; extension: string }[] = [
   { value: "web-component", label: "Web Component", extension: ".js" },
 ];
 
-type Tab = "optimize" | "scan";
+type Tab = "optimize" | "scan" | "history";
 
 export function Popup() {
   const [activeTab, setActiveTab] = useState<Tab>("optimize");
@@ -49,6 +51,9 @@ export function Popup() {
   const [isScanning, setIsScanning] = useState(false);
   const [scannedSvgs, setScannedSvgs] = useState<SVGInfo[]>([]);
   const [selectedSvgs, setSelectedSvgs] = useState<Set<string>>(new Set());
+
+  // History state
+  const [history, setHistory] = useState<HistoryItem[]>([]);
 
   // Toast state
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -93,6 +98,10 @@ export function Popup() {
       if (defaultFormat) {
         setFormat(defaultFormat);
       }
+
+      // Load history
+      const savedHistory = await getStorageValue("history");
+      setHistory(savedHistory);
 
       // Check for pending optimization from context menu
       const storage = await chrome.storage.local.get("pendingOptimization");
@@ -149,6 +158,10 @@ export function Popup() {
           format: outputFormat,
           savedPercent: optimizationResult.savedPercent,
         });
+
+        // Update local history state
+        const updatedHistory = await getStorageValue("history");
+        setHistory(updatedHistory);
 
         addToast("success", `Optimized! ${optimizationResult.savedPercent} smaller`);
       } catch (err) {
@@ -303,6 +316,31 @@ export function Popup() {
     [format, handleOptimize, addToast]
   );
 
+  // History functions
+  const handleCopyFromHistory = useCallback(
+    async (content: string) => {
+      try {
+        await navigator.clipboard.writeText(content);
+        addToast("success", "Copied to clipboard!");
+      } catch {
+        addToast("error", "Failed to copy to clipboard");
+      }
+    },
+    [addToast]
+  );
+
+  const handleClearHistory = useCallback(async () => {
+    await clearHistory();
+    setHistory([]);
+    addToast("info", "History cleared");
+  }, [addToast]);
+
+  const handleReOptimize = useCallback((svg: string) => {
+    setInput(svg);
+    setActiveTab("optimize");
+    // Don't auto-optimize, let user pick format
+  }, []);
+
   return (
     <div className="flex flex-col h-full">
       {/* Toast notifications */}
@@ -364,10 +402,28 @@ export function Popup() {
         >
           <span className="flex items-center justify-center gap-1.5">
             <Search className="w-3.5 h-3.5" />
-            Scan Page
+            Scan
             {scannedSvgs.length > 0 && (
               <span className="ml-1 px-1.5 py-0.5 text-xs bg-blue-500 text-white rounded-full">
                 {scannedSvgs.length}
+              </span>
+            )}
+          </span>
+        </button>
+        <button
+          onClick={() => setActiveTab("history")}
+          className={`flex-1 py-2 px-3 text-sm font-medium rounded-t-lg transition-colors ${
+            activeTab === "history"
+              ? "bg-[hsl(var(--secondary))] text-[hsl(var(--foreground))]"
+              : "text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
+          }`}
+        >
+          <span className="flex items-center justify-center gap-1.5">
+            <Clock className="w-3.5 h-3.5" />
+            History
+            {history.length > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 text-xs bg-blue-500 text-white rounded-full">
+                {history.length}
               </span>
             )}
           </span>
@@ -530,7 +586,7 @@ export function Popup() {
               </div>
             )}
           </>
-        ) : (
+        ) : activeTab === "scan" ? (
           /* Scanner Tab */
           <div className="flex-1 flex flex-col gap-3 overflow-hidden">
             {/* Scanner Controls */}
@@ -657,9 +713,17 @@ export function Popup() {
               </div>
             )}
           </div>
-        )}
+        ) : activeTab === "history" ? (
+          /* History Tab */
+          <History
+            history={history}
+            onCopy={handleCopyFromHistory}
+            onClear={handleClearHistory}
+            onReOptimize={handleReOptimize}
+          />
+        ) : null}
 
-        {/* Error - shown in both tabs */}
+        {/* Error - shown in all tabs */}
         {error && (
           <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 text-sm">
             {error}

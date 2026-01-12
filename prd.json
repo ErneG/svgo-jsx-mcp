@@ -845,7 +845,7 @@
       "phase": 10,
       "title": "Add history panel",
       "description": "Store and display last 50 optimized SVGs with ability to re-copy",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "History tab in popup",

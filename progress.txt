@@ -681,3 +681,18 @@ All 8 tasks in Phase 9 (Browser Extension MVP) have been completed:
 - Added settings button (gear icon) to popup header
 - Date: 2026-01-12
 
+#### Task 10.4: Add history panel ✅
+- Created packages/extension/src/popup/History.tsx component
+- Added History tab to popup (3rd tab alongside Optimize and Scan)
+- Features:
+  - Shows up to 50 recent optimizations
+  - Each item shows: SVG preview, format used, savings percentage, timestamp
+  - Human-readable timestamps (Just now, 5m ago, 2h ago, Jan 12)
+  - One-click copy of optimized output
+  - Expandable view to see code preview
+  - Re-optimize option to load original SVG into optimize tab
+  - Clear history button
+- Badge showing history count in tab
+- History persists in Chrome storage
+- Date: 2026-01-12
+
