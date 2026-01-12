@@ -708,3 +708,22 @@ All 8 tasks in Phase 9 (Browser Extension MVP) have been completed:
 - Content script now detects more SVG sources on page scan
 - Date: 2026-01-12
 
+#### Task 10.6: Add batch download as ZIP ✅
+- Added jszip dependency for ZIP file creation
+- Created packages/extension/src/shared/zip.ts with:
+  - `createZip()`: Creates ZIP blob from array of files
+  - `generateFilename()`: Generates proper filenames based on format and URL
+  - `downloadBlob()`: Triggers browser download of blob
+  - `downloadAsZip()`: Convenience function to create and download ZIP
+- Updated Popup.tsx:
+  - Added Download icon and isDownloading state
+  - `handleBatchDownload()`: Optimizes all selected SVGs and creates ZIP
+  - Selection info bar now shows "Download ZIP" button
+  - Progress indicator while creating ZIP
+- Features:
+  - Downloads all selected SVGs from scan tab as ZIP
+  - Each file optimized and converted to selected output format
+  - Filenames extracted from original URLs or numbered
+  - Handles duplicate filenames automatically
+- Date: 2026-01-12
+

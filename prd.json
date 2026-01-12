@@ -878,7 +878,7 @@
       "phase": 10,
       "title": "Add batch download as ZIP",
       "description": "Allow downloading multiple optimized SVGs as a ZIP file",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Download ZIP button when multiple selected",

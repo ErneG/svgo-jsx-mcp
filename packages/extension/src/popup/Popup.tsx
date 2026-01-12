@@ -14,10 +14,12 @@ import {
   Square,
   Settings,
   Clock,
+  Download,
 } from "lucide-react";
 import { optimizeSvg } from "@/shared/optimizer";
 import { getStorageValue, setStorageValue, addToHistory, clearHistory } from "@/shared/storage";
 import { createToastId, TOAST_DURATIONS, type Toast } from "@/shared/toast";
+import { downloadAsZip, generateFilename, type ZipFile } from "@/shared/zip";
 import { ToastContainer } from "./Toast";
 import { History } from "./History";
 import type { OutputFormat, OptimizationResult, SVGInfo, HistoryItem } from "@/types";
@@ -340,6 +342,50 @@ export function Popup() {
     setActiveTab("optimize");
     // Don't auto-optimize, let user pick format
   }, []);
+
+  // Batch download state
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleBatchDownload = useCallback(async () => {
+    if (selectedSvgs.size === 0) return;
+
+    setIsDownloading(true);
+    try {
+      const selectedItems = scannedSvgs.filter((svg) => selectedSvgs.has(svg.id) && svg.content);
+
+      if (selectedItems.length === 0) {
+        addToast("error", "No SVGs available for download");
+        return;
+      }
+
+      const files: ZipFile[] = [];
+      let fileIndex = 0;
+      for (const svg of selectedItems) {
+        try {
+          const result = optimizeSvg(svg.content, format);
+          files.push({
+            name: generateFilename(fileIndex, format, svg.url),
+            content: result.output,
+          });
+          fileIndex++;
+        } catch {
+          // Skip failed optimizations
+        }
+      }
+
+      if (files.length === 0) {
+        addToast("error", "Failed to optimize SVGs");
+        return;
+      }
+
+      await downloadAsZip(files);
+      addToast("success", `Downloaded ${files.length} optimized SVG(s)`);
+    } catch {
+      addToast("error", "Failed to create ZIP file");
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [selectedSvgs, scannedSvgs, format, addToast]);
 
   return (
     <div className="flex flex-col h-full">
@@ -705,11 +751,18 @@ export function Popup() {
               )}
             </div>
 
-            {/* Selection Info */}
+            {/* Selection Info & Download */}
             {selectedSvgs.size > 0 && (
               <div className="flex items-center justify-between p-2 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400 text-sm">
                 <span>{selectedSvgs.size} SVG(s) selected</span>
-                <span className="text-xs">Batch download coming soon</span>
+                <button
+                  onClick={handleBatchDownload}
+                  disabled={isDownloading}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-blue-500 text-white text-xs font-medium hover:bg-blue-600 disabled:opacity-50 transition-colors"
+                >
+                  <Download className={`w-3.5 h-3.5 ${isDownloading ? "animate-bounce" : ""}`} />
+                  {isDownloading ? "Creating ZIP..." : "Download ZIP"}
+                </button>
               </div>
             )}
           </div>
