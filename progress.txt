@@ -651,3 +651,16 @@ All 8 tasks in Phase 9 (Browser Extension MVP) have been completed:
 - Clicking Optimize loads SVG into Optimize tab
 - Date: 2026-01-12
 
+#### Task 10.2: Toast notification system ✅
+- Created packages/extension/src/shared/toast.ts with Toast types and utilities
+- Created packages/extension/src/popup/Toast.tsx with Toast and ToastContainer components
+- Toast types: success (green), error (red), info (blue), warning (amber)
+- Auto-dismiss timers based on toast type (3-5 seconds)
+- CSS animations for slide-in-from-top effect
+- Integrated throughout Popup.tsx:
+  - Copy: success on copy, error on failure
+  - Optimize: warning for empty input, success with savings percentage, error on failure
+  - Scan: error/info/success based on results
+  - CORS blocked SVGs show error toast
+- Date: 2026-01-12
+

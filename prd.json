@@ -811,7 +811,7 @@
       "phase": 10,
       "title": "Implement toast notification system",
       "description": "Add toast notifications for success, error, and progress feedback",
-      "passes": false,
+      "passes": true,
       "hitl": false,
       "verification": [
         "Success toast on copy",

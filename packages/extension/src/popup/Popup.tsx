@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { optimizeSvg } from "@/shared/optimizer";
 import { getStorageValue, setStorageValue, addToHistory } from "@/shared/storage";
+import { createToastId, TOAST_DURATIONS, type Toast } from "@/shared/toast";
+import { ToastContainer } from "./Toast";
 import type { OutputFormat, OptimizationResult, SVGInfo } from "@/types";
 
 // Check if running in Chrome extension context
@@ -46,6 +48,23 @@ export function Popup() {
   const [isScanning, setIsScanning] = useState(false);
   const [scannedSvgs, setScannedSvgs] = useState<SVGInfo[]>([]);
   const [selectedSvgs, setSelectedSvgs] = useState<Set<string>>(new Set());
+
+  // Toast state
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  const addToast = useCallback((type: Toast["type"], message: string) => {
+    const toast: Toast = {
+      id: createToastId(),
+      type,
+      message,
+      duration: TOAST_DURATIONS[type],
+    };
+    setToasts((prev) => [...prev, toast]);
+  }, []);
+
+  const removeToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   // Load preferences on mount
   useEffect(() => {
@@ -107,35 +126,42 @@ export function Popup() {
     return () => chrome.runtime.onMessage.removeListener(handleMessage);
   }, [format]);
 
-  const handleOptimize = useCallback(async (svgContent: string, outputFormat: OutputFormat) => {
-    if (!svgContent.trim()) {
-      setError("Please paste or drop an SVG");
-      return;
-    }
+  const handleOptimize = useCallback(
+    async (svgContent: string, outputFormat: OutputFormat) => {
+      if (!svgContent.trim()) {
+        addToast("warning", "Please paste or drop an SVG");
+        return;
+      }
 
-    setIsOptimizing(true);
-    setError(null);
+      setIsOptimizing(true);
+      setError(null);
 
-    try {
-      const optimizationResult = optimizeSvg(svgContent, outputFormat);
-      setResult(optimizationResult);
-      setOutput(optimizationResult.output);
+      try {
+        const optimizationResult = optimizeSvg(svgContent, outputFormat);
+        setResult(optimizationResult);
+        setOutput(optimizationResult.output);
 
-      // Save to history
-      await addToHistory({
-        originalSvg: svgContent,
-        optimizedSvg: optimizationResult.output,
-        format: outputFormat,
-        savedPercent: optimizationResult.savedPercent,
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Optimization failed");
-      setOutput("");
-      setResult(null);
-    } finally {
-      setIsOptimizing(false);
-    }
-  }, []);
+        // Save to history
+        await addToHistory({
+          originalSvg: svgContent,
+          optimizedSvg: optimizationResult.output,
+          format: outputFormat,
+          savedPercent: optimizationResult.savedPercent,
+        });
+
+        addToast("success", `Optimized! ${optimizationResult.savedPercent} smaller`);
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : "Optimization failed";
+        setError(errorMsg);
+        addToast("error", errorMsg);
+        setOutput("");
+        setResult(null);
+      } finally {
+        setIsOptimizing(false);
+      }
+    },
+    [addToast]
+  );
 
   const handleCopy = useCallback(async () => {
     if (!output) return;
@@ -144,10 +170,11 @@ export function Popup() {
       await navigator.clipboard.writeText(output);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      addToast("success", "Copied to clipboard!");
     } catch {
-      setError("Failed to copy to clipboard");
+      addToast("error", "Failed to copy to clipboard");
     }
-  }, [output]);
+  }, [output, addToast]);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
@@ -209,7 +236,7 @@ export function Popup() {
   // Scanner functions
   const scanPage = useCallback(async () => {
     if (!isExtensionContext) {
-      setError("Page scanning only works in extension context");
+      addToast("error", "Page scanning only works in extension context");
       return;
     }
 
@@ -221,7 +248,7 @@ export function Popup() {
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (!tab?.id) {
-        setError("No active tab found");
+        addToast("error", "No active tab found");
         return;
       }
 
@@ -229,15 +256,17 @@ export function Popup() {
       if (response?.svgs) {
         setScannedSvgs(response.svgs);
         if (response.svgs.length === 0) {
-          setError("No SVGs found on this page");
+          addToast("info", "No SVGs found on this page");
+        } else {
+          addToast("success", `Found ${response.svgs.length} SVG(s)`);
         }
       }
     } catch {
-      setError("Failed to scan page. Try refreshing the page.");
+      addToast("error", "Failed to scan page. Try refreshing the page.");
     } finally {
       setIsScanning(false);
     }
-  }, []);
+  }, [addToast]);
 
   const toggleSvgSelection = useCallback((id: string) => {
     setSelectedSvgs((prev) => {
@@ -263,18 +292,21 @@ export function Popup() {
   const optimizeSelectedSvg = useCallback(
     (svg: SVGInfo) => {
       if (!svg.content) {
-        setError("Cannot access this SVG due to CORS restrictions");
+        addToast("error", "Cannot access this SVG due to CORS restrictions");
         return;
       }
       setInput(svg.content);
       setActiveTab("optimize");
       handleOptimize(svg.content, format);
     },
-    [format, handleOptimize]
+    [format, handleOptimize, addToast]
   );
 
   return (
     <div className="flex flex-col h-full">
+      {/* Toast notifications */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+
       {/* Header */}
       <div className="flex items-center justify-between p-4 pb-2">
         <div className="flex items-center gap-2">
